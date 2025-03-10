@@ -339,23 +339,12 @@ function isElementSticky(element) {
 
 // Our existing handler with additional prevention
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-		
-		e.stopPropagation();
+    if (e.key === 'Escape' && (e.altKey || e.ctrlKey || e.shiftKey || isMouseDown)) {
+        e.stopPropagation();
         e.preventDefault();
-        
-// Handle ESC + modifier keys
-        if (e.altKey) {
-          cleanupSelection();
-        } else if (e.ctrlKey) {            
-          cleanupSelection();
-        } else if (e.shiftKey) {    
-          cleanupSelection();
-        } else if (isMouseDown) {           
-          cleanupSelection();
-        }
+        cleanupSelection();
     }
-},  {capture: true, passive: false});
+}, {capture: true, passive: false});
 
 
 // Centralized cleanup function of selection box
