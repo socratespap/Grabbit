@@ -149,35 +149,48 @@ function updateSelectionBox() {
     updateSelectedLinks();
 }
 // Handle mouse move event
+// Add this helper function
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Then modify the mousemove event listener
 document.addEventListener('mousemove', (e) => {
     if (!isMouseDown || !selectionBox) return;
 
     const currentX = e.clientX;
-    const currentY = e.clientY + window.scrollY; // Add scroll offset to current Y position
+    const currentY = e.clientY + window.scrollY;
     lastMouseY = currentY;
 
-    // Calculate box dimensions using absolute positions
+    // Update box dimensions
     const left = Math.min(startX, currentX);
     const top = Math.min(startY, currentY);
     const width = Math.abs(currentX - startX);
     const height = Math.abs(currentY - startY);
 
-    // Update selection box position and size
     selectionBox.style.left = `${left}px`;
     selectionBox.style.top = `${top}px`;
     selectionBox.style.width = `${width}px`;
     selectionBox.style.height = `${height}px`;
 
     handleScroll(e.clientY);
-    updateSelectedLinks();
+    
+    // Use debounced version for link selection
+    debouncedUpdateLinks();
 
     if (counterLabel) {
         counterLabel.style.left = `${e.clientX}px`;
         counterLabel.style.top = `${e.clientY}px`;
-        updateVisualStyles(); 
-        
+        updateVisualStyles();
     }
 });
+
+// Create debounced version
+const debouncedUpdateLinks = debounce(updateSelectedLinks, 50);
 
   // Handle mouse up event
   document.addEventListener('mouseup', (e) => {
