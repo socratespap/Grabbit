@@ -86,7 +86,9 @@ The extension uses:
 
 - Windows 10
 - Windows 11
-- Chrome Latest Version (Version 131.0.6778.205 (Official Build) (64-bit))
+- Chrome Version (Version 131.0.6778.205 (Official Build) (64-bit))
+- Chrome Latest Version Version 133.0.6943.142 (Official Build) (64-bit)
+
 
 ## Known Issues
 
@@ -96,6 +98,8 @@ The extension uses:
 - 🟢 Add two actions. Action 1: Ctrl + Right Mouse for copy link. Action 2: Ctrl + Left mouse for open links. Only action with right mouse works
 - 🔴 Lifting keyboard key and no action is found for mouse only actions, is still selecting
 - 🟢 Removed unused context menu permission
+- 🔴 Not compatible with Netsuite
+- 🔴 Fix naming of buttons in Mac
 
 ## Features to be added
 
@@ -106,6 +110,11 @@ The extension uses:
 - 🟢 Add rating button
 - 🟢 Open tabs next to active tab
 - 🟢 Recognize <a> tags that are not visible
+- 🔴 Include Compatibility with Youtube Subscriptions links
+- 🟢 Add delay when opening tabs
+- 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
+- 🔴 Create Bookmarks
+- 🔴 Fix compatibility with Netsuite
 
 
 ## Version 1.0.1 Changelog:
@@ -120,3 +129,13 @@ Added activeTab permission
 
 Opens Tabs next to active tab
 Recognize <a> tags that are not visible
+
+## Version 1.0.4 Changelog:
+Open Links/tabs in reverse order option added
+Show correct combination keys for each OS (Option and Command for MacOs)
+
+## Version 1.0.5 Changelog:
+Added delay option when tabs are opened
+
+## Contributions
+- TheTacoScott - https://github.com/TheTacoScott

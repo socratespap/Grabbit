@@ -1,5 +1,5 @@
  
-  let isMouseDown = false; // Flag to track if mouse is down
+let isMouseDown = false; // Flag to track if mouse is down
   let startX = 0; // Starting X position
   let startY = 0; // Starting Y position
   let selectionBox = null; 
@@ -200,13 +200,32 @@ document.addEventListener('mousemove', (e) => {
 
 
       if (matchedAction && selectedLinks.size > 0) {
-          const urls = Array.from(selectedLinks).map(link => link.href);
+          let urls = Array.from(selectedLinks).map(link => link.href);
         
           // Apply smart select if enabled
-          const finalUrls = matchedAction.smartSelect === 'on' ? 
+          let finalUrls = matchedAction.smartSelect === 'on' ? 
               [...new Set(urls)] : urls;
+              
+         
 
-              if (matchedAction.openLinks) {
+          if (matchedAction.openLinks) {
+             // Apply reverse order if not enabled to fix bug
+          if (!matchedAction.reverseOrder) {
+            finalUrls = finalUrls.reverse();
+        }
+                // Pass the delay value to the background script
+                chrome.runtime.sendMessage({
+                    action: 'createTabs',
+                    urls: finalUrls,
+                    delay: matchedAction.tabDelay || 0
+                });
+            } else if (matchedAction.openWindow) {
+                // Send message to background script to handle window/tab creation
+                chrome.runtime.sendMessage({
+                    action: 'openLinks',
+                    urls: finalUrls,
+                    delay: matchedAction.tabDelay || 0
+                });
                 finalUrls.forEach(url => {
                     // Send a message to the background script to create the tab
                     chrome.runtime.sendMessage({
@@ -222,8 +241,18 @@ chrome.runtime.sendMessage({
   });
   
             } else if (matchedAction.copyUrls) {
-                navigator.clipboard.writeText(finalUrls.join('\n'));
+                 // Apply reverse order if enabled
+          if (matchedAction.reverseOrder) {
+            finalUrls = finalUrls.reverse();
+        }
+                
+                navigator.clipboard.writeText(finalUrls.join('\n\n'));
             } else if (matchedAction.copyUrlsAndTitles) {
+                 // Apply reverse order if enabled
+          if (matchedAction.reverseOrder) {
+            finalUrls = finalUrls.reverse();
+        }
+                
                 const urlsAndTitles = finalUrls.map(url => {
                     const link = Array.from(selectedLinks).find(l => l.href === url);
                     return `${link.textContent.trim()}\n${url}`;

@@ -2,6 +2,18 @@
 // Check if we're in a Chrome extension context to handle API calls safely
 const isExtension = typeof chrome !== 'undefined' && chrome.storage;
 
+// OS Detection Function
+function detectOS() {
+    const platform = navigator.userAgent.toLowerCase();
+    if (platform.includes('mac')) return 'mac';
+    if (platform.includes('win')) return 'windows';
+    if (platform.includes('linux')) return 'linux';
+    return 'windows'; // Default to Windows if unable to detect
+}
+
+// Get the current OS
+const currentOS = detectOS();
+
 // DOM Elements - Get all the important buttons and containers we need
 const actionButton = document.querySelector('.action-button');     // The big "Add New Action" button
 const modal = document.getElementById('actionModal');              // The popup window
@@ -45,6 +57,21 @@ function loadActionsFromStorage() {
     });
 }
 
+// Function to update key labels based on OS
+function updateKeyLabels() {
+    // Update the combinedKey dropdown options based on OS
+    const ctrlOption = combinedKeySelect.querySelector('option[value="ctrl"]');
+    if (ctrlOption) {
+        ctrlOption.textContent = currentOS === 'mac' ? 'Command' : 'Ctrl';
+    }
+    
+    // Update the Alt option to show as Option for macOS
+    const altOption = combinedKeySelect.querySelector('option[value="alt"]');
+    if (altOption) {
+        altOption.textContent = currentOS === 'mac' ? 'Option' : 'Alt';
+    }
+}
+
 // Action Card Management
 // Function to create a new action card with all its functionality
 function createActionCard(action) {
@@ -54,7 +81,12 @@ function createActionCard(action) {
     // Create combination text for display
     let combinationText = [];
     if (action.combination.key !== 'none') {
-        combinationText.push(action.combination.key.toUpperCase());
+        // Display OS-specific key name
+        let keyText = action.combination.key.toUpperCase();
+        if (action.combination.key === 'ctrl') {
+            keyText = currentOS === 'mac' ? 'COMMAND' : 'CTRL';
+        }
+        combinationText.push(keyText);
     }
     if (action.combination.mouseButton !== 'none') {
         // Convert mouse button values to user-friendly text
@@ -66,10 +98,12 @@ function createActionCard(action) {
     // Create features array for display
 const features = [];
 if (action.openLinks) features.push('Open Links');
-if (action.openWindow) features.push('Open in Window'); // Add this line
+if (action.openWindow) features.push('Open in Window');
 if (action.copyUrls) features.push('Copy URLs');
 if (action.smartSelect === 'on') features.push('Smart Select');
 if (action.copyUrlsAndTitles) features.push('Copy URLs & Titles');
+if (action.reverseOrder) features.push('Reverse Order');
+if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.push(`${action.tabDelay}s Delay`);
 
 
 
@@ -100,9 +134,20 @@ if (action.copyUrlsAndTitles) features.push('Copy URLs & Titles');
         // Populate the modal with current action data
         document.getElementById('combinedKey').value = action.combination.key;
         document.getElementById('mouseButton').value = action.combination.mouseButton;
-        document.getElementById('actionType').value = action.openLinks ? 'openLinks' : 'copyUrls';
+        document.getElementById('actionType').value = action.openLinks ? 'openLinks' : (action.openWindow ? 'openWindow' : (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' : 'copyUrls'));
         document.getElementById('smartSelect').value = action.smartSelect;
+        document.getElementById('reverseOrder').checked = action.reverseOrder || false;
         document.getElementById('boxColor').value = action.boxColor || '#2196F3'; // Load saved color or default
+        document.getElementById('tabDelay').value = action.tabDelay || 0; // Load saved delay or default
+        document.getElementById('delayValue').textContent = action.tabDelay || 0; // Update display value
+        
+        // Show/hide delay option based on action type
+        const delayContainer = document.getElementById('delayOptionContainer');
+        if (action.openLinks || action.openWindow) {
+            delayContainer.style.display = 'flex';
+        } else {
+            delayContainer.style.display = 'none';
+        }
 
         // Show the modal and mark it as editing
         modal.classList.add('active');
@@ -170,8 +215,13 @@ const closeModal = () => {
     document.getElementById('combinedKey').value = 'none';
     document.getElementById('mouseButton').value = '';
     document.getElementById('actionType').value = '';
+    document.getElementById('reverseOrder').checked = false;
+    document.getElementById('tabDelay').value = 0;
+    document.getElementById('delayValue').textContent = '0';
     // Reset all error messages
     document.querySelectorAll('.error-message').forEach(error => error.classList.remove('visible'));
+    // Hide delay option by default
+    document.getElementById('delayOptionContainer').style.display = 'none';
 };
 
 // Add close functionality to buttons
@@ -218,11 +268,13 @@ document.getElementById('saveButton').addEventListener('click', () => {
             mouseButton: mouseButton.value
         },
         openLinks: actionType.value === 'openLinks',
-        openWindow: actionType.value === 'openWindow', // Add this line
+        openWindow: actionType.value === 'openWindow',
         copyUrls: actionType.value === 'copyUrls',
         copyUrlsAndTitles: actionType.value === 'copyUrlsAndTitles',
         smartSelect: document.getElementById('smartSelect').value,
-        boxColor: document.getElementById('boxColor').value
+        reverseOrder: document.getElementById('reverseOrder').checked,
+        boxColor: document.getElementById('boxColor').value,
+        tabDelay: parseInt(document.getElementById('tabDelay').value, 10) // Add the tab delay value
     };
 
     // Handle editing vs creating new action
@@ -249,7 +301,13 @@ boxColorInput.addEventListener('change', (e) => {
 
 // Load saved actions when the page loads
 if (isExtension) {
-    document.addEventListener('DOMContentLoaded', loadActionsFromStorage);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadActionsFromStorage();
+        updateKeyLabels();
+    });
+} else {
+    // For non-extension environments (like local testing)
+    updateKeyLabels();
 }
 
 // Form Validation
@@ -270,8 +328,23 @@ document.getElementById('actionType').addEventListener('change', (e) => {
     } else {
         actionTypeError.classList.remove('visible');
     }
+    
+    // Show/hide delay option based on action type
+    const delayContainer = document.getElementById('delayOptionContainer');
+    if (e.target.value === 'openLinks' || e.target.value === 'openWindow') {
+        delayContainer.style.display = 'flex';
+    } else {
+        delayContainer.style.display = 'none';
+    }
 });
 
+// Add event listener for the delay slider
+const tabDelaySlider = document.getElementById('tabDelay');
+const delayValueDisplay = document.getElementById('delayValue');
+
+tabDelaySlider.addEventListener('input', (e) => {
+    delayValueDisplay.textContent = e.target.value;
+});
 
 // handle pin extension button
 const pinExtensionButton = document.getElementById('pinExtensionButton');

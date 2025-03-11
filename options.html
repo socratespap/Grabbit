@@ -911,6 +911,27 @@
                         <div class="tooltip">Smart select removes duplicate URLs when selecting multiple links with the same destination.</div>
                     </div>
                 </div>
+                <div class="advanced-options" style="margin-top: 1rem;">
+                    <label>Open/Copy links in reverse order</label>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="reverseOrder">
+                    </div>
+                    <div class="smart-select-info">
+                        <div class="tooltip">When enabled, links will be opened in reverse order of selection.</div>
+                    </div>
+                </div>
+                
+                <!-- New delay option -->
+                <div class="advanced-options" style="margin-top: 1rem;" id="delayOptionContainer">
+                    <label>Tab opening delay (seconds)</label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="range" id="tabDelay" min="0" max="60" value="0" style="width: 150px;">
+                        <span id="delayValue">0</span>
+                    </div>
+                    <div class="smart-select-info">
+                        <div class="tooltip">Sets a delay between opening each tab. Only applies when opening links in tabs or windows.</div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">
