@@ -1,5 +1,4 @@
- 
-let isMouseDown = false; // Flag to track if mouse is down
+  let isMouseDown = false; // Flag to track if mouse is down
   let startX = 0; // Starting X position
   let startY = 0; // Starting Y position
   let selectionBox = null; 
@@ -145,9 +144,21 @@ function updateSelectionBox() {
     selectionBox.style.top = `${top}px`;
     selectionBox.style.height = `${height}px`;
     
-    // Update link selection
-    updateSelectedLinks();
+    // Update link selection using debounced function
+    debouncedUpdateLinks();
 }
+// Add this helper function
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Create debounced version
+const debouncedUpdateLinks = debounce(updateSelectedLinks, 50);
+
 // Handle mouse move event
 document.addEventListener('mousemove', (e) => {
     if (!isMouseDown || !selectionBox) return;
@@ -169,13 +180,14 @@ document.addEventListener('mousemove', (e) => {
     selectionBox.style.height = `${height}px`;
 
     handleScroll(e.clientY);
-    updateSelectedLinks();
+    
+    // Use debounced version for link selection
+    debouncedUpdateLinks();
 
     if (counterLabel) {
         counterLabel.style.left = `${e.clientX}px`;
         counterLabel.style.top = `${e.clientY}px`;
         updateVisualStyles(); 
-        
     }
 });
 
@@ -330,6 +342,9 @@ chrome.runtime.sendMessage({
                 link.style.backgroundColor = '';
             }
         });
+        
+        // Update the counter label after links selection changes
+        updateVisualStyles();
     }
 //how the counter label is created
 function createCounterLabel() {
@@ -368,9 +383,8 @@ function isElementSticky(element) {
 
 // Our existing handler with additional prevention
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-		
-		e.stopPropagation();
+    if (e.key === 'Escape' && (e.altKey || e.ctrlKey || e.shiftKey || isMouseDown)) {
+        e.stopPropagation();
         e.preventDefault();
         
 // Handle ESC + modifier keys
@@ -384,8 +398,7 @@ window.addEventListener('keydown', (e) => {
           cleanupSelection();
         }
     }
-},  {capture: true, passive: false});
-
+}, {capture: true, passive: false});
 
 // Centralized cleanup function of selection box
 function cleanupSelection() {

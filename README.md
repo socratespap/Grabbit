@@ -137,8 +137,12 @@ Open Links/tabs in reverse order option added
 Show correct combination keys for each OS (Option and Command for MacOs)
 
 ## Version 1.0.5 Changelog:
-Added delay option when tabs are opened
+Added delay option when tabs are opened by TheTacoScott
+
+## Version 1.0.6 Changelog:
+fix memory leak for ESC by oaustegard
+debounce link selection by oaustegard
 
 ## Contributions
 - TheTacoScott - https://github.com/TheTacoScott
-
+- oaustegard - https://github.com/oaustegard
