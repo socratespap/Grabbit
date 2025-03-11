@@ -1,4 +1,3 @@
-
 # Grabbit Chrome Extension
 
 Grabbit is a powerful Chrome extension that allows users to select multiple links on a webpage using a drag-select interface and perform various actions like opening them in new tabs, new windows, or copying URLs to clipboard.
@@ -54,7 +53,7 @@ The settings page that allows users to:
 5. Select the extension directory
 
 Or directly from the chome extension store:
-https://chrome.google.com/webstore/detail/Grabbit/
+[https://chrome.google.com/webstore/detail/Grabbit/](https://chromewebstore.google.com/detail/grabbit/madmdgpjgagdmmmiddpiggdnpgjglcdk)
 
 ## Usage
 
@@ -115,7 +114,10 @@ The extension uses:
 - 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
 - 🔴 Create Bookmarks
 - 🔴 Fix compatibility with Netsuite
-
+- 🔴 Add delay when opening tabs
+- 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
+- 🔴 Create Bookmarks
+- 🔴 Fix compatibility with Netsuite
 
 ## Version 1.0.1 Changelog:
 
@@ -139,3 +141,4 @@ Added delay option when tabs are opened
 
 ## Contributions
 - TheTacoScott - https://github.com/TheTacoScott
+
