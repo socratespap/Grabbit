@@ -142,3 +142,6 @@ debounce link selection by oaustegard
 ## Contributions
 - TheTacoScott - https://github.com/TheTacoScott
 - oaustegard - https://github.com/oaustegard
+
+This is a Linkclump replacement/alternative
+This is a Copy All Urls replacement/alternative
