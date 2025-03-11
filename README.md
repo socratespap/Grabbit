@@ -102,7 +102,7 @@ The extension uses:
 
 ## Features to be added
 
-- 🔴 Open Links/tabs in reverse order
+- 🟢 Open Links/tabs in reverse order
 - 🟢 Copy links with titles
 - 🟢  Provide different color on add new action
 - 🔴 Append Urls to clipboard. Clipboard = selected links + clipboard
@@ -114,7 +114,6 @@ The extension uses:
 - 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
 - 🔴 Create Bookmarks
 - 🔴 Fix compatibility with Netsuite
-- 🔴 Add delay when opening tabs
 - 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
 - 🔴 Create Bookmarks
 - 🔴 Fix compatibility with Netsuite
