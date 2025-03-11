@@ -114,9 +114,6 @@ The extension uses:
 - 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
 - 🔴 Create Bookmarks
 - 🔴 Fix compatibility with Netsuite
-- 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
-- 🔴 Create Bookmarks
-- 🔴 Fix compatibility with Netsuite
 
 ## Version 1.0.1 Changelog:
 
