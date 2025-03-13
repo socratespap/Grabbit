@@ -108,6 +108,7 @@ if (action.openWindow) features.push('Open in Window');
 if (action.copyUrls) features.push('Copy URLs');
 if (action.smartSelect === 'on') features.push('Smart Select');
 if (action.copyUrlsAndTitles) features.push('Copy URLs & Titles');
+if (action.copyTitles) features.push('Copy Titles');
 if (action.reverseOrder) features.push('Reverse Order');
 if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.push(`${action.tabDelay}s Delay`);
 
@@ -140,7 +141,7 @@ if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.pus
         // Populate the modal with current action data
         document.getElementById('combinedKey').value = action.combination.key;
         document.getElementById('mouseButton').value = action.combination.mouseButton;
-        document.getElementById('actionType').value = action.openLinks ? 'openLinks' : (action.openWindow ? 'openWindow' : (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' : 'copyUrls'));
+        document.getElementById('actionType').value = action.openLinks ? 'openLinks' : (action.openWindow ? 'openWindow' : (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' : (action.copyTitles ? 'copyTitles' : 'copyUrls')));
         document.getElementById('smartSelect').value = action.smartSelect;
         document.getElementById('reverseOrder').checked = action.reverseOrder || false;
         document.getElementById('boxColor').value = action.boxColor || '#2196F3'; // Load saved color or default
@@ -313,6 +314,7 @@ document.getElementById('saveButton').addEventListener('click', () => {
         openWindow: actionType.value === 'openWindow',
         copyUrls: actionType.value === 'copyUrls',
         copyUrlsAndTitles: actionType.value === 'copyUrlsAndTitles',
+        copyTitles: actionType.value === 'copyTitles',
         smartSelect: document.getElementById('smartSelect').value,
         reverseOrder: document.getElementById('reverseOrder').checked,
         boxColor: document.getElementById('boxColor').value,

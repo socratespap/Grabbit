@@ -271,6 +271,17 @@ document.addEventListener('mousemove', (e) => {
                     return `${link.textContent.trim()}\n${url}`;
                 }).join('\n\n');
                 navigator.clipboard.writeText(urlsAndTitles);
+            } else if (matchedAction.copyTitles) {
+                // Apply reverse order if enabled
+                if (matchedAction.reverseOrder) {
+                  finalUrls = finalUrls.reverse();
+                }
+                
+                const titles = finalUrls.map(url => {
+                    const link = Array.from(selectedLinks).find(l => l.href === url);
+                    return link.textContent.trim();
+                }).join('\n');
+                navigator.clipboard.writeText(titles);
             }
         }
 
@@ -518,11 +529,12 @@ function updateVisualStyles() {
             urls.length;
             
         const actionType = 
-                currentMatchedAction.openLinks ? 'open' : 
-                currentMatchedAction.openWindow ? 'open in window' :
-                currentMatchedAction.copyUrlsAndTitles ? 'copy with titles' :
-                  'copy';
-        counterLabel.textContent = `${count} links to ${actionType}`;
+                currentMatchedAction.openLinks ? 'be opened in new tabs' : 
+                currentMatchedAction.openWindow ? 'be opened in a new window' :
+                currentMatchedAction.copyUrlsAndTitles ? 'be copied including page titles' :
+                currentMatchedAction.copyTitles ? 'copy their page titles only' :
+                  'be copied to clipboard';
+        counterLabel.textContent = `${count} URls to ${actionType}`;
     }
 }
 

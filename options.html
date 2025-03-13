@@ -887,13 +887,14 @@
             <div class="modal-section">
                 <h3>Action</h3>
                 <div class="input-group">
-                    <label>Selected links should be...</label>
+                    <label>This action should...</label>
                     <select class="key-select required" id="actionType" required>
                         <option value="">Select Action Type</option>
-                        <option value="openLinks">Opened in a New Tab</option>
-                        <option value="openWindow">Opened in a New Window</option>
-                        <option value="copyUrls">Copied to Clipboard</option> 
-                        <option value="copyUrlsAndTitles">Copy URLs and Page Titles</option>                       
+                        <option value="openLinks">Open links in new tabs</option>
+                        <option value="openWindow">Open links in a new window</option>
+                        <option value="copyUrls">Copy URLs to clipboard</option> 
+                        <option value="copyUrlsAndTitles">Copy URLs with page titles</option>
+                        <option value="copyTitles">Copy page titles only</option>                       
                     </select>
                     
                     <div class="error-message" id="actionTypeError">Please select an action type</div>

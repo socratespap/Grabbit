@@ -144,6 +144,7 @@ Added delay option when tabs are opened by TheTacoScott
 - Fix reverse order bug
 - Fixed too much debounce link delay
 - Won't allow user to add duplicate actions with the same combination keys
+- Added new action - Copy URL Titles
 
 ## Contributions
 - TheTacoScott - https://github.com/TheTacoScott
