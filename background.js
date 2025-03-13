@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }, (newWindow) => {
             // Create tabs for remaining URLs in the new window with delay
             if (delay > 0) {
-                // Open tabs with delay
+                // Open tabs with delay - only process the remaining URLs (not the first one)
                 request.urls.slice(1).forEach((url, index) => {
                     setTimeout(() => {
                         chrome.tabs.create({
@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     }, delay * 1000 * (index + 1)); // Convert seconds to milliseconds and multiply by index
                 });
             } else {
-                // Open tabs without delay
+                // Open tabs without delay - only process the remaining URLs (not the first one)
                 request.urls.slice(1).forEach(url => {
                     chrome.tabs.create({
                         windowId: newWindow.id,

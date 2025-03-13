@@ -1,4 +1,4 @@
-  let isMouseDown = false; // Flag to track if mouse is down
+let isMouseDown = false; // Flag to track if mouse is down
   let startX = 0; // Starting X position
   let startY = 0; // Starting Y position
   let selectionBox = null; 
@@ -43,10 +43,18 @@
         const mouseMatch = action.combination.mouseButton === mouseButton;
         if (!mouseMatch) return false;
 
-        // Then check key modifier match
-        const keyMatch = action.combination.key === 'none' ? 
-            !e.ctrlKey && !e.shiftKey && !e.altKey :
-            e[`${action.combination.key}Key`];
+        // Then check key modifier match based on OS
+        let keyMatch = false;
+        
+        if (action.combination.key === 'none') {
+            keyMatch = !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
+        } else if (action.combination.key === 'ctrl') {
+            // Use metaKey (Command) on Mac, ctrlKey on other platforms
+            keyMatch = navigator.userAgent.includes('Mac') ? e.metaKey : e.ctrlKey;
+        } else {
+            // For other keys (shift, alt), use standard properties
+            keyMatch = e[`${action.combination.key}Key`];
+        }
 
         return keyMatch && mouseMatch;
     });
@@ -157,7 +165,7 @@ function debounce(func, wait) {
 }
 
 // Create debounced version
-const debouncedUpdateLinks = debounce(updateSelectedLinks, 50);
+const debouncedUpdateLinks = debounce(updateSelectedLinks, 15);
 
 // Handle mouse move event
 document.addEventListener('mousemove', (e) => {
@@ -221,8 +229,8 @@ document.addEventListener('mousemove', (e) => {
          
 
           if (matchedAction.openLinks) {
-             // Apply reverse order if not enabled to fix bug
-          if (!matchedAction.reverseOrder) {
+             // Apply reverse order if enabled (fixed logic)
+          if (matchedAction.reverseOrder) {
             finalUrls = finalUrls.reverse();
         }
                 // Pass the delay value to the background script
@@ -232,38 +240,31 @@ document.addEventListener('mousemove', (e) => {
                     delay: matchedAction.tabDelay || 0
                 });
             } else if (matchedAction.openWindow) {
+                // Apply reverse order if enabled (fixed logic)
+          if (matchedAction.reverseOrder) {
+            finalUrls = finalUrls.reverse();
+        }
                 // Send message to background script to handle window/tab creation
                 chrome.runtime.sendMessage({
                     action: 'openLinks',
                     urls: finalUrls,
                     delay: matchedAction.tabDelay || 0
                 });
-                finalUrls.forEach(url => {
-                    // Send a message to the background script to create the tab
-                    chrome.runtime.sendMessage({
-                        action: 'createTab',
-                        url: url
-                    });
-                });
-            } else if (matchedAction.openWindow) {
-// Send message to background script to handle window/tab creation
-chrome.runtime.sendMessage({
-    action: 'openLinks',
-    urls: finalUrls
-  });
-  
-            } else if (matchedAction.copyUrls) {
+         
+            } 
+         
+            else if (matchedAction.copyUrls) {
                  // Apply reverse order if enabled
-          if (matchedAction.reverseOrder) {
-            finalUrls = finalUrls.reverse();
-        }
+            if (matchedAction.reverseOrder) {
+              finalUrls = finalUrls.reverse();
+            }
                 
-                navigator.clipboard.writeText(finalUrls.join('\n\n'));
+                navigator.clipboard.writeText(finalUrls.join('\n'));
             } else if (matchedAction.copyUrlsAndTitles) {
                  // Apply reverse order if enabled
-          if (matchedAction.reverseOrder) {
-            finalUrls = finalUrls.reverse();
-        }
+            if (matchedAction.reverseOrder) {
+              finalUrls = finalUrls.reverse();
+            }
                 
                 const urlsAndTitles = finalUrls.map(url => {
                     const link = Array.from(selectedLinks).find(l => l.href === url);
@@ -297,41 +298,43 @@ chrome.runtime.sendMessage({
       }
   });
     // Handle link selection
-    function updateSelectedLinks() {
+        function updateSelectedLinks() {
         // Get all links on the page
         const links = document.querySelectorAll('a');
         // Get the bounding rectangle of the selection box
         const boxRect = selectionBox.getBoundingClientRect();
-
+    
         // Iterate through each link
         links.forEach(link => {
-            // Check if element is sticky
-            if (isElementSticky(link)) {
+            // Special handling for YouTube subscription links
+            const isYouTubeSubscription = window.location.hostname.includes('youtube.com') && 
+                (link.href.includes('/channel/') || link.href.includes('/c/') || 
+                 link.href.includes('/user/') || link.href.includes('@'));
+            
+            // Skip sticky check for YouTube subscription links
+            if (!isYouTubeSubscription && isElementSticky(link)) {
                 return;
             }
-
+    
             // Add visibility checks
             const style = window.getComputedStyle(link);
             if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
                 return;
             }
-
+    
             // Get the bounding rectangle of the link; if zero, try its first child if available
             let rect = link.getBoundingClientRect();
             if ((rect.width === 0 || rect.height === 0) && link.children.length > 0) {
                 rect = link.children[0].getBoundingClientRect();
             }
-            // If the rectangle is still zero-sized, skip this link
-        //    if (rect.width === 0 || rect.height === 0) {
-          //      return;
-          //  }
-
+           
+    
             // Check if link is within selection box
             const isInBox = !(rect.left > boxRect.right ||
                               rect.right < boxRect.left ||
                               rect.top > boxRect.bottom ||
                               rect.bottom < boxRect.top);
-
+    
             // If the link is in the box, add it to selectedLinks and highlight it
             if (isInBox) {
                 selectedLinks.add(link);

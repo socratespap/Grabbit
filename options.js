@@ -62,13 +62,19 @@ function updateKeyLabels() {
     // Update the combinedKey dropdown options based on OS
     const ctrlOption = combinedKeySelect.querySelector('option[value="ctrl"]');
     if (ctrlOption) {
-        ctrlOption.textContent = currentOS === 'mac' ? 'Command' : 'Ctrl';
+        ctrlOption.textContent = currentOS === 'mac' ? 'Command ⌘' : 'Ctrl';
     }
     
     // Update the Alt option to show as Option for macOS
     const altOption = combinedKeySelect.querySelector('option[value="alt"]');
     if (altOption) {
-        altOption.textContent = currentOS === 'mac' ? 'Option' : 'Alt';
+        altOption.textContent = currentOS === 'mac' ? 'Option ⌥' : 'Alt';
+    }
+    
+    // Update the Shift option to include symbol for macOS
+    const shiftOption = combinedKeySelect.querySelector('option[value="shift"]');
+    if (shiftOption) {
+        shiftOption.textContent = currentOS === 'mac' ? 'Shift ⇧' : 'Shift';
     }
 }
 
@@ -235,6 +241,22 @@ modal.addEventListener('click', (e) => {
     }
 });
 
+// Function to check if a key+mouse combination already exists
+function isDuplicateCombination(newCombination, editingCard = null) {
+    // Get all existing actions
+    const existingActions = Array.from(savedActionsContainer.children);
+    
+    // Check each action for matching combination
+    return existingActions.some(card => {
+        // Skip the card being edited
+        if (editingCard === card) return false;
+        
+        const action = card.actionData;
+        return action.combination.key === newCombination.key && 
+               action.combination.mouseButton === newCombination.mouseButton;
+    });
+}
+
 // Form Validation and Submission
 // Save button click handler
 document.getElementById('saveButton').addEventListener('click', () => {
@@ -242,10 +264,12 @@ document.getElementById('saveButton').addEventListener('click', () => {
     const mouseButtonError = document.getElementById('mouseButtonError');
     const actionType = document.getElementById('actionType');
     const actionTypeError = document.getElementById('actionTypeError');
+    const combinationError = document.getElementById('combinationError');
 
     // Reset error messages
     mouseButtonError.classList.remove('visible');
     actionTypeError.classList.remove('visible');
+    if (combinationError) combinationError.classList.remove('visible');
 
     // Validate mouse button selection
     if (!mouseButton.value) {
@@ -261,12 +285,30 @@ document.getElementById('saveButton').addEventListener('click', () => {
         return;
     }
 
+    // Create combination object to check for duplicates
+    const newCombination = {
+        key: document.getElementById('combinedKey').value,
+        mouseButton: mouseButton.value
+    };
+
+    // Check for duplicate combinations
+    if (isDuplicateCombination(newCombination, modal.editingCard)) {
+        // If combinationError doesn't exist, create it
+        if (!combinationError) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'combinationError';
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = 'This key and mouse combination is already in use!';
+            mouseButton.parentNode.appendChild(errorDiv);
+        } else {
+            combinationError.classList.add('visible');
+        }
+        return;
+    }
+
     // Create action object with form data
     const action = {
-        combination: {
-            key: document.getElementById('combinedKey').value,
-            mouseButton: mouseButton.value
-        },
+        combination: newCombination,
         openLinks: actionType.value === 'openLinks',
         openWindow: actionType.value === 'openWindow',
         copyUrls: actionType.value === 'copyUrls',
