@@ -145,3 +145,7 @@ debounce link selection by oaustegard
 
 This is a Linkclump replacement/alternative
 This is a Copy All Urls replacement/alternative
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
