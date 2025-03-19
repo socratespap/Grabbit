@@ -146,7 +146,7 @@ if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.pus
         document.getElementById('reverseOrder').checked = action.reverseOrder || false;
         document.getElementById('boxColor').value = action.boxColor || '#2196F3'; // Load saved color or default
         document.getElementById('tabDelay').value = action.tabDelay || 0; // Load saved delay or default
-        document.getElementById('delayValue').textContent = action.tabDelay || 0; // Update display value
+        document.getElementById('delayValue').textContent = (action.tabDelay || 0).toFixed(1) + 's'; // Format display value with one decimal place
         
         // Show/hide delay option based on action type
         const delayContainer = document.getElementById('delayOptionContainer');
@@ -224,7 +224,7 @@ const closeModal = () => {
     document.getElementById('actionType').value = '';
     document.getElementById('reverseOrder').checked = false;
     document.getElementById('tabDelay').value = 0;
-    document.getElementById('delayValue').textContent = '0';
+    document.getElementById('delayValue').textContent = '0.0s';
     // Reset all error messages
     document.querySelectorAll('.error-message').forEach(error => error.classList.remove('visible'));
     // Hide delay option by default
@@ -318,7 +318,7 @@ document.getElementById('saveButton').addEventListener('click', () => {
         smartSelect: document.getElementById('smartSelect').value,
         reverseOrder: document.getElementById('reverseOrder').checked,
         boxColor: document.getElementById('boxColor').value,
-        tabDelay: parseInt(document.getElementById('tabDelay').value, 10) // Add the tab delay value
+        tabDelay: parseFloat(document.getElementById('tabDelay').value) // Use parseFloat to preserve decimal values
     };
 
     // Handle editing vs creating new action
@@ -387,7 +387,9 @@ const tabDelaySlider = document.getElementById('tabDelay');
 const delayValueDisplay = document.getElementById('delayValue');
 
 tabDelaySlider.addEventListener('input', (e) => {
-    delayValueDisplay.textContent = e.target.value + 's';
+    // Format the value to show one decimal place
+    const value = parseFloat(e.target.value);
+    delayValueDisplay.textContent = value.toFixed(1) + 's';
 });
 
 // handle pin extension button
