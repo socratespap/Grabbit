@@ -146,6 +146,10 @@ Added delay option when tabs are opened by TheTacoScott
 - Won't allow user to add duplicate actions with the same combination keys
 - Added new action - Copy URL Titles
 
+## Version 1.0.8 Changelog:
+- Added "Copy all tab URLs" in popup.html
+- Changed delay timer from 0 to 30 seconds with step 0.5
+
 ## Contributions
 - TheTacoScott - https://github.com/TheTacoScott
 - oaustegard - https://github.com/oaustegard

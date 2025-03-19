@@ -387,7 +387,7 @@ const tabDelaySlider = document.getElementById('tabDelay');
 const delayValueDisplay = document.getElementById('delayValue');
 
 tabDelaySlider.addEventListener('input', (e) => {
-    delayValueDisplay.textContent = e.target.value;
+    delayValueDisplay.textContent = e.target.value + 's';
 });
 
 // handle pin extension button

@@ -269,7 +269,7 @@ document.addEventListener('mousemove', (e) => {
                 const urlsAndTitles = finalUrls.map(url => {
                     const link = Array.from(selectedLinks).find(l => l.href === url);
                     return `${link.textContent.trim()}\n${url}`;
-                }).join('\n\n');
+                }).join('\n');
                 navigator.clipboard.writeText(urlsAndTitles);
             } else if (matchedAction.copyTitles) {
                 // Apply reverse order if enabled
