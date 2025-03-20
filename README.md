@@ -111,7 +111,7 @@ The extension uses:
 - 🟢 Recognize <a> tags that are not visible
 - 🔴 Include Compatibility with Youtube Subscriptions links
 - 🟢 Add delay when opening tabs
-- 🔴 Include option when copying URLs ("Title <tab> Url, instead of Title \n Url")
+- 🟢 Include option when copying URLs ("Title tab Url, instead of Title \n Url")
 - 🔴 Create Bookmarks
 - 🔴 Fix compatibility with Netsuite
 
