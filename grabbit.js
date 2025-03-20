@@ -13,10 +13,6 @@ let isMouseDown = false; // Flag to track if mouse is down
   let previousAction = null;
   let currentMouseButton = null;
 
-
- 
-
-
   // Get saved actions from chrome storage
   let savedActions = [];
   chrome.storage.sync.get(['savedActions', 'boxColor'], function(result) {
@@ -225,9 +221,7 @@ document.addEventListener('mousemove', (e) => {
           // Apply smart select if enabled
           let finalUrls = matchedAction.smartSelect === 'on' ? 
               [...new Set(urls)] : urls;
-              
-         
-
+                  
           if (matchedAction.openLinks) {
              // Apply reverse order if enabled (fixed logic)
           if (matchedAction.reverseOrder) {
@@ -237,7 +231,8 @@ document.addEventListener('mousemove', (e) => {
                 chrome.runtime.sendMessage({
                     action: 'createTabs',
                     urls: finalUrls,
-                    delay: matchedAction.tabDelay || 0
+                    delay: matchedAction.tabDelay || 0,
+                    openAtEnd: matchedAction.openAtEnd || false
                 });
             } else if (matchedAction.openWindow) {
                 // Apply reverse order if enabled (fixed logic)
@@ -266,11 +261,48 @@ document.addEventListener('mousemove', (e) => {
               finalUrls = finalUrls.reverse();
             }
                 
+                // Format URLs and titles based on formatting options
                 const urlsAndTitles = finalUrls.map(url => {
                     const link = Array.from(selectedLinks).find(l => l.href === url);
-                    return `${link.textContent.trim()}\n${url}`;
-                }).join('\n');
-                navigator.clipboard.writeText(urlsAndTitles);
+                    const title = link.textContent.trim();
+                    
+                    // Get formatting options with defaults
+                    const formatPattern = matchedAction.formatPattern || 'titleFirst'; // Default to titleFirst
+                    const separatorType = matchedAction.separatorType || 'newline'; // Default to newline
+                    const separatorCount = matchedAction.separatorCount || 1; // Default to 1
+                    
+                    // Create separator based on type and count
+                    let separator;
+                    if (separatorType === 'newline') {
+                        separator = '\n'.repeat(separatorCount);
+                    } else if (separatorType === 'space') {
+                        separator = ' '.repeat(separatorCount);
+                    } else if (separatorType === 'tab') {
+                        separator = '\t'.repeat(separatorCount);
+                    } else {
+                        separator = '\n'; // Fallback to newline
+                    }
+                    
+                    // Format based on pattern
+                    if (formatPattern === 'titleFirst') {
+                        return `${title}${separator}${url}`;
+                    } else if (formatPattern === 'urlFirst') {
+                        return `${url}${separator}${title}`;
+                    } else {
+                        return `${title}${separator}${url}`; // Fallback to title-first
+                    }
+                });
+                
+                // Get link separator count with default
+                const linkSeparatorCount = matchedAction.linkSeparatorCount || 0;
+                
+                // Create link separator based on linkSeparatorCount
+                const linkSeparator = linkSeparatorCount > 0 ? '\n'.repeat(linkSeparatorCount + 1) : '\n';
+                
+                // Join the formatted links with the appropriate separator
+                const formattedText = urlsAndTitles.join(linkSeparator);
+                
+                navigator.clipboard.writeText(formattedText);
             } else if (matchedAction.copyTitles) {
                 // Apply reverse order if enabled
                 if (matchedAction.reverseOrder) {
@@ -461,11 +493,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
 
 /**
- * Handles keyboard events for updating the visual styles of the link selection.
- * When the user presses a key while the mouse is down and a selection box is active,
- * this function checks for a matching key combination and updates the current action.
- * It then calls `updateVisualStyles()` to update the appearance of the selection box,
- * highlighted links, and counter label.
+ * Updates visual styles when keyboard events occur during link selection.
  */
 document.addEventListener('keydown', (e) => {
     if (isMouseDown && selectionBox) {
@@ -485,10 +513,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 /**
- * Handles keyboard events for reverting the visual styles of the link selection.
- * When the user releases a key while the mouse is down and a selection box is active,
- * this function reverts the current action to the previous action and calls
- * `updateVisualStyles()` to update the appearance of the selection.
+ * Reverts visual styles when releasing keys during link selection.
  */
 document.addEventListener('keyup', (e) => {
     if (isMouseDown && selectionBox ) {
@@ -504,11 +529,8 @@ document.addEventListener('keyup', (e) => {
         updateVisualStyles();
     }
 });
-/**
- * Updates the visual styles of the link selection based on the current action.
- * This function updates the border color and background color of the selection box,
- * the background color of the highlighted links, and the text content of the counter label.
- */
+
+/** Updates visual styles for selection box, highlighted links and counter label */
 function updateVisualStyles() {
     if (!currentMatchedAction) return;
 
@@ -537,7 +559,6 @@ function updateVisualStyles() {
         counterLabel.textContent = `${count} URls to ${actionType}`;
     }
 }
-
 
 /**
  * Cleans up the selection when the window loses focus (e.g. when the user switches to another application).

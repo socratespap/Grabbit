@@ -46,23 +46,57 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'createTabs') {
         const delay = request.delay || 0; // Get delay in seconds
         const currentIndex = sender.tab.index;
+        const currentWindowId = sender.tab.windowId;
+        const openAtEnd = request.openAtEnd || false; // Get openAtEnd preference
         
-        if (delay > 0) {
-            // Open tabs with delay
+        // If openAtEnd is true, we'll need to get the total number of tabs
+        if (openAtEnd && delay === 0) {
+            // For tabs without delay, get tab count first then create tabs
+            chrome.tabs.query({windowId: currentWindowId}, function(tabs) {
+                const tabCount = tabs.length;
+                // Create all tabs at the end
+                request.urls.forEach((url, index) => {
+                    chrome.tabs.create({
+                        url: url,
+                        windowId: currentWindowId,
+                        index: tabCount + index, // Place at the end
+                        active: false
+                    });
+                });
+            });
+        } else if (openAtEnd && delay > 0) {
+            // For tabs with delay, get tab count before each creation
+            request.urls.forEach((url, index) => {
+                setTimeout(() => {
+                    chrome.tabs.query({windowId: currentWindowId}, function(tabs) {
+                        const tabCount = tabs.length;
+                        chrome.tabs.create({
+                            url: url,
+                            windowId: currentWindowId,
+                            index: tabCount, // Place at the end
+                            active: false
+                        });
+                    });
+                }, delay * 1000 * index);
+            });
+        } else if (delay > 0) {
+            // Original behavior: Open tabs with delay after current tab
             request.urls.forEach((url, index) => {
                 setTimeout(() => {
                     chrome.tabs.create({
                         url: url,
+                        windowId: currentWindowId,
                         index: currentIndex + index + 1,
                         active: false
                     });
                 }, delay * 1000 * index); // Convert seconds to milliseconds and multiply by index
             });
         } else {
-            // Open tabs without delay
+            // Original behavior: Open tabs without delay after current tab
             request.urls.forEach((url, index) => {
                 chrome.tabs.create({
                     url: url,
+                    windowId: currentWindowId,
                     index: currentIndex + index + 1,
                     active: false
                 });
@@ -70,17 +104,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
     }
     
-    //create single tab (for backward compatibility)
-    if (request.action === 'createTab') {
-        // Get the index of the current tab
-        const currentIndex = sender.tab.index;
-        // Create a new tab with the specified URL
-        chrome.tabs.create({
-            url: request.url,
-            // Set the new tab's index to be right after the current tab
-            index: currentIndex + 1,
-            // Don't make the new tab active
-            active: false
-        });
-    }
 });

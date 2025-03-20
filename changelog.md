@@ -32,3 +32,5 @@ Added delay option when tabs are opened by TheTacoScott
 ## Version 1.0.8 Changelog:
 - Added "Copy all tab URLs" in popup.html
 - Changed delay timer from 0 to 30 seconds with step 0.5
+- Added advanced option 'Open tabs at the end of opened tabs' when 'Open links in new tabs' is selected
+- Added custom options for "Copy Title & Urls" action

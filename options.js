@@ -107,9 +107,39 @@ if (action.openLinks) features.push('Open Links');
 if (action.openWindow) features.push('Open in Window');
 if (action.copyUrls) features.push('Copy URLs');
 if (action.smartSelect === 'on') features.push('Smart Select');
-if (action.copyUrlsAndTitles) features.push('Copy URLs & Titles');
+if (action.copyUrlsAndTitles) {
+    features.push('Copy URLs & Titles');
+    // Add formatting details for Copy URLs & Titles
+    if (action.formatPattern) {
+        const formatText = action.formatPattern === 'titleFirst' ? 'Title&rarr;URL' : 'URL&rarr;Title';
+        features.push(formatText);
+    }
+    if (action.separatorType) {
+        let separatorText = '';
+        switch(action.separatorType) {
+            case 'newline':
+                separatorText = 'Newline';
+                break;
+            case 'space':
+                separatorText = 'Space';
+                break;
+            case 'tab':
+                separatorText = 'Tab';
+                break;
+        }
+        if (action.separatorCount > 1) {
+            separatorText += ` x${action.separatorCount}`;
+        }
+        features.push(separatorText);
+    }
+    // Add link separator info if set
+    if (action.linkSeparatorCount > 0) {
+        features.push(`Link Gap: ${action.linkSeparatorCount}`);
+    }
+}
 if (action.copyTitles) features.push('Copy Titles');
 if (action.reverseOrder) features.push('Reverse Order');
+if (action.openLinks && action.openAtEnd) features.push('Open at End');
 if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.push(`${action.tabDelay}s Delay`);
 
 
@@ -144,16 +174,43 @@ if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.pus
         document.getElementById('actionType').value = action.openLinks ? 'openLinks' : (action.openWindow ? 'openWindow' : (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' : (action.copyTitles ? 'copyTitles' : 'copyUrls')));
         document.getElementById('smartSelect').value = action.smartSelect;
         document.getElementById('reverseOrder').checked = action.reverseOrder || false;
+        document.getElementById('openAtEnd').checked = action.openAtEnd || false;
         document.getElementById('boxColor').value = action.boxColor || '#2196F3'; // Load saved color or default
         document.getElementById('tabDelay').value = action.tabDelay || 0; // Load saved delay or default
         document.getElementById('delayValue').textContent = (action.tabDelay || 0).toFixed(1) + 's'; // Format display value with one decimal place
         
         // Show/hide delay option based on action type
         const delayContainer = document.getElementById('delayOptionContainer');
+        const openAtEndContainer = document.getElementById('openAtEndContainer');
+        const formatOptionsContainer = document.getElementById('formatOptionsContainer');
+        
         if (action.openLinks || action.openWindow) {
             delayContainer.style.display = 'flex';
         } else {
             delayContainer.style.display = 'none';
+        }
+        
+        // Show/hide openAtEnd option based on action type
+        if (action.openLinks) {
+            openAtEndContainer.style.display = 'flex';
+        } else {
+            openAtEndContainer.style.display = 'none';
+        }
+        
+        // Show/hide format options based on action type
+        if (action.copyUrlsAndTitles) {
+            formatOptionsContainer.style.display = 'block';
+            // Populate format options if they exist
+            if (action.formatPattern) document.getElementById('formatPattern').value = action.formatPattern;
+            if (action.separatorType) {
+                const separatorTypeSelect = document.getElementById('separatorType');
+                separatorTypeSelect.value = action.separatorType;
+                               
+            }
+            if (action.separatorCount) document.getElementById('separatorCount').value = action.separatorCount;
+            if (action.linkSeparatorCount !== undefined) document.getElementById('linkSeparatorCount').value = action.linkSeparatorCount;
+        } else {
+            formatOptionsContainer.style.display = 'none';
         }
 
         // Show the modal and mark it as editing
@@ -223,12 +280,15 @@ const closeModal = () => {
     document.getElementById('mouseButton').value = '';
     document.getElementById('actionType').value = '';
     document.getElementById('reverseOrder').checked = false;
+    document.getElementById('openAtEnd').checked = false;
     document.getElementById('tabDelay').value = 0;
     document.getElementById('delayValue').textContent = '0.0s';
     // Reset all error messages
     document.querySelectorAll('.error-message').forEach(error => error.classList.remove('visible'));
     // Hide delay option by default
     document.getElementById('delayOptionContainer').style.display = 'none';
+    // Hide openAtEnd option by default
+    document.getElementById('openAtEndContainer').style.display = 'none';
 };
 
 // Add close functionality to buttons
@@ -317,9 +377,18 @@ document.getElementById('saveButton').addEventListener('click', () => {
         copyTitles: actionType.value === 'copyTitles',
         smartSelect: document.getElementById('smartSelect').value,
         reverseOrder: document.getElementById('reverseOrder').checked,
+        openAtEnd: document.getElementById('openAtEnd').checked,
         boxColor: document.getElementById('boxColor').value,
         tabDelay: parseFloat(document.getElementById('tabDelay').value) // Use parseFloat to preserve decimal values
     };
+    
+    // Add formatting options if copyUrlsAndTitles is selected
+    if (action.copyUrlsAndTitles) {
+        action.formatPattern = document.getElementById('formatPattern')?.value || 'title-first';
+        action.separatorType = document.getElementById('separatorType')?.value || 'newline';
+        action.separatorCount = parseInt(document.getElementById('separatorCount')?.value || '1', 10);
+        action.linkSeparatorCount = parseInt(document.getElementById('linkSeparatorCount')?.value || '0', 10);
+    }
 
     // Handle editing vs creating new action
     if (modal.editingCard) {
@@ -375,10 +444,27 @@ document.getElementById('actionType').addEventListener('change', (e) => {
     
     // Show/hide delay option based on action type
     const delayContainer = document.getElementById('delayOptionContainer');
+    const openAtEndContainer = document.getElementById('openAtEndContainer');
+    const formatOptionsContainer = document.getElementById('formatOptionsContainer');
+    
     if (e.target.value === 'openLinks' || e.target.value === 'openWindow') {
         delayContainer.style.display = 'flex';
     } else {
         delayContainer.style.display = 'none';
+    }
+    
+    // Show/hide openAtEnd option based on action type
+    if (e.target.value === 'openLinks') {
+        openAtEndContainer.style.display = 'flex';
+    } else {
+        openAtEndContainer.style.display = 'none';
+    }
+    
+    // Show/hide format options based on action type
+    if (e.target.value === 'copyUrlsAndTitles') {
+        formatOptionsContainer.style.display = 'block';
+    } else {
+        formatOptionsContainer.style.display = 'none';
     }
 });
 
@@ -417,3 +503,4 @@ document.getElementById('rateExtensionButton').addEventListener('click', () => {
         url: `https://chrome.google.com/webstore/detail/${extensionId}/reviews`
     });
 });
+
