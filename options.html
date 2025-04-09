@@ -10,7 +10,7 @@
             <img src="icons/icon128.png" alt="Grabbit Logo" style="width: 64px; height: 64px;">
             <h1 style="margin: 0;">Grabbit Settings</h1>
         </div>
-        
+
         <div class="card rate-card">
             <div class="rate-content">
                 <h3>Enjoying Grabbit?</h3>
@@ -21,10 +21,10 @@
                 </button>
             </div>
         </div>
-        
-        
-        
-        
+
+
+
+
         <div class="card instructions-container">
             <div class="instructions-split">
                 <div class="instructions-panel">
@@ -39,7 +39,7 @@
 						<li>Use activation keys and mouse to start selecting links</li>
                     </ul>
                 </div>
-                
+
                 <div class="instructions-panel">
                     <h2>How to Use Grabbit Popup</h2>
                     <ul class="instructions-list">
@@ -47,16 +47,16 @@
                             <button id="pinExtensionButton" class="pin-button">
                                 Pin Extension to Toolbar
                             </button>
-                        </li>   
+                        </li>
 						<li>Select Multiple Tabs (Ctrl or Shift + Click)</li>
                         <li>Click extension icon to open popup</li>
                         <li>Use "Copy Selected Tab URLs" to copy links</li>
-                        <li>Use "Open Copied Links" to open copied URLs in new tabs</li>                                   
+                        <li>Use "Open Copied Links" to open copied URLs in new tabs</li>
                     </ul>
                 </div>
             </div>
         </div>
-        
+
 
         <div id="savedActions">
             <!-- Saved actions will be displayed here -->
@@ -84,7 +84,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 24">
                             <path d="M68.664 8.915c-1.784-1.612-3.938-2.4-6.428-2.4-2.456 0-4.61.789-6.395 2.4-1.784 1.577-2.691 3.772-2.691 6.584s.907 5.005 2.691 6.617c1.784 1.577 3.939 2.366 6.395 2.366 2.49 0 4.644-.789 6.428-2.366 1.818-1.612 2.725-3.806 2.725-6.617s-.908-5.007-2.725-6.584zm-9.792 10.183c-.941-.925-1.415-2.126-1.415-3.6s.47-2.674 1.415-3.566a4.6 4.6 0 0 1 3.363-1.371 4.68 4.68 0 0 1 3.398 1.371c.974.892 1.448 2.091 1.448 3.566s-.47 2.674-1.448 3.6c-.941.891-2.086 1.337-3.398 1.337a4.71 4.71 0 0 1-3.363-1.337zm18.881 4.903V.473h-4.24v23.528zM91.438 6.995v9.388c0 2.262-1.2 3.762-3.484 3.762-2.323 0-3.491-1.498-3.491-3.762V6.995h-4.248v10.108c0 3.916 2.423 7.378 7.739 7.378h.033c5.283 0 7.702-3.539 7.702-7.378V6.995zm-42.8 0l-4.24 11.52-4.24-11.52h-4.509l6.766 17.007h3.972l6.765-17.007zm-12.969 8.023c0-2.468-.773-4.491-2.288-6.103s-3.464-2.4-5.854-2.4c-2.456 0-4.544.858-6.26 2.537-1.684 1.681-2.523 3.806-2.523 6.446s.841 4.801 2.49 6.48c1.684 1.681 3.703 2.503 6.092 2.503 3.67 0 6.26-1.646 7.839-4.972l-3.162-1.852c-1.041 2.091-2.558 3.12-4.61 3.12-2.523 0-4.307-1.646-4.577-4.251h12.852v-1.509zM27.39 9.806c2.389 0 3.972 1.371 4.375 3.566h-8.951c.641-2.023 2.389-3.566 4.577-3.566zm-8.647 14.195l-5.689-10.148c3.599-1.337 5.383-3.668 5.383-7.063C18.441 2.641 15.208 0 10.06 0H0v24.001h4.442v-9.737h3.77l5.45 9.738zM10.06 3.977c2.625 0 3.938 1.063 3.938 3.154s-1.314 3.154-3.938 3.154H4.442V3.977zm92.817 20.504c-2.729 0-4.942-2.256-4.942-5.04V2.4h4.24v4.601h3.636v3.497h-3.636v8.665c0 .816.649 1.477 1.451 1.477h2.185v3.841z" fill="currentColor"/>
                         </svg>
-                        
+
                     </a>
                 </div>
             </div>
@@ -124,7 +124,7 @@
                 <div class="input-group">
                     <label>Selection box color</label>
                     <input type="color" class="color-picker" id="boxColor" value="#2196F3">
-                  
+
                 </div>
             </div>
 
@@ -136,11 +136,11 @@
                         <option value="">Select Action Type</option>
                         <option value="openLinks">Open links in new tabs</option>
                         <option value="openWindow">Open links in a new window</option>
-                        <option value="copyUrls">Copy URLs to clipboard</option> 
+                        <option value="copyUrls">Copy URLs to clipboard</option>
                         <option value="copyUrlsAndTitles">Copy URLs with page titles</option>
-                        <option value="copyTitles">Copy page titles only</option>                       
+                        <option value="copyTitles">Copy page titles only</option>
                     </select>
-                    
+
                     <div class="error-message" id="actionTypeError">Please select an action type</div>
                 </div>
             </div>
@@ -148,7 +148,7 @@
             <div class="modal-section" id="formatOptionsContainer" style="display: none;">
                 <h3>Format Options</h3>
                 <p>Choose how to format the copied URLs and titles</p>
-                
+
                 <div class="input-group">
                     <label>Format pattern</label>
                     <select class="key-select" id="formatPattern">
@@ -156,7 +156,7 @@
                         <option value="urlFirst">URL then Title</option>
                     </select>
                 </div>
-                
+
                 <div class="input-group">
                     <label>Separator type</label>
                     <select class="key-select" id="separatorType">
@@ -165,7 +165,7 @@
                         <option value="tab">Tab (for Excel)</option>
                     </select>
                 </div>
-                
+
                 <div class="input-group">
                     <label>Separator count</label>
                     <input type="number" id="separatorCount" class="key-select" min="1" max="10" value="1">
@@ -173,7 +173,7 @@
                         <div class="tooltip">Number of times to repeat the separator between URL and Title (e.g., number of new lines, spaces, tabs)</div>
                     </div>
                 </div>
-                
+
                 <div class="input-group">
                     <label>New lines for each link</label>
                     <input type="number" id="linkSeparatorCount" class="key-select" min="0" max="10" value="0">
@@ -187,12 +187,28 @@
                 <h3>Advanced Options</h3>
                 <div class="advanced-options">
                     <label>Smart select</label>
-                    <select class="key-select" id="smartSelect"> 
+                    <select class="key-select" id="smartSelect">
                         <option value="on">On</option>
                         <option value="off">Off</option>
                     </select>
                     <div class="smart-select-info">
                         <div class="tooltip">Smart select removes duplicate URLs when selecting multiple links with the same destination.</div>
+                    </div>
+                </div>
+
+                <div class="advanced-options" style="margin-top: 1rem;">
+                    <label>Include keywords</label>
+                    <input type="text" id="includeKeywords" class="key-select" placeholder="e.g. github, docs">
+                    <div class="smart-select-info">
+                        <div class="tooltip">Only include URLs containing any of these keywords (comma-separated). Leave empty to include all.</div>
+                    </div>
+                </div>
+
+                <div class="advanced-options" style="margin-top: 1rem;">
+                    <label>Exclude keywords</label>
+                    <input type="text" id="excludeKeywords" class="key-select" placeholder="e.g. ads, tracker">
+                    <div class="smart-select-info">
+                        <div class="tooltip">Exclude URLs containing any of these keywords (comma-separated).</div>
                     </div>
                 </div>
                 <div class="advanced-options" style="margin-top: 1rem;">
@@ -204,7 +220,7 @@
                         <div class="tooltip">When enabled, links will be opened in reverse order of selection.</div>
                     </div>
                 </div>
-                
+
                 <!-- New delay option -->
                 <div class="advanced-options" style="margin-top: 1rem;" id="openAtEndContainer">
                     <label>Open tabs at the end of opened tabs</label>
@@ -215,7 +231,7 @@
                         <div class="tooltip">When enabled, new tabs will be opened at the end of all tabs instead of after the current tab.</div>
                     </div>
                 </div>
-                
+
                 <!-- New delay option -->
                 <div class="advanced-options" style="margin-top: 1rem;" id="delayOptionContainer">
                     <label>Tab opening delay (seconds)</label>
@@ -237,6 +253,6 @@
     </div>
 
     <script src="options.js"></script>
-    
+
 </body>
 </html>

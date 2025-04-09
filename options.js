@@ -64,13 +64,13 @@ function updateKeyLabels() {
     if (ctrlOption) {
         ctrlOption.textContent = currentOS === 'mac' ? 'Command ⌘' : 'Ctrl';
     }
-    
+
     // Update the Alt option to show as Option for macOS
     const altOption = combinedKeySelect.querySelector('option[value="alt"]');
     if (altOption) {
         altOption.textContent = currentOS === 'mac' ? 'Option ⌥' : 'Alt';
     }
-    
+
     // Update the Shift option to include symbol for macOS
     const shiftOption = combinedKeySelect.querySelector('option[value="shift"]');
     if (shiftOption) {
@@ -141,6 +141,8 @@ if (action.copyTitles) features.push('Copy Titles');
 if (action.reverseOrder) features.push('Reverse Order');
 if (action.openLinks && action.openAtEnd) features.push('Open at End');
 if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.push(`${action.tabDelay}s Delay`);
+if (action.includeKeywords) features.push(`Include: ${action.includeKeywords}`);
+if (action.excludeKeywords) features.push(`Exclude: ${action.excludeKeywords}`);
 
 
 
@@ -178,25 +180,27 @@ if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.pus
         document.getElementById('boxColor').value = action.boxColor || '#2196F3'; // Load saved color or default
         document.getElementById('tabDelay').value = action.tabDelay || 0; // Load saved delay or default
         document.getElementById('delayValue').textContent = (action.tabDelay || 0).toFixed(1) + 's'; // Format display value with one decimal place
-        
+        document.getElementById('includeKeywords').value = action.includeKeywords || ''; // Load saved include keywords
+        document.getElementById('excludeKeywords').value = action.excludeKeywords || ''; // Load saved exclude keywords
+
         // Show/hide delay option based on action type
         const delayContainer = document.getElementById('delayOptionContainer');
         const openAtEndContainer = document.getElementById('openAtEndContainer');
         const formatOptionsContainer = document.getElementById('formatOptionsContainer');
-        
+
         if (action.openLinks || action.openWindow) {
             delayContainer.style.display = 'flex';
         } else {
             delayContainer.style.display = 'none';
         }
-        
+
         // Show/hide openAtEnd option based on action type
         if (action.openLinks) {
             openAtEndContainer.style.display = 'flex';
         } else {
             openAtEndContainer.style.display = 'none';
         }
-        
+
         // Show/hide format options based on action type
         if (action.copyUrlsAndTitles) {
             formatOptionsContainer.style.display = 'block';
@@ -205,7 +209,7 @@ if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.pus
             if (action.separatorType) {
                 const separatorTypeSelect = document.getElementById('separatorType');
                 separatorTypeSelect.value = action.separatorType;
-                               
+
             }
             if (action.separatorCount) document.getElementById('separatorCount').value = action.separatorCount;
             if (action.linkSeparatorCount !== undefined) document.getElementById('linkSeparatorCount').value = action.linkSeparatorCount;
@@ -240,22 +244,22 @@ function generateUniqueColor() {
         '#00FFFF', // aqua
         '#FFA500'  // orange
     ];
-    
+
     // Get all existing action colors
     const existingColors = Array.from(savedActionsContainer.children)
         .map(card => card.actionData.boxColor);
-    
+
     // Filter out colors that are already in use
-    const availableColors = colors.filter(color => 
+    const availableColors = colors.filter(color =>
         !existingColors.includes(color)
     );
-    
+
     // If all colors are used, return the first color from the original list
     // This ensures we always return a color even if all are used
     if (availableColors.length === 0) {
         return colors[0];
     }
-    
+
     // Return a random color from available colors
     const randomIndex = Math.floor(Math.random() * availableColors.length);
     return availableColors[randomIndex];
@@ -283,6 +287,8 @@ const closeModal = () => {
     document.getElementById('openAtEnd').checked = false;
     document.getElementById('tabDelay').value = 0;
     document.getElementById('delayValue').textContent = '0.0s';
+    document.getElementById('includeKeywords').value = '';
+    document.getElementById('excludeKeywords').value = '';
     // Reset all error messages
     document.querySelectorAll('.error-message').forEach(error => error.classList.remove('visible'));
     // Hide delay option by default
@@ -306,14 +312,14 @@ modal.addEventListener('click', (e) => {
 function isDuplicateCombination(newCombination, editingCard = null) {
     // Get all existing actions
     const existingActions = Array.from(savedActionsContainer.children);
-    
+
     // Check each action for matching combination
     return existingActions.some(card => {
         // Skip the card being edited
         if (editingCard === card) return false;
-        
+
         const action = card.actionData;
-        return action.combination.key === newCombination.key && 
+        return action.combination.key === newCombination.key &&
                action.combination.mouseButton === newCombination.mouseButton;
     });
 }
@@ -379,9 +385,11 @@ document.getElementById('saveButton').addEventListener('click', () => {
         reverseOrder: document.getElementById('reverseOrder').checked,
         openAtEnd: document.getElementById('openAtEnd').checked,
         boxColor: document.getElementById('boxColor').value,
-        tabDelay: parseFloat(document.getElementById('tabDelay').value) // Use parseFloat to preserve decimal values
+        tabDelay: parseFloat(document.getElementById('tabDelay').value), // Use parseFloat to preserve decimal values
+        includeKeywords: document.getElementById('includeKeywords').value.trim(),
+        excludeKeywords: document.getElementById('excludeKeywords').value.trim()
     };
-    
+
     // Add formatting options if copyUrlsAndTitles is selected
     if (action.copyUrlsAndTitles) {
         action.formatPattern = document.getElementById('formatPattern')?.value || 'title-first';
@@ -402,7 +410,7 @@ document.getElementById('saveButton').addEventListener('click', () => {
     // Save all actions to storage
     const allActions = Array.from(savedActionsContainer.children).map(card => card.actionData);
     saveActionsToStorage(allActions);
-    
+
     closeModal();
 });
 
@@ -441,25 +449,25 @@ document.getElementById('actionType').addEventListener('change', (e) => {
     } else {
         actionTypeError.classList.remove('visible');
     }
-    
+
     // Show/hide delay option based on action type
     const delayContainer = document.getElementById('delayOptionContainer');
     const openAtEndContainer = document.getElementById('openAtEndContainer');
     const formatOptionsContainer = document.getElementById('formatOptionsContainer');
-    
+
     if (e.target.value === 'openLinks' || e.target.value === 'openWindow') {
         delayContainer.style.display = 'flex';
     } else {
         delayContainer.style.display = 'none';
     }
-    
+
     // Show/hide openAtEnd option based on action type
     if (e.target.value === 'openLinks') {
         openAtEndContainer.style.display = 'flex';
     } else {
         openAtEndContainer.style.display = 'none';
     }
-    
+
     // Show/hide format options based on action type
     if (e.target.value === 'copyUrlsAndTitles') {
         formatOptionsContainer.style.display = 'block';
@@ -503,4 +511,3 @@ document.getElementById('rateExtensionButton').addEventListener('click', () => {
         url: `https://chrome.google.com/webstore/detail/${extensionId}/reviews`
     });
 });
-
