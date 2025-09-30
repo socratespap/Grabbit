@@ -62,19 +62,19 @@ function updateKeyLabels() {
     // Update the combinedKey dropdown options based on OS
     const ctrlOption = combinedKeySelect.querySelector('option[value="ctrl"]');
     if (ctrlOption) {
-        ctrlOption.textContent = currentOS === 'mac' ? 'Command ⌘' : 'Ctrl';
+        ctrlOption.textContent = currentOS === 'mac' ? 'Command \u2318' : 'Ctrl';
     }
     
     // Update the Alt option to show as Option for macOS
     const altOption = combinedKeySelect.querySelector('option[value="alt"]');
     if (altOption) {
-        altOption.textContent = currentOS === 'mac' ? 'Option ⌥' : 'Alt';
+        altOption.textContent = currentOS === 'mac' ? 'Option \u2325' : 'Alt';
     }
     
     // Update the Shift option to include symbol for macOS
     const shiftOption = combinedKeySelect.querySelector('option[value="shift"]');
     if (shiftOption) {
-        shiftOption.textContent = currentOS === 'mac' ? 'Shift ⇧' : 'Shift';
+        shiftOption.textContent = currentOS === 'mac' ? 'Shift \u21E7' : 'Shift';
     }
 }
 
