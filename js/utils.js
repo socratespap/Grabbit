@@ -75,3 +75,29 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
+
+/**
+ * Queries all links in the document, including those inside Shadow DOM
+ * @param {Document|ShadowRoot} root - The root element to start searching from
+ * @returns {Array<HTMLAnchorElement>} Array of all anchor elements found
+ */
+function getAllLinks(root = document) {
+    const links = [];
+
+    // Get all links in the current root
+    const directLinks = root.querySelectorAll('a');
+    links.push(...directLinks);
+
+    // Find all elements that might have a shadow root
+    const allElements = root.querySelectorAll('*');
+
+    allElements.forEach(element => {
+        if (element.shadowRoot) {
+            // Recursively query links in the shadow root
+            const shadowLinks = getAllLinks(element.shadowRoot);
+            links.push(...shadowLinks);
+        }
+    });
+
+    return links;
+}

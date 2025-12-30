@@ -1,3 +1,7 @@
+## Version 2.0.3 Changelog:
+- Added Shadow DOM support for link detection.
+- Links inside Shadow DOM components are now properly recognized and selectable.
+
 ## Version 2.0.2 Changelog:
 - Modularized Settings into sections (Main, Popup, Advanced, Global).
 - Created standalone Advanced Options page.

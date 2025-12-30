@@ -47,8 +47,8 @@ document.addEventListener('mousedown', (e) => {
     const scrollX = window.scrollX;
     const scrollY = window.scrollY;
 
-    // Query all links
-    const allLinks = document.querySelectorAll('a');
+    // Query all links (including those in Shadow DOM)
+    const allLinks = getAllLinks();
     GrabbitState.cachedLinks = [];
 
     allLinks.forEach(link => {
