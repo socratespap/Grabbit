@@ -76,7 +76,6 @@ function createSelectionBox() {
   const box = document.createElement('div');
   box.style.cssText = `
     position: fixed;
-    border: 2px solid;
     background-color: rgba(33, 150, 243, 0.1);
     z-index: 10000;
     pointer-events: none;
@@ -321,7 +320,10 @@ function updateVisualStyles() {
   if (!GrabbitState.currentMatchedAction) return;
 
   // Update selection box
-  if (GrabbitState.selectionBox) {
+  if (GrabbitState.selectionBox && GrabbitState.currentMatchedAction) {
+    const borderThickness = GrabbitState.currentMatchedAction.borderThickness || 2;
+    const borderStyle = GrabbitState.currentMatchedAction.borderStyle || 'solid';
+    GrabbitState.selectionBox.style.border = `${borderThickness}px ${borderStyle}`;
     GrabbitState.selectionBox.style.borderColor = GrabbitState.currentMatchedAction.boxColor;
     GrabbitState.selectionBox.style.backgroundColor = `${GrabbitState.currentMatchedAction.boxColor}19`;
   }
@@ -541,6 +543,11 @@ document.addEventListener('mousedown', (e) => {
     });
 
     GrabbitState.selectionBox = createSelectionBox();
+
+    // Apply border styling
+    const borderThickness = matchedAction.borderThickness || 2;
+    const borderStyle = matchedAction.borderStyle || 'solid';
+    GrabbitState.selectionBox.style.border = `${borderThickness}px ${borderStyle}`;
     GrabbitState.selectionBox.style.borderColor = matchedAction.boxColor;
     GrabbitState.selectionBox.style.backgroundColor = `${matchedAction.boxColor}19`;
     GrabbitState.selectionBox.style.position = 'absolute';

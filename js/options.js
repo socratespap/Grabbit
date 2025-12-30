@@ -51,7 +51,7 @@ const boxColorInput = document.getElementById('boxColor');         // Color pick
  */
 function saveActionsToStorage(actions) {
     if (!isExtension) return;
-    chrome.storage.sync.set({ savedActions: actions }, function() {
+    chrome.storage.sync.set({ savedActions: actions }, function () {
         console.log('Actions saved:', actions);
     });
 }
@@ -62,7 +62,7 @@ function saveActionsToStorage(actions) {
  */
 function saveBoxColorToStorage(color) {
     if (!isExtension) return;
-    chrome.storage.sync.set({ boxColor: color }, function() {
+    chrome.storage.sync.set({ boxColor: color }, function () {
         console.log('Box color saved:', color);
     });
 }
@@ -72,7 +72,7 @@ function saveBoxColorToStorage(color) {
  */
 function loadActionsFromStorage() {
     if (!isExtension) return;
-    chrome.storage.sync.get(['savedActions', 'boxColor'], function(result) {
+    chrome.storage.sync.get(['savedActions', 'boxColor'], function (result) {
         // Load saved actions
         if (result.savedActions) {
             result.savedActions.forEach(action => {
@@ -96,13 +96,13 @@ function updateKeyLabels() {
     if (ctrlOption) {
         ctrlOption.textContent = currentOS === 'mac' ? 'Command ⌘' : 'Ctrl';
     }
-    
+
     // Update the Alt option to show as Option for macOS
     const altOption = combinedKeySelect.querySelector('option[value="alt"]');
     if (altOption) {
         altOption.textContent = currentOS === 'mac' ? 'Option ⌥' : 'Alt';
     }
-    
+
     // Update the Shift option to include symbol for macOS
     const shiftOption = combinedKeySelect.querySelector('option[value="shift"]');
     if (shiftOption) {
@@ -155,7 +155,7 @@ function createActionCard(action) {
         }
         if (action.separatorType) {
             let separatorText = '';
-            switch(action.separatorType) {
+            switch (action.separatorType) {
                 case 'newline':
                     separatorText = 'Newline';
                     break;
@@ -180,6 +180,14 @@ function createActionCard(action) {
     if (action.reverseOrder) features.push('Reverse Order');
     if (action.openLinks && action.openAtEnd) features.push('Open at End');
     if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.push(`${action.tabDelay}s Delay`);
+
+    // Add border styling info
+    if (action.borderThickness && action.borderThickness !== 2) {
+        features.push(`${action.borderThickness}px Border`);
+    }
+    if (action.borderStyle && action.borderStyle !== 'solid') {
+        features.push(`${action.borderStyle.charAt(0).toUpperCase() + action.borderStyle.slice(1)} Border`);
+    }
 
     // Create color preview
     const colorPreview = `<span class="color-preview" style="background-color: ${action.boxColor || '#2196F3'}"></span>`;
@@ -208,36 +216,38 @@ function createActionCard(action) {
         // Populate the modal with current action data
         document.getElementById('combinedKey').value = action.combination.key;
         document.getElementById('mouseButton').value = action.combination.mouseButton;
-        document.getElementById('actionType').value = action.openLinks ? 'openLinks' : 
-                                                    (action.openWindow ? 'openWindow' : 
-                                                    (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' : 
-                                                    (action.copyTitles ? 'copyTitles' : 'copyUrls')));
+        document.getElementById('actionType').value = action.openLinks ? 'openLinks' :
+            (action.openWindow ? 'openWindow' :
+                (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' :
+                    (action.copyTitles ? 'copyTitles' : 'copyUrls')));
         document.getElementById('smartSelect').value = action.smartSelect;
         document.getElementById('reverseOrder').checked = action.reverseOrder || false;
         document.getElementById('openAtEnd').checked = action.openAtEnd || false;
         document.getElementById('boxColor').value = action.boxColor || '#2196F3'; // Load saved color or default
         document.getElementById('tabDelay').value = action.tabDelay || 0; // Load saved delay or default
         document.getElementById('delayValue').textContent = (action.tabDelay || 0).toFixed(1) + 's'; // Format display value
-        
+        document.getElementById('borderThickness').value = action.borderThickness || 2; // Load border thickness
+        document.getElementById('borderStyle').value = action.borderStyle || 'solid'; // Load border style
+
         // Show/hide conditional UI elements based on action type
         const delayContainer = document.getElementById('delayOptionContainer');
         const openAtEndContainer = document.getElementById('openAtEndContainer');
         const formatOptionsContainer = document.getElementById('formatOptionsContainer');
-        
+
         // Show delay option only for actions that open tabs/windows
         if (action.openLinks || action.openWindow) {
             delayContainer.style.display = 'flex';
         } else {
             delayContainer.style.display = 'none';
         }
-        
+
         // Show openAtEnd option only for actions that open links
         if (action.openLinks) {
             openAtEndContainer.style.display = 'flex';
         } else {
             openAtEndContainer.style.display = 'none';
         }
-        
+
         // Show format options only for copyUrlsAndTitles action
         if (action.copyUrlsAndTitles) {
             formatOptionsContainer.style.display = 'block';
@@ -246,7 +256,7 @@ function createActionCard(action) {
             if (action.separatorType) {
                 const separatorTypeSelect = document.getElementById('separatorType');
                 separatorTypeSelect.value = action.separatorType;
-                               
+
             }
             if (action.separatorCount) document.getElementById('separatorCount').value = action.separatorCount;
             if (action.linkSeparatorCount !== undefined) document.getElementById('linkSeparatorCount').value = action.linkSeparatorCount;
@@ -286,21 +296,21 @@ function generateUniqueColor() {
         '#00FFFF', // aqua
         '#FFA500'  // orange
     ];
-    
+
     // Get all existing action colors
     const existingColors = Array.from(savedActionsContainer.children)
         .map(card => card.actionData.boxColor);
-    
+
     // Filter out colors that are already in use
-    const availableColors = colors.filter(color => 
+    const availableColors = colors.filter(color =>
         !existingColors.includes(color)
     );
-    
+
     // If all colors are used, return the first color from the original list
     if (availableColors.length === 0) {
         return colors[0];
     }
-    
+
     // Return a random color from available colors
     const randomIndex = Math.floor(Math.random() * availableColors.length);
     return availableColors[randomIndex];
@@ -332,6 +342,8 @@ const closeModal = () => {
     document.getElementById('openAtEnd').checked = false;
     document.getElementById('tabDelay').value = 0;
     document.getElementById('delayValue').textContent = '0.0s';
+    document.getElementById('borderThickness').value = 2; // Reset to default
+    document.getElementById('borderStyle').value = 'solid'; // Reset to default
     // Reset all error messages
     document.querySelectorAll('.error-message').forEach(error => error.classList.remove('visible'));
     // Hide conditional UI elements by default
@@ -359,15 +371,15 @@ modal.addEventListener('click', (e) => {
 function isDuplicateCombination(newCombination, editingCard = null) {
     // Get all existing actions
     const existingActions = Array.from(savedActionsContainer.children);
-    
+
     // Check each action for matching combination
     return existingActions.some(card => {
         // Skip the card being edited
         if (editingCard === card) return false;
-        
+
         const action = card.actionData;
-        return action.combination.key === newCombination.key && 
-               action.combination.mouseButton === newCombination.mouseButton;
+        return action.combination.key === newCombination.key &&
+            action.combination.mouseButton === newCombination.mouseButton;
     });
 }
 
@@ -435,9 +447,11 @@ document.getElementById('saveButton').addEventListener('click', () => {
         reverseOrder: document.getElementById('reverseOrder').checked,
         openAtEnd: document.getElementById('openAtEnd').checked,
         boxColor: document.getElementById('boxColor').value,
-        tabDelay: parseFloat(document.getElementById('tabDelay').value) // Use parseFloat for decimal values
+        tabDelay: parseFloat(document.getElementById('tabDelay').value), // Use parseFloat for decimal values
+        borderThickness: parseInt(document.getElementById('borderThickness').value) || 2,
+        borderStyle: document.getElementById('borderStyle').value || 'solid'
     };
-    
+
     // Add formatting options if copyUrlsAndTitles is selected
     if (action.copyUrlsAndTitles) {
         action.formatPattern = document.getElementById('formatPattern')?.value || 'titleFirst';
@@ -458,7 +472,7 @@ document.getElementById('saveButton').addEventListener('click', () => {
     // Save all actions to storage
     const allActions = Array.from(savedActionsContainer.children).map(card => card.actionData);
     saveActionsToStorage(allActions);
-    
+
     closeModal();
 });
 
@@ -480,20 +494,20 @@ if (isExtension) {
     document.addEventListener('DOMContentLoaded', () => {
         loadActionsFromStorage();
         updateKeyLabels();
-        
+
         // Sidebar navigation functionality
         const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        
+
         sidebarLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                
+
                 // Remove active class from all links
                 sidebarLinks.forEach(l => l.classList.remove('active'));
-                
+
                 // Add active class to clicked link
                 link.classList.add('active');
-                
+
                 // For now, we're just implementing the sidebar UI without section switching
                 // In the future, this would show/hide different sections based on data-section attribute
             });
@@ -525,24 +539,24 @@ document.getElementById('actionType').addEventListener('change', (e) => {
     } else {
         actionTypeError.classList.remove('visible');
     }
-    
+
     // Show/hide conditional UI elements based on action type
     const delayContainer = document.getElementById('delayOptionContainer');
     const openAtEndContainer = document.getElementById('openAtEndContainer');
     const formatOptionsContainer = document.getElementById('formatOptionsContainer');
-    
+
     if (e.target.value === 'openLinks' || e.target.value === 'openWindow') {
         delayContainer.style.display = 'flex';
     } else {
         delayContainer.style.display = 'none';
     }
-    
+
     if (e.target.value === 'openLinks') {
         openAtEndContainer.style.display = 'flex';
     } else {
         openAtEndContainer.style.display = 'none';
     }
-    
+
     if (e.target.value === 'copyUrlsAndTitles') {
         formatOptionsContainer.style.display = 'block';
     } else {

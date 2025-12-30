@@ -41,3 +41,4 @@ Added delay option when tabs are opened by TheTacoScott
 - New Brand Images in Chrome's Store
 - New Sidebar UI
 - New Options Page UI
+- Added border thickness and style customization.
