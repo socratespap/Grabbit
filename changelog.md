@@ -42,3 +42,10 @@ Added delay option when tabs are opened by TheTacoScott
 - New Sidebar UI
 - New Options Page UI
 - Added border thickness and style customization.
+
+## Version 2.0.1 Changelog:
+- Refactor grabbit.js into smaller parts:
+logic.js
+ui.js
+utils.js
+state.js
