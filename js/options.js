@@ -495,23 +495,7 @@ if (isExtension) {
         loadActionsFromStorage();
         updateKeyLabels();
 
-        // Sidebar navigation functionality
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
 
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                // Remove active class from all links
-                sidebarLinks.forEach(l => l.classList.remove('active'));
-
-                // Add active class to clicked link
-                link.classList.add('active');
-
-                // For now, we're just implementing the sidebar UI without section switching
-                // In the future, this would show/hide different sections based on data-section attribute
-            });
-        });
     });
 } else {
     // For non-extension environments (like local testing)
