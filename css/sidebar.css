@@ -1,0 +1,129 @@
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #1976D2;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 180px;
+    height: 50%;
+    background: linear-gradient(145deg, #1976D2 0%, #2196F3 90%);
+    color: white;
+    padding: 16px 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    z-index: 100;
+    transition: all 0.3s ease;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 0 16px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 16px;
+}
+
+.sidebar-logo {
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    border-radius: 6px;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.3px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-left: 2px solid transparent;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.sidebar-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.sidebar-link.active {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border-left-color: white;
+}
+
+.sidebar-link svg {
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover svg,
+.sidebar-link.active svg {
+    opacity: 1;
+}
+
+/* Responsive design for sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 160px;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 80%;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 50px;
+        overflow: hidden;
+        left: 8px;
+        top: 8px;
+        height: calc(100% - 16px);
+    }
+    
+    .sidebar-header h2 {
+        display: none;
+    }
+    
+    .sidebar-link span {
+        display: none;
+    }
+    
+    .sidebar-link {
+        justify-content: center;
+        padding: 12px 0;
+    }
+    
+    .sidebar-logo {
+        margin-right: 0;
+        width: 24px;
+        height: 24px;
+    }
+    
+    .sidebar-header {
+        justify-content: center;
+        padding-bottom: 12px;
+    }
+}
