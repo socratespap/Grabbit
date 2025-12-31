@@ -155,6 +155,9 @@ function processSelectedLinks(matchedAction) {
             delay: matchedAction.tabDelay || 0,
             openAtEnd: matchedAction.openAtEnd || false
         });
+        // Mark links as visited (persistent storage)
+        markLinksAsGrabbitVisited(finalUrls, Array.from(GrabbitState.selectedLinks));
+
     } else if (matchedAction.openWindow) {
         // Send message to background script to handle window creation
         chrome.runtime.sendMessage({
@@ -162,6 +165,9 @@ function processSelectedLinks(matchedAction) {
             urls: finalUrls,
             delay: matchedAction.tabDelay || 0
         });
+        // Mark links as visited (persistent storage)
+        markLinksAsGrabbitVisited(finalUrls, Array.from(GrabbitState.selectedLinks));
+
     } else if (matchedAction.copyUrls) {
         // Copy URLs to clipboard
         navigator.clipboard.writeText(finalUrls.join('\n'));
@@ -217,4 +223,6 @@ function processSelectedLinks(matchedAction) {
 
         navigator.clipboard.writeText(titles);
     }
+
 }
+

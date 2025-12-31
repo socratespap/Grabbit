@@ -18,7 +18,7 @@
     "windows",
     "history"
   ],
-  "action": { 
+  "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
@@ -30,11 +30,14 @@
   "options_page": "options.html",
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "<all_urls>"
+      ],
       "js": [
         "js/state.js",
         "js/utils.js",
         "js/ui.js",
+        "js/visited.js",
         "js/logic.js",
         "js/grabbit.js",
         "popup/popup.js"
@@ -42,7 +45,8 @@
       "all_frames": true,
       "run_at": "document_end"
     }
-  ],  "background": {
+  ],
+  "background": {
     "service_worker": "js/background.js"
   }
 }

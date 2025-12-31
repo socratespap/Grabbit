@@ -1,3 +1,9 @@
+## Version 2.0.6 Changelog:
+- Implemented Persistent Visited Link Marking.
+- Added `js/visited.js` to track and visually mark links opened via Grabbit using `chrome.storage.local`.
+- Bypassed browser limitations where redirect URLs (like Google Search) fail to show native `:visited` styling.
+- Integrated `chrome.history` API to ensure opened links are correctly added to the browser's global history.
+
 ## Version 2.0.5 Changelog:
 - Implemented robust Cross-Platform Key Recognition.
 - Centralized OS detection in `js/utils.js` for Windows, macOS, and Linux.
