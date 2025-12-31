@@ -3,12 +3,36 @@
 //=============================================================================
 
 /**
+ * Detects the user's operating system
+ * @returns {string} The detected OS ('mac', 'windows', or 'linux')
+ */
+function getOS() {
+    // Modern API (Chrome 90+, Edge 90+)
+    if (navigator.userAgentData?.platform) {
+        const platform = navigator.userAgentData.platform.toLowerCase();
+        if (platform.includes('mac')) return 'mac';
+        if (platform.includes('win')) return 'windows';
+        if (platform.includes('linux')) return 'linux';
+    }
+
+    // Fallback to userAgent
+    const ua = navigator.userAgent.toLowerCase();
+    if (ua.includes('mac')) return 'mac';
+    if (ua.includes('win')) return 'windows';
+    if (ua.includes('linux')) return 'linux';
+
+    return 'windows'; // Default to Windows
+}
+
+/**
  * Checks if a key combination matches a saved action
  * @param {Event} e - The keyboard event
  * @param {string} mouseButton - The mouse button being used
  * @returns {Object|null} The matched action or null if no match
  */
 function checkKeyCombination(e, mouseButton) {
+    const isMac = getOS() === 'mac';
+
     return GrabbitState.savedActions.find(action => {
         // First check if mouse buttons match exactly
         const mouseMatch = action.combination.mouseButton === mouseButton;
@@ -20,8 +44,8 @@ function checkKeyCombination(e, mouseButton) {
         if (action.combination.key === 'none') {
             keyMatch = !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
         } else if (action.combination.key === 'ctrl') {
-            // Use metaKey (Command) on Mac, ctrlKey on other platforms
-            keyMatch = navigator.userAgent.includes('Mac') ? e.metaKey : e.ctrlKey;
+            // Use metaKey (Command ⌘) on Mac, ctrlKey on other platforms
+            keyMatch = isMac ? e.metaKey : e.ctrlKey;
         } else {
             // For other keys (shift, alt), use standard properties
             keyMatch = e[`${action.combination.key}Key`];

@@ -13,20 +13,9 @@
 // Check if we're in a Chrome extension context to handle API calls safely
 const isExtension = typeof chrome !== 'undefined' && chrome.storage;
 
-/**
- * Detects the user's operating system for OS-specific UI adjustments
- * @returns {string} The detected OS ('mac', 'windows', or 'linux')
- */
-function detectOS() {
-    const platform = navigator.userAgent.toLowerCase();
-    if (platform.includes('mac')) return 'mac';
-    if (platform.includes('win')) return 'windows';
-    if (platform.includes('linux')) return 'linux';
-    return 'windows'; // Default to Windows if unable to detect
-}
-
 // Get the current OS for UI customization
-const currentOS = detectOS();
+// Uses shared getOS() from utils.js if available, with fallback
+const currentOS = typeof getOS !== 'undefined' ? getOS() : 'windows';
 
 // ============================================================================
 // DOM ELEMENT REFERENCES

@@ -1,3 +1,9 @@
+## Version 2.0.5 Changelog:
+- Implemented robust Cross-Platform Key Recognition.
+- Centralized OS detection in `js/utils.js` for Windows, macOS, and Linux.
+- Improved ESC key handling: selection cancellation now works consistently and prevents default page behavior while Grabbit is active.
+- Corrected key mapping for macOS (Command ⌘, Option ⌥, Shift ⇧) in Options UI and selection logic.
+
 ## Version 2.0.4 Changelog:
 - Implemented Drag Threshold for selection activation.
 - Selection box now waits for a 5-pixel drag before appearing, preventing accidental activation on simple clicks.

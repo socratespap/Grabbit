@@ -15,7 +15,8 @@
     "clipboardWrite",
     "clipboardRead",
     "tabs",
-    "windows"
+    "windows",
+    "history"
   ],
   "action": { 
     "default_popup": "popup/popup.html",

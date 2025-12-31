@@ -220,13 +220,15 @@ document.addEventListener('contextmenu', (e) => {
  */
 document.addEventListener('keydown', (e) => {
   // Handle ESC key to cancel selection
-  if (e.key === 'Escape' && (e.altKey || e.ctrlKey || e.shiftKey || GrabbitState.isMouseDown)) {
-    e.stopPropagation();
-    e.preventDefault();
-
-    // Handle ESC + modifier keys or just ESC during selection
-    cleanupSelection();
-    return;
+  // Cancel if ESC is pressed during mouse down OR with any modifier key held
+  if (e.key === 'Escape') {
+    if (GrabbitState.isMouseDown || GrabbitState.isSelectionActive) {
+      // Always prevent the page from reacting to ESC while Grabbit is active
+      e.preventDefault();
+      e.stopPropagation();
+      cleanupSelection();
+      return;
+    }
   }
 
   // Handle key combinations during selection
