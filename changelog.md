@@ -1,3 +1,8 @@
+## Version 2.0.4 Changelog:
+- Implemented Drag Threshold for selection activation.
+- Selection box now waits for a 5-pixel drag before appearing, preventing accidental activation on simple clicks.
+- Improved UX by removing visual flashes and zero-size selections on accidental triggers.
+
 ## Version 2.0.3 Changelog:
 - Added Shadow DOM support for link detection.
 - Links inside Shadow DOM components are now properly recognized and selectable.

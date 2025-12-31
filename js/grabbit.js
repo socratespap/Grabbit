@@ -37,90 +37,117 @@ document.addEventListener('mousedown', (e) => {
   if (matchedAction) {
     GrabbitState.currentMatchedAction = matchedAction;
     GrabbitState.isMouseDown = true;
+    GrabbitState.isSelectionActive = false; // Selection not active until threshold is crossed
     GrabbitState.startX = e.clientX;
     GrabbitState.startY = e.clientY + window.scrollY; // Add scroll offset to initial Y position
     GrabbitState.initialScrollY = window.scrollY;
-
-    // PRE-CACHE LINKS
-    // We do this once at the start to avoid expensive DOM queries and getBoundingClientRect 
-    // during the drag operation.
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-
-    // Query all links (including those in Shadow DOM)
-    const allLinks = getAllLinks();
-    GrabbitState.cachedLinks = [];
-
-    allLinks.forEach(link => {
-      // Skip links without href
-      if (!link.href) return;
-
-      // Visibility check
-      // Note: getComputedStyle can be expensive, but doing it once on mousedown
-      // is much better than on every mousemove
-      const style = window.getComputedStyle(link);
-      if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
-        return;
-      }
-
-      // Sticky/Fixed check
-      const isYouTubeSubscription = window.location.hostname.includes('youtube.com') &&
-        (link.href.includes('/channel/') || link.href.includes('/c/') ||
-          link.href.includes('/user/') || link.href.includes('@'));
-
-      if (!isYouTubeSubscription && isElementSticky(link)) {
-        return;
-      }
-
-      // Get dimensions
-      let clientRect = link.getBoundingClientRect();
-      if ((clientRect.width === 0 || clientRect.height === 0) && link.children.length > 0) {
-        clientRect = link.children[0].getBoundingClientRect();
-      }
-
-      if (clientRect.width === 0 && clientRect.height === 0) return;
-
-      // Store document-relative coordinates
-      GrabbitState.cachedLinks.push({
-        link: link,
-        box: {
-          top: clientRect.top + scrollY,
-          bottom: clientRect.bottom + scrollY,
-          left: clientRect.left + scrollX,
-          right: clientRect.right + scrollX
-        }
-      });
-    });
-
-    GrabbitState.selectionBox = createSelectionBox();
-
-    // Apply border styling
-    const borderThickness = matchedAction.borderThickness || 2;
-    const borderStyle = matchedAction.borderStyle || 'solid';
-    GrabbitState.selectionBox.style.border = `${borderThickness}px ${borderStyle}`;
-    GrabbitState.selectionBox.style.borderColor = matchedAction.boxColor;
-    GrabbitState.selectionBox.style.backgroundColor = `${matchedAction.boxColor}19`;
-    GrabbitState.selectionBox.style.position = 'absolute';
-    GrabbitState.selectionBox.style.left = `${GrabbitState.startX}px`;
-    GrabbitState.selectionBox.style.top = `${GrabbitState.startY}px`; // Use absolute position from document top
-    document.body.appendChild(GrabbitState.selectionBox);
-    GrabbitState.counterLabel = createCounterLabel();
-    document.body.appendChild(GrabbitState.counterLabel);
-    GrabbitState.selectedLinks.clear();
     e.preventDefault();
   }
 });
 
 /**
+ * Activates the selection UI after drag threshold is crossed.
+ * This function is called from mousemove when the user has dragged far enough.
+ */
+function activateSelection() {
+  GrabbitState.isSelectionActive = true;
+
+  // PRE-CACHE LINKS
+  // We do this once when selection activates to avoid expensive DOM queries
+  // and getBoundingClientRect during the drag operation.
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+
+  // Query all links (including those in Shadow DOM)
+  const allLinks = getAllLinks();
+  GrabbitState.cachedLinks = [];
+
+  allLinks.forEach(link => {
+    // Skip links without href
+    if (!link.href) return;
+
+    // Visibility check
+    // Note: getComputedStyle can be expensive, but doing it once on activation
+    // is much better than on every mousemove
+    const style = window.getComputedStyle(link);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+      return;
+    }
+
+    // Sticky/Fixed check
+    const isYouTubeSubscription = window.location.hostname.includes('youtube.com') &&
+      (link.href.includes('/channel/') || link.href.includes('/c/') ||
+        link.href.includes('/user/') || link.href.includes('@'));
+
+    if (!isYouTubeSubscription && isElementSticky(link)) {
+      return;
+    }
+
+    // Get dimensions
+    let clientRect = link.getBoundingClientRect();
+    if ((clientRect.width === 0 || clientRect.height === 0) && link.children.length > 0) {
+      clientRect = link.children[0].getBoundingClientRect();
+    }
+
+    if (clientRect.width === 0 && clientRect.height === 0) return;
+
+    // Store document-relative coordinates
+    GrabbitState.cachedLinks.push({
+      link: link,
+      box: {
+        top: clientRect.top + scrollY,
+        bottom: clientRect.bottom + scrollY,
+        left: clientRect.left + scrollX,
+        right: clientRect.right + scrollX
+      }
+    });
+  });
+
+  const matchedAction = GrabbitState.currentMatchedAction;
+  GrabbitState.selectionBox = createSelectionBox();
+
+  // Apply border styling
+  const borderThickness = matchedAction.borderThickness || 2;
+  const borderStyle = matchedAction.borderStyle || 'solid';
+  GrabbitState.selectionBox.style.border = `${borderThickness}px ${borderStyle}`;
+  GrabbitState.selectionBox.style.borderColor = matchedAction.boxColor;
+  GrabbitState.selectionBox.style.backgroundColor = `${matchedAction.boxColor}19`;
+  GrabbitState.selectionBox.style.position = 'absolute';
+  GrabbitState.selectionBox.style.left = `${GrabbitState.startX}px`;
+  GrabbitState.selectionBox.style.top = `${GrabbitState.startY}px`; // Use absolute position from document top
+  document.body.appendChild(GrabbitState.selectionBox);
+  GrabbitState.counterLabel = createCounterLabel();
+  document.body.appendChild(GrabbitState.counterLabel);
+  GrabbitState.selectedLinks.clear();
+}
+
+/**
  * Handles the mousemove event to update the selection box
  */
 document.addEventListener('mousemove', (e) => {
-  if (!GrabbitState.isMouseDown || !GrabbitState.selectionBox) return;
+  if (!GrabbitState.isMouseDown) return;
 
   const currentX = e.clientX;
   const currentY = e.clientY + window.scrollY; // Add scroll offset to current Y position
   GrabbitState.lastMouseX = currentX;
   GrabbitState.lastMouseY = e.clientY; // Store viewport Y position for scroll handling
+
+  // Check if we need to activate selection (threshold check)
+  if (!GrabbitState.isSelectionActive) {
+    // Calculate distance from start position (using viewport coordinates for consistency)
+    const distance = Math.hypot(currentX - GrabbitState.startX, currentY - GrabbitState.startY);
+
+    // If below threshold, don't activate yet
+    if (distance < CONSTANTS.DRAG_THRESHOLD) {
+      return;
+    }
+
+    // Threshold crossed - activate selection
+    activateSelection();
+  }
+
+  // At this point, selection is active - proceed with normal logic
+  if (!GrabbitState.selectionBox) return;
 
   // Calculate box dimensions using absolute positions
   const left = Math.min(GrabbitState.startX, currentX);
@@ -170,8 +197,8 @@ document.addEventListener('mouseup', (e) => {
   const mouseButton = getMouseButton(e);
   const matchedAction = checkKeyCombination(e, mouseButton);
 
-  // Process selected links if there's a matched action
-  if (matchedAction && GrabbitState.selectedLinks.size > 0) {
+  // Process selected links only if selection was actually activated and there's a matched action
+  if (GrabbitState.isSelectionActive && matchedAction && GrabbitState.selectedLinks.size > 0) {
     processSelectedLinks(matchedAction);
   }
 

@@ -82,6 +82,7 @@ function updateVisualStyles() {
  */
 function cleanupSelection() {
     GrabbitState.isMouseDown = false;
+    GrabbitState.isSelectionActive = false;
 
     if (GrabbitState.selectionBox) {
         GrabbitState.selectionBox.remove();

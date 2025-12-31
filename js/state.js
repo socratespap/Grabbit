@@ -8,6 +8,7 @@
  */
 const GrabbitState = {
     isMouseDown: false,         // Flag to track if mouse is down
+    isSelectionActive: false,   // Flag to track if drag threshold has been crossed
     startX: 0,                  // Starting X position
     startY: 0,                  // Starting Y position
     lastMouseX: 0,              // Last mouse X position for tracking movement
@@ -38,5 +39,6 @@ const CONSTANTS = {
     SCROLL_SPEED: 35,           // Pixels per frame on scroll
     SCROLL_INTERVAL: 16,        // Milliseconds between scroll updates (~60fps)
     DEBOUNCE_DELAY: 5,          // Milliseconds for debouncing link selection
-    DEFAULT_BOX_COLOR: '#2196F3' // Default selection box color
+    DEFAULT_BOX_COLOR: '#2196F3', // Default selection box color
+    DRAG_THRESHOLD: 5           // Pixels to drag before activating selection
 };
