@@ -12,6 +12,7 @@
 *   **Linkify:** Automatically converts plain text URLs on web pages into clickable links. Includes an **Aggressive Mode** for domain-only recognition (e.g., `google.com`) and support for links inside code blocks.
 *   **Exclusion Filters:** Global keyword and Regular Expression (Regex) filtering to automatically skip unwanted links during drag-selection. Manageable via a dynamic tag-based UI.
 *   **Options Page:** Extensive customization for colors, behavior, and granular filtering rules.
+*   **Enhanced Copy Formatting:** expanded "Copy URLs with Titles" action with support for **Markdown**, **JSON**, and customizable separators (Comma, Dot, Tab, etc.).
 *   **Advanced Options:** Dedicated section for experimental and power-user features. Now includes a **dynamic UI** that hides/shows sub-settings based on primary features and a robust filter management system.
 *   **Modern Architecture:** Refactored into a modular structure for better maintainability.
 

@@ -1,3 +1,9 @@
+## Version 3.2.8 Changelog:
+- **Major Copy Action Upgrade**: Enhanced "Copy URLs with Titles" action with **Markdown** and **JSON** support.
+- **Custom Separators**: Added options for **Comma** and **Dot** separators in addition to Newline, Space, and Tab.
+- **Format-Aware UI**: The Action Modal now intelligently hides irrelevant separator options when Markdown or JSON formats are selected.
+- **Action Card Updates**: Saved action cards now clearly display the chosen format (Markdown/JSON) and separator type.
+
 ## Version 3.2.7 Changelog:
 - **Modular Codebase**: Refactored `options.js` into 7 separate ES modules (`main`, `env`, `storage`, `utils`, `preview`, `card`, `modal`) for improved maintainability.
 - **Modernized Options Page**: Updated `options.html` to use native ES module imports.

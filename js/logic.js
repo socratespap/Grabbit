@@ -237,6 +237,11 @@ function processSelectedLinks(matchedAction) {
             const separatorType = matchedAction.separatorType || 'newline';
             const separatorCount = matchedAction.separatorCount || 1;
 
+            // Handle JSON format separately (it ignores other separators)
+            if (formatPattern === 'json') {
+                return { title, url };
+            }
+
             // Create separator based on type and count
             let separator;
             if (separatorType === 'newline') {
@@ -245,12 +250,18 @@ function processSelectedLinks(matchedAction) {
                 separator = ' '.repeat(separatorCount);
             } else if (separatorType === 'tab') {
                 separator = '\t'.repeat(separatorCount);
+            } else if (separatorType === 'comma') {
+                separator = ','.repeat(separatorCount);
+            } else if (separatorType === 'dot') {
+                separator = '.'.repeat(separatorCount);
             } else {
                 separator = '\n'; // Fallback to newline
             }
 
             // Format based on pattern
-            if (formatPattern === 'titleFirst') {
+            if (formatPattern === 'markdown') {
+                return `[${title}](${url})`;
+            } else if (formatPattern === 'titleFirst') {
                 return `${title}${separator}${url}`;
             } else if (formatPattern === 'urlFirst') {
                 return `${url}${separator}${title}`;
@@ -259,14 +270,19 @@ function processSelectedLinks(matchedAction) {
             }
         });
 
-        // Get link separator count with default
-        const linkSeparatorCount = matchedAction.linkSeparatorCount || 0;
+        let formattedText;
+        if (matchedAction.formatPattern === 'json') {
+            formattedText = JSON.stringify(urlsAndTitles);
+        } else {
+            // Get link separator count with default
+            const linkSeparatorCount = matchedAction.linkSeparatorCount || 0;
 
-        // Create link separator based on linkSeparatorCount
-        const linkSeparator = linkSeparatorCount > 0 ? '\n'.repeat(linkSeparatorCount + 1) : '\n';
+            // Create link separator based on linkSeparatorCount
+            const linkSeparator = linkSeparatorCount > 0 ? '\n'.repeat(linkSeparatorCount + 1) : '\n';
 
-        // Join the formatted links with the appropriate separator
-        const formattedText = urlsAndTitles.join(linkSeparator);
+            // Join the formatted links with the appropriate separator
+            formattedText = urlsAndTitles.join(linkSeparator);
+        }
 
         navigator.clipboard.writeText(formattedText);
     } else if (matchedAction.copyTitles) {

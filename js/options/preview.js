@@ -35,16 +35,33 @@ export function updateFormatPreview() {
         case 'tab':
             separator = '\t'.repeat(separatorCount);
             break;
+        case 'comma':
+            separator = ','.repeat(separatorCount);
+            break;
+        case 'dot':
+            separator = '.'.repeat(separatorCount);
+            break;
     }
 
     // Build the preview output
     const formattedLinks = sampleLinks.map(link => {
-        if (formatPattern === 'titleFirst') {
+        if (formatPattern === 'markdown') {
+            return `[${link.title}](${link.url})`;
+        } else if (formatPattern === 'json') {
+            return JSON.stringify({ title: link.title, url: link.url });
+        } else if (formatPattern === 'titleFirst') {
             return `<span class="preview-title">${link.title}</span>${separator}<span class="preview-url">${link.url}</span>`;
         } else {
             return `<span class="preview-url">${link.url}</span>${separator}<span class="preview-title">${link.title}</span>`;
         }
     });
+
+    // Special handling for JSON to show valid array
+    if (formatPattern === 'json') {
+        const jsonObjects = sampleLinks.map(link => ({ title: link.title, url: link.url }));
+        formatPreview.textContent = JSON.stringify(jsonObjects);
+        return;
+    }
 
     // Join links with the link separator (extra blank lines between links)
     const linkSeparator = '\n'.repeat(linkSeparatorCount + 1);

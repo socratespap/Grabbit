@@ -240,9 +240,45 @@ export function setupFormValidation() {
 
         if (e.target.value === 'copyUrlsAndTitles') {
             formatOptionsContainer.style.display = 'block';
-            updateFormatPreview();
+            // Update the preview with the loaded settings
+            updateFormatOptionVisibility();
+            setTimeout(updateFormatPreview, 0);
         } else {
             formatOptionsContainer.style.display = 'none';
         }
     });
+
+    // Format pattern change handler
+    document.getElementById('formatPattern')?.addEventListener('change', () => {
+        updateFormatOptionVisibility();
+        updateFormatPreview();
+    });
+}
+
+/**
+ * Updates the visibility of format options based on selected pattern
+ */
+function updateFormatOptionVisibility() {
+    const formatPattern = document.getElementById('formatPattern')?.value;
+    const separatorCountContainer = document.getElementById('separatorCount')?.closest('.input-group');
+    const linkSeparatorCountContainer = document.getElementById('linkSeparatorCount')?.closest('.input-group');
+    const separatorTypeContainer = document.getElementById('separatorType')?.closest('.input-group');
+
+    if (!separatorCountContainer || !linkSeparatorCountContainer || !separatorTypeContainer) return;
+
+    // Reset all to visible first
+    separatorCountContainer.style.display = 'flex';
+    linkSeparatorCountContainer.style.display = 'flex';
+    separatorTypeContainer.style.display = 'flex';
+
+    if (formatPattern === 'markdown') {
+        // Markdown: hide separator count (uses standard markdown format)
+        separatorCountContainer.style.display = 'none';
+        separatorTypeContainer.style.display = 'none'; // Also hide separator type for Markdown as it's fixed
+    } else if (formatPattern === 'json') {
+        // JSON: hide all separator options
+        separatorCountContainer.style.display = 'none';
+        linkSeparatorCountContainer.style.display = 'none';
+        separatorTypeContainer.style.display = 'none';
+    }
 }

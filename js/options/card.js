@@ -47,10 +47,17 @@ export function createActionCard(action, savedActionsContainer, modal) {
         features.push('Copy URLs & Titles');
         // Add formatting details for Copy URLs & Titles
         if (action.formatPattern) {
-            const formatText = action.formatPattern === 'titleFirst' ? 'Title&rarr;URL' : 'URL&rarr;Title';
+            let formatText = '';
+            if (action.formatPattern === 'markdown') {
+                formatText = 'Markdown';
+            } else if (action.formatPattern === 'json') {
+                formatText = 'JSON';
+            } else {
+                formatText = action.formatPattern === 'titleFirst' ? 'Title&rarr;URL' : 'URL&rarr;Title';
+            }
             features.push(formatText);
         }
-        if (action.separatorType) {
+        if (action.separatorType && action.formatPattern !== 'json' && action.formatPattern !== 'markdown') {
             let separatorText = '';
             switch (action.separatorType) {
                 case 'newline':
@@ -61,6 +68,12 @@ export function createActionCard(action, savedActionsContainer, modal) {
                     break;
                 case 'tab':
                     separatorText = 'Tab';
+                    break;
+                case 'comma':
+                    separatorText = 'Comma';
+                    break;
+                case 'dot':
+                    separatorText = 'Dot';
                     break;
             }
             if (action.separatorCount > 1) {
