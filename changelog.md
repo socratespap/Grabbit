@@ -4,6 +4,7 @@
 - Improved iconography and fixed character encoding issues in the Options UI.
 - Set "Smart Select" to off by default for new actions to improve initial user experience.
 - Optimized CSS by removing redundant styles and fixing syntax errors.
+- Synchronized saved action card left borders with their respective selection box colors.
 
 ## Version 2.0.7 Changelog:
 - Implemented LinkClump-style Smart Select: dynamic filtering that switches to heading-only (H1-H6) mode when a heading link is touched.

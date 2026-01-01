@@ -111,6 +111,7 @@ function updateKeyLabels() {
 function createActionCard(action) {
     const card = document.createElement('div');
     card.className = 'card saved-action';
+    card.style.borderLeftColor = action.boxColor || '#2196F3';
 
     // Create combination text for display (e.g., "CTRL + Left Mouse Click")
     let combinationText = [];

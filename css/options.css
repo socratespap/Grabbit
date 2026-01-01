@@ -782,7 +782,7 @@ h1 {
     background: #f8f9fa;
     border-radius: 5px;
     margin-bottom: 1rem;
-    border-left: 4px solid var(--primary-color);
+    border-left: 4px solid #ddd;
 }
 
 .action-details {
