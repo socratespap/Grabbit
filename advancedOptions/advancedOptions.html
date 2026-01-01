@@ -57,6 +57,31 @@
                     </label>
                 </div>
 
+                <!-- Exclusion Filters Section -->
+                <h3
+                    style="margin-top: 2rem; margin-bottom: 0.75rem; color: #333; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    🚫 Exclusion Filters</h3>
+
+                <div class="option-item" style="flex-direction: column; align-items: stretch;">
+                    <div class="option-label" style="margin-bottom: 1rem;">
+                        <label>Filter Keywords & Regex</label>
+                        <p class="description">Add keywords or Regular Expressions to exclude matching links from
+                            drag-selection. Links containing these patterns will be automatically skipped.</p>
+                    </div>
+
+                    <div class="filter-input-row">
+                        <input type="text" id="filter-input" placeholder="e.g., google.com or ^https?://ad\."
+                            class="filter-input">
+                        <button id="add-filter-btn" class="btn btn-primary">Add</button>
+                    </div>
+
+                    <ul id="filter-list" class="filter-list"></ul>
+
+                    <div id="clear-filters-container" style="display: none; margin-top: 0.5rem;">
+                        <button id="clear-all-filters-btn" class="btn btn-secondary">Clear All Filters</button>
+                    </div>
+                </div>
+
                 <div id="status" class="status-message"></div>
             </div>
 

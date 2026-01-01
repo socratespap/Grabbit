@@ -74,9 +74,29 @@ function handleScroll(mouseY) {
 //=============================================================================
 
 /**
+ * Checks if a link URL matches any exclusion filter.
+ * Uses pre-compiled RegExp objects for performance.
+ * Falls back to substring matching for invalid regex patterns.
+ * @param {string} url - The URL to check
+ * @returns {boolean} True if the link should be excluded
+ */
+function isLinkExcluded(url) {
+    return GrabbitState.compiledExclusionFilters.some(filter => {
+        if (filter.regex) {
+            // Use pre-compiled regex
+            return filter.regex.test(url);
+        } else {
+            // Fallback to case-insensitive substring match
+            return url.toLowerCase().includes(filter.pattern.toLowerCase());
+        }
+    });
+}
+
+/**
  * Updates the selected links based on the current selection box
  * Implements LinkClump-style smart select: dynamically filters to "important" links
- * (those inside heading tags H1-H6) when any important link is touched
+ * (those inside heading tags H1-H6) when any important link is touched.
+ * Also applies exclusion filters to skip matching links.
  */
 function updateSelectedLinks() {
     if (!GrabbitState.selectionBox || !GrabbitState.isMouseDown) return;
@@ -101,6 +121,11 @@ function updateSelectedLinks() {
 
     GrabbitState.cachedLinks.forEach(item => {
         const { link, box, isImportant } = item;
+
+        // Skip links matching exclusion filters
+        if (isLinkExcluded(link.href)) {
+            return;
+        }
 
         // Check if link is within selection box
         const isInBox = !(box.left > boxRight ||

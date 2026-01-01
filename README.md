@@ -10,8 +10,9 @@
 *   **Custom Actions:** Configurable mouse/keyboard combinations (e.g., Ctrl + Drag to Copy).
 *   **Smart Selection:** Dynamic filtering that prioritizes heading links (H1-H6).
 *   **Linkify:** Automatically converts plain text URLs on web pages into clickable links. Includes an **Aggressive Mode** for domain-only recognition (e.g., `google.com`) and support for links inside code blocks.
+*   **Exclusion Filters:** Global keyword and Regular Expression (Regex) filtering to automatically skip unwanted links during drag-selection. Manageable via a dynamic tag-based UI.
 *   **Options Page:** Extensive customization for colors, behavior, and granular filtering rules.
-*   **Advanced Options:** Dedicated section for experimental features. Now includes a **dynamic UI** that hides/shows sub-settings based on primary features.
+*   **Advanced Options:** Dedicated section for experimental and power-user features. Now includes a **dynamic UI** that hides/shows sub-settings based on primary features and a robust filter management system.
 *   **Modern Architecture:** Refactored into a modular structure for better maintainability.
 
 ## Architecture & Technology
@@ -37,9 +38,9 @@ The project is built using standard web technologies and the Chrome WebExtension
     *   `popup.css`: **Complete Redesign** featuring animated background orbs, dark glassmorphism cards, and gradient icon boxes. Standardized using global variables.
 *   **`options.html` / `js/options.js`**: The full settings page for configuring actions and appearance.
 *   **`advancedOptions/`**: Dedicated sub-page for power-user settings.
-    *   `advancedOptions.html`: Layout for experimental features.
-    *   `advancedOptions.js`: Logic for saving/loading advanced settings.
-    *   `advancedOptions.css`: Specific styling for advanced controls (e.g., toggle switches).
+    *   `advancedOptions.html`: Layout for experimental features including Linkify and **Exclusion Filters**.
+    *   `advancedOptions.js`: Logic for saving/loading advanced settings and managing the exclusion filter list.
+    *   `advancedOptions.css`: Specific styling for advanced controls (toggle switches, filter tags).
 *   **`js/linkify.js`**: (New) Scans the page for plain text URLs and converts them to clickable `<a>` tags if enabled.
 *   **`js/visited.js`**: (New) Handles persistent tracking and visual marking of visited links to bypass browser redirect limitations.
 
@@ -73,7 +74,7 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 
 ### `js/state.js`
 **Role:** State Management
-*   **GrabbitState:** Global state object (mouse position, selection status, cached links, smartSelectActive).
+*   **GrabbitState:** Global state object (mouse position, selection status, cached links, smartSelectActive, exclusionFilters).
 *   **CONSTANTS:** Configuration values (drag threshold, scroll speed, debounce delay).
 
 ### `js/ui.js`
@@ -88,8 +89,9 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 **Role:** Core Business Logic
 *   **updateSelectionBox()**: Calculates geometry.
 *   **handleScroll()**: Auto-scrolling.
+*   **isLinkExcluded()**: Checks URLs against keyword and regex exclusion patterns.
 *   **processSelectedLinks()**: Executes actions (open/copy), handles deduplication, and reverse ordering.
-*   **updateSelectedLinks()**: Collision detection and Smart Select (heading-based filtering).
+*   **updateSelectedLinks()**: Collision detection, Smart Select (heading-based filtering), and Exclusion Filtering.
 
 ### `js/visited.js`
 **Role:** Persistent Visited State Management

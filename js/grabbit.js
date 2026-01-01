@@ -17,9 +17,27 @@
 /**
  * Load saved actions from chrome storage on initialization
  */
-chrome.storage.sync.get(['savedActions', 'boxColor'], function (result) {
+chrome.storage.sync.get(['savedActions', 'boxColor', 'exclusionFilters'], function (result) {
   GrabbitState.savedActions = result.savedActions || [];
+  GrabbitState.exclusionFilters = result.exclusionFilters || [];
+  compileExclusionFilters();
 });
+
+/**
+ * Compiles exclusion filter patterns into RegExp objects for performance.
+ * Falls back to substring matching for invalid regex patterns.
+ */
+function compileExclusionFilters() {
+  GrabbitState.compiledExclusionFilters = GrabbitState.exclusionFilters.map(pattern => {
+    try {
+      // Try to compile as regex with case-insensitive flag
+      return { regex: new RegExp(pattern, 'i'), pattern: pattern };
+    } catch (e) {
+      // Invalid regex - will use substring matching
+      return { regex: null, pattern: pattern };
+    }
+  });
+}
 
 //=============================================================================
 // EVENT LISTENERS
@@ -309,6 +327,12 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
       GrabbitState.selectedLinks.forEach(link => {
         link.style.backgroundColor = `${changes.boxColor.newValue}33`;
       });
+    }
+
+    // Update exclusionFilters if they changed
+    if (changes.exclusionFilters) {
+      GrabbitState.exclusionFilters = changes.exclusionFilters.newValue || [];
+      compileExclusionFilters();
     }
   }
 });

@@ -1,3 +1,9 @@
+## Version 3.2.5 Changelog:
+- **New Feature: Global Exclusion Filters**: Users can now define keywords and Regular Expressions to automatically exclude specific links from being selected.
+- **Improved Filter Management**: Added a dedicated UI in Advanced Options to add, view, and remove filter tags.
+- **Performance Optimization**: Implemented pre-compiled regex objects for fast URL matching during drag-selection.
+- **Robust Pattern Matching**: Includes fallback to case-insensitive substring matching for invalid regex entries.
+
 ## Version 3.2.4 Changelog:
 - **Linkify: Code Block Support**: Enabled linkification within `<code>` and `<pre>` tags.
 - **Aggressive Linkify Mode**: Added a new optional toggle to recognize prefix-less domains (e.g., `google.com`).
