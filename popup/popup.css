@@ -238,19 +238,19 @@ body {
 
 /* Color Variants */
 .action-button.blue .button-icon {
-    background: linear-gradient(135deg, #2196F3, #1976D2);
+    background: var(--button-primary-bg);
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
     color: white;
 }
 
 .action-button.purple .button-icon {
-    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    background: var(--button-purple-bg);
     box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
     color: white;
 }
 
 .action-button.orange .button-icon {
-    background: linear-gradient(135deg, #FF9800, #F57C00);
+    background: var(--button-orange-bg);
     box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
     color: white;
 }
@@ -290,12 +290,12 @@ body {
 
 /* Success State */
 .action-button.success .button-icon {
-    background: linear-gradient(135deg, #4CAF50, #388E3C) !important;
+    background: var(--button-success-bg) !important;
     box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important;
 }
 
 .action-button.success .button-title {
-    color: #4CAF50;
+    color: var(--success-color);
 }
 
 /* Footer Section */
