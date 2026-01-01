@@ -2,10 +2,12 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <title>Grabbit - Advanced Options</title>
     <link rel="stylesheet" href="/css/variables.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/options.css">
+    <link rel="stylesheet" href="advancedOptions.css">
 </head>
 
 <body>
@@ -19,13 +21,29 @@
             </div>
 
             <div class="card">
-                <h3>Experimental Features</h3>
-                <p>Configure advanced behavior and experimental functionality.</p>
-                <div
-                    style="margin-top: 2rem; padding: 2rem; border: 2px dashed #eee; border-radius: 8px; text-align: center; color: #666;">
-                    Advanced settings for power users will appear here.
+                <h2>Experimental Features</h2>
+                <p style="color: #666; margin-bottom: 1.5rem;">Configure advanced behavior and experimental
+                    functionality.</p>
+
+                <div class="option-item">
+                    <div class="option-label">
+                        <label for="linkify-toggle">Auto-Linkify Plain Text URLs</label>
+                        <p class="description">Automatically converts plain text URLs into clickable links on web pages.
+                        </p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="linkify-toggle">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
+
+                <div id="status" class="status-message"></div>
             </div>
+
+            <footer class="footer">
+                <p style="color: #999; font-size: 0.85rem;">These features are experimental and may change in future
+                    updates.</p>
+            </footer>
         </div>
     </div>
 

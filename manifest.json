@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Grabbit",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Open or Copy Multiple links",
   "icons": {
     "16": "icons/icon16.png",
@@ -39,6 +39,7 @@
         "js/ui.js",
         "js/visited.js",
         "js/logic.js",
+        "js/linkify.js",
         "js/grabbit.js",
         "popup/popup.js"
       ],

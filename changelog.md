@@ -1,3 +1,9 @@
+## Version 3.2.3 Changelog:
+- **New Feature: Linkify**: Automatically converts plain text URLs on web pages into clickable links.
+- **Advanced Options Page**: Integrated experimental features into a dedicated "Advanced Options" settings page.
+- **UI Refinement**: Cleaned up sidebar navigation by merging Global and Advanced options for a more intuitive settings experience.
+- **Engine Optimization**: Added `js/linkify.js` with comprehensive URL regex matching and Shadow DOM support.
+
 ## Version 3.2.2 Changelog:
 - **Major Popup UI Redesign**: Implemented a modern glassmorphism aesthetic with a dark premium theme.
 - **Animated Components**: Added decorative floating background orbs and pulsing logo effects.
