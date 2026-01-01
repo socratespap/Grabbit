@@ -1,4 +1,4 @@
-## Version 2.0.10 Changelog:
+## Version 3.2.2 Changelog:
 - **Major Popup UI Redesign**: Implemented a modern glassmorphism aesthetic with a dark premium theme.
 - **Animated Components**: Added decorative floating background orbs and pulsing logo effects.
 - **Enhanced Button Layout**: Replaced basic buttons with interactive cards featuring gradient icon boxes, titles, and subtitles.
