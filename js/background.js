@@ -1,5 +1,12 @@
 //open options page on extension install
 chrome.runtime.onInstalled.addListener((details) => {
+    // Enable Linkify by default for new installs OR existing users upgrading to this version
+    chrome.storage.sync.get(['linkifyEnabled'], (result) => {
+        if (result.linkifyEnabled === undefined) {
+            chrome.storage.sync.set({ linkifyEnabled: true });
+        }
+    });
+
     if (details.reason === 'install') {
         // Open options page on first install
         chrome.runtime.openOptionsPage();
