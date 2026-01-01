@@ -515,12 +515,37 @@ if (isExtension) {
     document.addEventListener('DOMContentLoaded', () => {
         loadActionsFromStorage();
         updateKeyLabels();
-
-
+        initializeTooltips();
     });
 } else {
     // For non-extension environments (like local testing)
     updateKeyLabels();
+    initializeTooltips();
+}
+
+// ============================================================================
+// TOOLTIP POSITIONING
+// ============================================================================
+
+/**
+ * Initializes dynamic positioning for fixed tooltips
+ * Required because fixed positioning needs viewport coordinates
+ */
+function initializeTooltips() {
+    const tooltipTriggers = document.querySelectorAll('.smart-select-info');
+
+    tooltipTriggers.forEach(trigger => {
+        const tooltip = trigger.querySelector('.tooltip');
+        if (!tooltip) return;
+
+        trigger.addEventListener('mouseenter', () => {
+            const rect = trigger.getBoundingClientRect();
+            // Position tooltip above the trigger, centered horizontally
+            tooltip.style.left = rect.left + (rect.width / 2) + 'px';
+            tooltip.style.top = (rect.top - 8) + 'px';
+            tooltip.style.transform = 'translate(-50%, -100%)';
+        });
+    });
 }
 
 // ============================================================================

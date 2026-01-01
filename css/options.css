@@ -724,10 +724,7 @@ h1 {
 
 .tooltip {
     visibility: hidden;
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed;
     padding: 6px 10px;
     background: #333;
     color: white;
@@ -735,12 +732,13 @@ h1 {
     font-size: 11px;
     line-height: 1.4;
     opacity: 0;
-    transition: all 0.2s ease;
-    z-index: 1001;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 10000;
     width: max-content;
-    max-width: 200px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    max-width: 250px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     white-space: normal;
+    pointer-events: none;
 }
 
 .tooltip::after {
