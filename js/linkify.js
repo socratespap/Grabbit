@@ -8,7 +8,7 @@ const Linkify = (() => {
     // Matches http/https/ftp or www.
     const URL_REGEX = /((?:https?|ftp):\/\/[^\s/$.?#].[^\s]*)|(www\.[^\s/$.?#].[^\s]*)/gi;
 
-    const BLACKLIST_TAGS = ['A', 'SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'BUTTON', 'SELECT', 'OPTION', 'CODE', 'PRE'];
+    const BLACKLIST_TAGS = ['A', 'SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'BUTTON', 'SELECT', 'OPTION'];
 
     function linkifyNode(node) {
         if (node.nodeType === Node.TEXT_NODE) {
