@@ -1,0 +1,124 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-stack);
+}
+
+body {
+    width: 300px;
+    padding: 16px;
+    background: var(--body-bg-gradient);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.logo {
+    width: 24px;
+    height: 24px;
+    background: url('../icons/icon48.png');
+    background-size: cover;
+    border-radius: 6px;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f1f1f;
+}
+
+.button {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-standard);
+    background: var(--button-primary-bg);
+    color: white;
+    box-shadow: var(--shadow-button);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-button-hover);
+}
+
+.button:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-button);
+}
+
+.button.success {
+    background: var(--button-success-bg);
+}
+
+/* Specific buttons with custom gradients mapped to variables */
+#copyAllUrls {
+    background: var(--button-purple-bg) !important;
+}
+
+#openUrls {
+    background: var(--button-orange-bg) !important;
+}
+
+.divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 8px 0;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.settings-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s ease;
+}
+
+.settings-link:hover {
+    color: var(--primary-color);
+}
+
+.version {
+    color: #999;
+    font-size: 12px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

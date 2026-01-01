@@ -1,19 +1,12 @@
-:root {
-    --primary-color: #2196F3;
-    --secondary-color: #1976D2;
-    --text-color: #333;
-    --bg-color: #f5f5f5;
-}
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    transition: all 0.3s ease;
+    transition: var(--transition-standard);
 }
 
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: var(--font-stack);
     background: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
@@ -80,14 +73,14 @@ h1 {
     border-radius: 10px;
     padding: 4%;
     margin-bottom: 4%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-standard);
     transform: translateY(0);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-hover);
 }
 
 .instructions {

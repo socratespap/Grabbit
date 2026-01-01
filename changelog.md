@@ -1,3 +1,9 @@
+## Version 2.0.9 Changelog:
+- Centralized CSS architecture using a unified variable system (`variables.css`).
+- Extracted inline styles from `popup.html` into a dedicated `popup.css` stylesheet.
+- Standardized all design tokens (colors, fonts, gradients, shadows) for consistent branding.
+- Improved codebase maintainability by removing hardcoded visual values.
+
 ## Version 2.0.8 Changelog:
 - Redesigned the Action Modal UI with a modern, compact two-column layout and scrollable body.
 - Implemented glassmorphism styling, premium gradients, and interactive collapsible sections.
