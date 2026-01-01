@@ -1,3 +1,7 @@
+## Version 3.2.7 Changelog:
+- **Modular Codebase**: Refactored `options.js` into 7 separate ES modules (`main`, `env`, `storage`, `utils`, `preview`, `card`, `modal`) for improved maintainability.
+- **Modernized Options Page**: Updated `options.html` to use native ES module imports.
+
 ## Version 3.2.6 Changelog:
 - **New Feature: Format Preview**: Added a live, syntax-highlighted preview to the "Copy URLs with Titles" action. Users can now see exactly how their output will look in real-time while adjusting format patterns, separators, and link spacing.
 - **UI Enhancement**: Implemented a code-themed terminal preview box in the action configuration modal for immediate visual feedback.

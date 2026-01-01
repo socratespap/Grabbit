@@ -36,7 +36,7 @@ The project is built using standard web technologies and the Chrome WebExtension
     *   `popup.html`: Structure of the popup, featuring a **Modern Glassmorphism** design.
     *   `popup.js`: Logic for quick actions (e.g., "Copy all tabs"). Handles dynamic success states for nested button elements.
     *   `popup.css`: **Complete Redesign** featuring animated background orbs, dark glassmorphism cards, and gradient icon boxes. Standardized using global variables.
-*   **`options.html` / `js/options.js`**: The full settings page for configuring actions and appearance.
+*   **`options.html` / `js/options/`**: The full settings page for configuring actions and appearance, now refactored into ES modules.
 *   **`advancedOptions/`**: Dedicated sub-page for power-user settings.
     *   `advancedOptions.html`: Layout for experimental features including Linkify and **Exclusion Filters**.
     *   `advancedOptions.js`: Logic for saving/loading advanced settings and managing the exclusion filter list.
@@ -80,6 +80,16 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 ### `js/ui.js`
 **Role:** DOM & Visuals
 *   Handles creation and updating of the selection box and counter label.
+
+### `js/options/` (Modular Options Page)
+**Role:** Main Options Page Logic (Refactored)
+*   **`main.js`**: Entry point. Imports modules and orchestrates initialization.
+*   **`env.js`**: Environment constants (OS detection, Extension context).
+*   **`storage.js`**: Handles saving/loading actions to `chrome.storage.sync`.
+*   **`utils.js`**: Helpers for colors, key labels, and tooltips.
+*   **`card.js`**: Generates and manages Action Card UI.
+*   **`modal.js`**: Manages the "Add/Edit Action" modal lifecycle.
+*   **`preview.js`**: Live format preview for "Copy URLs & Titles".
 
 ### `js/utils.js`
 **Role:** Helper Functions
