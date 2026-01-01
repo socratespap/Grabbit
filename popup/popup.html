@@ -7,60 +7,103 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo"></div>
-            <h1 class="title">Grabbit</h1>
+    <div class="popup-container">
+        <!-- Decorative background elements -->
+        <div class="bg-orb orb-1"></div>
+        <div class="bg-orb orb-2"></div>
+        <div class="bg-orb orb-3"></div>
+
+        <!-- Header Section -->
+        <div class="popup-header">
+            <div class="logo-wrapper">
+                <div class="logo"></div>
+                <div class="logo-glow"></div>
+            </div>
+            <div class="header-text">
+                <h1 class="title">Grabbit</h1>
+                <span class="tagline">Link Manager</span>
+            </div>
         </div>
 
-        <button id="copyUrls" class="button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-            </svg>
-            Copy Selected Tab URLs
-        </button>
+        <!-- Actions Section -->
+        <div class="actions-section">
+            <button id="copyUrls" class="action-button blue">
+                <div class="button-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </div>
+                <div class="button-content">
+                    <span class="button-title">Copy Selected Tabs</span>
+                    <span class="button-subtitle">Selected tabs only</span>
+                </div>
+                <div class="button-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            </button>
 
-        <!-- button for copying all tab URLs -->
-        <button id="copyAllUrls" class="button" style="background: linear-gradient(135deg, #9C27B0, #7B1FA2);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-            </svg>
-            Copy All Tab URLs
-        </button>
+            <button id="copyAllUrls" class="action-button purple">
+                <div class="button-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                </div>
+                <div class="button-content">
+                    <span class="button-title">Copy All Tabs</span>
+                    <span class="button-subtitle">All open tabs in window</span>
+                </div>
+                <div class="button-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            </button>
 
-        <!-- Button for opening links in clipboard -->
-        <button id="openUrls" class="button" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-            Open Copied Links
-        </button>
+            <button id="openUrls" class="action-button orange">
+                <div class="button-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </div>
+                <div class="button-content">
+                    <span class="button-title">Open Copied Links</span>
+                    <span class="button-subtitle">From clipboard</span>
+                </div>
+                <div class="button-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            </button>
+        </div>
 
-
-        <div class="divider"></div>
-
-        <div class="footer">
-            <a href="/popup/popupOptions/popupOptions.html" class="settings-link" target="_blank">
+        <!-- Footer Section -->
+        <div class="popup-footer">
+            <a href="/popup/popupOptions/popupOptions.html" class="footer-link" target="_blank">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 20h9"></path>
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                 </svg>
-                Popup Settings
+                <span>Popup</span>
             </a>
-            <a href="/options.html" class="settings-link" target="_blank">
+            <div class="footer-divider"></div>
+            <a href="/options.html" class="footer-link" target="_blank">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="3"></circle>
                     <path
                         d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
                     </path>
                 </svg>
-                More Settings
+                <span>Settings</span>
             </a>
-            <span class="version">v2.0.0</span>
+            <div class="footer-divider"></div>
+            <span class="version-badge">v2.0.10</span>
         </div>
     </div>
     <script src="popup.js"></script>

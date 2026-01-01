@@ -1,3 +1,9 @@
+## Version 2.0.10 Changelog:
+- **Major Popup UI Redesign**: Implemented a modern glassmorphism aesthetic with a dark premium theme.
+- **Animated Components**: Added decorative floating background orbs and pulsing logo effects.
+- **Enhanced Button Layout**: Replaced basic buttons with interactive cards featuring gradient icon boxes, titles, and subtitles.
+- **Refined UX**: Improved visual hierarchy, smooth hover transitions, and dynamic success states for better interaction feedback.
+
 ## Version 2.0.9 Changelog:
 - Centralized CSS architecture using a unified variable system (`variables.css`).
 - Extracted inline styles from `popup.html` into a dedicated `popup.css` stylesheet.

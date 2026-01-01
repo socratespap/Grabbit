@@ -1,3 +1,7 @@
+/* ============================================
+   Grabbit Popup - Modern Glassmorphism Design
+   ============================================ */
+
 * {
     margin: 0;
     padding: 0;
@@ -6,119 +10,361 @@
 }
 
 body {
-    width: 300px;
-    padding: 16px;
-    background: var(--body-bg-gradient);
+    width: 320px;
+    min-height: 280px;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d0d1f 100%);
+    overflow: hidden;
+    position: relative;
 }
 
-.container {
+/* Background Orbs - Decorative animated elements */
+.bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    pointer-events: none;
+    animation: float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    top: -30px;
+    right: -30px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    bottom: 40px;
+    left: -40px;
+    animation-delay: -3s;
+}
+
+.orb-3 {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    bottom: -20px;
+    right: 20px;
+    animation-delay: -5s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(10px, -15px) scale(1.05);
+    }
+
+    66% {
+        transform: translate(-5px, 10px) scale(0.95);
+    }
+}
+
+/* Main Container */
+.popup-container {
+    position: relative;
+    z-index: 1;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.logo {
-    width: 24px;
-    height: 24px;
-    background: url('../icons/icon48.png');
-    background-size: cover;
-    border-radius: 6px;
-}
-
-.title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1f1f1f;
-}
-
-.button {
-    padding: 12px 16px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition-standard);
-    background: var(--button-primary-bg);
-    color: white;
-    box-shadow: var(--shadow-button);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.button:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-button-hover);
-}
-
-.button:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow-button);
-}
-
-.button.success {
-    background: var(--button-success-bg);
-}
-
-/* Specific buttons with custom gradients mapped to variables */
-#copyAllUrls {
-    background: var(--button-purple-bg) !important;
-}
-
-#openUrls {
-    background: var(--button-orange-bg) !important;
-}
-
-.divider {
-    height: 1px;
-    background: #e0e0e0;
-    margin: 8px 0;
-}
-
-.footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 8px;
-}
-
-.settings-link {
-    color: #666;
-    text-decoration: none;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: color 0.2s ease;
-}
-
-.settings-link:hover {
-    color: var(--primary-color);
-}
-
-.version {
-    color: #999;
-    font-size: 12px;
+    gap: 16px;
+    animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(-10px);
     }
 
     to {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Header Section */
+.popup-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 8px;
+}
+
+.logo-wrapper {
+    position: relative;
+    width: 42px;
+    height: 42px;
+}
+
+.logo {
+    width: 42px;
+    height: 42px;
+    background: url('../icons/icon48.png');
+    background-size: cover;
+    border-radius: 12px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 16px;
+    filter: blur(15px);
+    opacity: 0.6;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 0%, #a8b4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.tagline {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+}
+
+/* Actions Section */
+.actions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Action Buttons - Glassmorphism Style */
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.action-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.action-button:hover::before {
+    opacity: 1;
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+/* Button Icon Styles */
+.button-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.action-button:hover .button-icon {
+    transform: scale(1.05);
+}
+
+/* Color Variants */
+.action-button.blue .button-icon {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+    color: white;
+}
+
+.action-button.purple .button-icon {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+    color: white;
+}
+
+.action-button.orange .button-icon {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+    color: white;
+}
+
+/* Button Content */
+.button-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    text-align: left;
+}
+
+.button-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.button-subtitle {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+}
+
+/* Button Arrow */
+.button-arrow {
+    color: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.action-button:hover .button-arrow {
+    color: rgba(255, 255, 255, 0.7);
+    transform: translateX(3px);
+}
+
+/* Success State */
+.action-button.success .button-icon {
+    background: linear-gradient(135deg, #4CAF50, #388E3C) !important;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important;
+}
+
+.action-button.success .button-title {
+    color: #4CAF50;
+}
+
+/* Footer Section */
+.popup-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.footer-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.footer-link svg {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.footer-link:hover svg {
+    opacity: 1;
+}
+
+.footer-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.version-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
