@@ -25,14 +25,34 @@
                 <p style="color: #666; margin-bottom: 1.5rem;">Configure advanced behavior and experimental
                     functionality.</p>
 
+                <!-- Linkify Section -->
+                <h3 style="margin-bottom: 0.75rem; color: #333; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    🔗 Linkify</h3>
+
                 <div class="option-item">
                     <div class="option-label">
                         <label for="linkify-toggle">Auto-Linkify Plain Text URLs</label>
-                        <p class="description">Automatically converts plain text URLs into clickable links on web pages.
-                        </p>
+                        <p class="description">Automatically converts text that looks like a URL (e.g.
+                            https://google.com, www.example.com) into clickable links. Includes support for links inside
+                            code blocks.</p>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="linkify-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div class="option-item" id="linkify-aggressive-container"
+                    style="margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
+                    <div class="option-label">
+                        <label for="linkify-aggressive">Aggressive Linkify (Domain-only)</label>
+                        <p class="description">Recognizes links without prefixes (e.g., "google.com").
+                            <span style="color: #d32f2f; display: block; margin-top: 0.25rem;">⚠️ Note: This may cause
+                                false positives on filenames or version numbers (e.g. app.js).</span>
+                        </p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="linkify-aggressive">
                         <span class="slider round"></span>
                     </label>
                 </div>

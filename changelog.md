@@ -1,3 +1,11 @@
+## Version 3.2.4 Changelog:
+- **Linkify: Code Block Support**: Enabled linkification within `<code>` and `<pre>` tags.
+- **Aggressive Linkify Mode**: Added a new optional toggle to recognize prefix-less domains (e.g., `google.com`).
+- **Enhanced Detection Engine**: Improved regex to support subdomains, deep paths, and complex query parameters for both standard and aggressive modes.
+- **Dynamic Advanced UI**: Enhanced user experience by hiding Aggressive Linkify options when the main feature is disabled.
+- **UI Organization**: Added a dedicated section heading for Linkify in Advanced Options for better future extensibility.
+- **Expanded Testing**: Updated `test_links.html` with complex real-world URL scenarios and a dedicated section for "Potential False Positives".
+
 ## Version 3.2.3 Changelog:
 - **New Feature: Linkify**: Automatically converts plain text URLs on web pages into clickable links.
 - **Advanced Options Page**: Integrated experimental features into a dedicated "Advanced Options" settings page.
