@@ -119,4 +119,50 @@ document.addEventListener('DOMContentLoaded', () => {
         const manifest = chrome.runtime.getManifest();
         versionBadge.textContent = `v${manifest.version}`;
     }
+
+    // Check for disabled domain
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (!tabs[0] || !tabs[0].url) return;
+        const currentUrl = tabs[0].url;
+        let hostname;
+        try {
+            hostname = new URL(currentUrl).hostname;
+        } catch (e) {
+            return; // Invalid URL
+        }
+
+        chrome.storage.sync.get(['disabledDomains'], (result) => {
+            const disabledDomains = result.disabledDomains || [];
+            
+            // Simple domain check logic (similar to utils.js but inline to avoid dependencies)
+            const isDisabled = disabledDomains.some(domain => hostname.includes(domain));
+
+            if (isDisabled) {
+                // Show disabled UI
+                const disabledState = document.getElementById('disabled-state');
+                const actionsSection = document.querySelector('.actions-section');
+                const enableBtn = document.getElementById('enable-site-btn');
+
+                if (disabledState) {
+                    disabledState.style.display = 'flex';
+                }
+                
+                if (actionsSection) {
+                    actionsSection.style.opacity = '0.3';
+                    actionsSection.style.pointerEvents = 'none';
+                }
+
+                // Handle enable button
+                if (enableBtn) {
+                    enableBtn.addEventListener('click', () => {
+                        const newDomains = disabledDomains.filter(d => !hostname.includes(d));
+                        chrome.storage.sync.set({ disabledDomains: newDomains }, () => {
+                            chrome.tabs.reload(tabs[0].id);
+                            window.close();
+                        });
+                    });
+                }
+            }
+        });
+    });
 });

@@ -17,9 +17,18 @@
 /**
  * Load saved actions from chrome storage on initialization
  */
-chrome.storage.sync.get(['savedActions', 'boxColor', 'exclusionFilters'], function (result) {
+chrome.storage.sync.get(['savedActions', 'boxColor', 'exclusionFilters', 'disabledDomains'], function (result) {
   GrabbitState.savedActions = result.savedActions || [];
   GrabbitState.exclusionFilters = result.exclusionFilters || [];
+  GrabbitState.disabledDomains = result.disabledDomains || [];
+
+  // Check if disabled
+  if (isDomainDisabled(GrabbitState.disabledDomains)) {
+    GrabbitState.isDisabled = true;
+    console.log('Grabbit: Disabled on this domain.');
+    return; // Stop further initialization if necessary
+  }
+
   compileExclusionFilters();
 });
 
@@ -47,6 +56,7 @@ function compileExclusionFilters() {
  * Handles the mousedown event to start the selection process
  */
 document.addEventListener('mousedown', (e) => {
+  if (GrabbitState.isDisabled) return;
   const mouseButton = getMouseButton(e);
   GrabbitState.currentMouseButton = mouseButton; // Store the initial mouse button
 
@@ -156,6 +166,7 @@ function activateSelection() {
  * Handles the mousemove event to update the selection box
  */
 document.addEventListener('mousemove', (e) => {
+  if (GrabbitState.isDisabled) return;
   if (!GrabbitState.isMouseDown) return;
 
   const currentX = e.clientX;
@@ -208,6 +219,7 @@ document.addEventListener('mousemove', (e) => {
  * Handles the mouseup event to finalize the selection
  */
 document.addEventListener('mouseup', (e) => {
+  if (GrabbitState.isDisabled) return;
   // Clear any scroll interval
   if (GrabbitState.scrollInterval) {
     clearInterval(GrabbitState.scrollInterval);
@@ -250,6 +262,7 @@ document.addEventListener('contextmenu', (e) => {
  * Handles keydown events during selection to update the action
  */
 document.addEventListener('keydown', (e) => {
+  if (GrabbitState.isDisabled) return;
   // Track letter keys (A-Z) for modifier key support
   if (e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
     GrabbitState.pressedKeys.add(e.key.toLowerCase());
@@ -289,6 +302,7 @@ document.addEventListener('keydown', (e) => {
  * Handles keyup events during selection to revert to previous action
  */
 document.addEventListener('keyup', (e) => {
+  if (GrabbitState.isDisabled) return;
   // Remove letter keys from pressedKeys when released
   if (e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
     GrabbitState.pressedKeys.delete(e.key.toLowerCase());

@@ -1,3 +1,9 @@
+## Version 3.5.0 Changelog:
+- **New Feature: Disabled Domains (Blocklist)**: Users can now specify domains where Grabbit will be completely inactive.
+- **Visual "OFF" State**: The extension icon now displays a dark gray "OFF" badge when browsing a blocked domain.
+- **Smart Popup Overlay**: Implemented a dedicated "Disabled" state in the popup with an easy "Enable for this site" button.
+- **Global Feature Blocking**: Ensures all core modules (Drag-Select, Linkify, Visited Tracking) respect the domain blocklist.
+
 ## Version 3.4.0 Changelog:
 - **New Feature: A-Z Modifier Support**: Users can now use any letter key (A-Z) as a modifier for actions, in addition to Ctrl, Shift, and Alt.
 - **Improved Action Flexibility**: Significantly expanded the range of possible custom keyboard + mouse shortcuts.

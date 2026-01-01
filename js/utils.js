@@ -91,12 +91,22 @@ function isElementSticky(element) {
 }
 
 /**
- * Debounces a function to limit how often it can be called
- * @param {Function} func - The function to debounce
- * @param {number} wait - The debounce delay in milliseconds
- * @returns {Function} The debounced function
+ * Checks if the extension should be disabled for the current domain.
+ * @param {string[]} disabledDomains - List of domains to block
+ * @param {string} [hostname] - Optional hostname to check (defaults to current window location)
+ * @returns {boolean}
+ */
+function isDomainDisabled(disabledDomains, hostname) {
+    if (!disabledDomains || !Array.isArray(disabledDomains)) return false;
+    const targetHostname = hostname || window.location.hostname;
+    return disabledDomains.some(domain => targetHostname.includes(domain));
+}
+
+/**
+ * Standard debounce implementation
  */
 function debounce(func, wait) {
+
     let timeout;
     return function (...args) {
         clearTimeout(timeout);

@@ -17,8 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearFiltersContainer = document.getElementById('clear-filters-container');
     const clearAllFiltersBtn = document.getElementById('clear-all-filters-btn');
 
+    // Disabled Domains elements
+    const disabledDomainInput = document.getElementById('disabled-domain-input');
+    const addDisabledDomainBtn = document.getElementById('add-disabled-domain-btn');
+    const disabledDomainsList = document.getElementById('disabled-domains-list');
+
     // Local state for filters
     let exclusionFilters = [];
+    let disabledDomains = [];
 
     // === Linkify Section ===
     if (linkifyToggle && linkifyAggressive) {
@@ -55,9 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // === Exclusion Filters Section ===
     if (filterInput && addFilterBtn && filterList) {
         // Load saved filters
-        chrome.storage.sync.get(['exclusionFilters'], (result) => {
+        chrome.storage.sync.get(['exclusionFilters', 'disabledDomains'], (result) => {
             exclusionFilters = result.exclusionFilters || [];
+            disabledDomains = result.disabledDomains || [];
             renderFilterList();
+            renderDisabledDomainsList();
         });
 
         // Add filter on button click
@@ -80,6 +88,82 @@ document.addEventListener('DOMContentLoaded', () => {
                 showStatus('All filters cleared!');
             });
         }
+    }
+
+    // === Disabled Domains Section ===
+    if (disabledDomainInput && addDisabledDomainBtn && disabledDomainsList) {
+        addDisabledDomainBtn.addEventListener('click', addDisabledDomain);
+        disabledDomainInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addDisabledDomain();
+            }
+        });
+    }
+
+    /**
+     * Adds a new disabled domain
+     */
+    function addDisabledDomain() {
+        const value = disabledDomainInput.value.trim();
+        if (!value) {
+            showStatus('Please enter a domain', true);
+            return;
+        }
+
+        if (disabledDomains.includes(value)) {
+            showStatus('Domain already in blocklist', true);
+            return;
+        }
+
+        disabledDomains.push(value);
+        saveDisabledDomains();
+        renderDisabledDomainsList();
+        disabledDomainInput.value = '';
+        showStatus('Domain added to blocklist!');
+    }
+
+    /**
+     * Removes a disabled domain at the specified index
+     * @param {number} index
+     */
+    function removeDisabledDomain(index) {
+        disabledDomains.splice(index, 1);
+        saveDisabledDomains();
+        renderDisabledDomainsList();
+        showStatus('Domain removed from blocklist!');
+    }
+
+    /**
+     * Saves disabled domains to storage
+     */
+    function saveDisabledDomains() {
+        chrome.storage.sync.set({ disabledDomains: disabledDomains });
+    }
+
+    /**
+     * Renders the disabled domains list
+     */
+    function renderDisabledDomainsList() {
+        disabledDomainsList.innerHTML = '';
+
+        disabledDomains.forEach((domain, index) => {
+            const li = document.createElement('li');
+            li.className = 'filter-tag'; // Reuse filter-tag style
+
+            const span = document.createElement('span');
+            span.textContent = domain;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Remove domain';
+            deleteBtn.addEventListener('click', () => removeDisabledDomain(index));
+
+            li.appendChild(span);
+            li.appendChild(deleteBtn);
+            disabledDomainsList.appendChild(li);
+        });
     }
 
     /**

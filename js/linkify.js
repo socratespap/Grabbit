@@ -86,7 +86,12 @@ const Linkify = (() => {
     }
 
     function init() {
-        chrome.storage.sync.get(['linkifyEnabled', 'linkifyAggressive'], (result) => {
+        chrome.storage.sync.get(['linkifyEnabled', 'linkifyAggressive', 'disabledDomains'], (result) => {
+            if (result.disabledDomains && isDomainDisabled(result.disabledDomains)) {
+                console.log('Grabbit Linkify: Disabled on this domain.');
+                return;
+            }
+
             if (result.linkifyEnabled) {
                 console.log('Grabbit: Linkify enabled (Aggressive: ' + !!result.linkifyAggressive + '). Scanning page...');
 

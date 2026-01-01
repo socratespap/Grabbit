@@ -92,5 +92,11 @@ function markLinksAsGrabbitVisited(urls, anchorElements = []) {
 }
 
 // Initialize on page load
-injectGrabbitVisitedStyles();
-applyGrabbitVisitedStyling();
+chrome.storage.sync.get(['disabledDomains'], (result) => {
+    if (result.disabledDomains && isDomainDisabled(result.disabledDomains)) {
+        return;
+    }
+
+    injectGrabbitVisitedStyles();
+    applyGrabbitVisitedStyling();
+});

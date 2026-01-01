@@ -201,3 +201,44 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
     }
 });
+
+/**
+ * Updates the extension icon state based on whether the domain is disabled.
+ * Uses a badge since we don't have gray icon assets yet.
+ */
+function updateIconState(tabId, url) {
+    if (!url) return;
+    try {
+        const hostname = new URL(url).hostname;
+        chrome.storage.sync.get(['disabledDomains'], (result) => {
+            const disabledDomains = result.disabledDomains || [];
+            const isDisabled = disabledDomains.some(domain => hostname.includes(domain));
+
+            if (isDisabled) {
+                // Set Badge to "OFF" with a dark gray background
+                chrome.action.setBadgeText({ text: "OFF", tabId: tabId });
+                chrome.action.setBadgeBackgroundColor({ color: '#555555', tabId: tabId });
+                // If gray icons existed: chrome.action.setIcon({ path: "icons/icon_gray.png", tabId: tabId });
+            } else {
+                // Clear Badge
+                chrome.action.setBadgeText({ text: "", tabId: tabId });
+            }
+        });
+    } catch (e) {
+        // Invalid URL, ignore
+    }
+}
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' && tab.url) {
+        updateIconState(tabId, tab.url);
+    }
+});
+
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    chrome.tabs.get(activeInfo.tabId, (tab) => {
+        if (tab.url) {
+            updateIconState(activeInfo.tabId, tab.url);
+        }
+    });
+});

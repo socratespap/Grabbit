@@ -82,6 +82,27 @@
                     </div>
                 </div>
 
+                <!-- Disabled Domains Section -->
+                <h3
+                    style="margin-top: 2rem; margin-bottom: 0.75rem; color: #333; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    ⛔ Disabled Domains</h3>
+
+                <div class="option-item" style="flex-direction: column; align-items: stretch;">
+                    <div class="option-label" style="margin-bottom: 1rem;">
+                        <label>Blocklist</label>
+                        <p class="description">Prevent Grabbit from running on these domains entirely (e.g.,
+                            `google.com`, `figma.com`).</p>
+                    </div>
+
+                    <div class="filter-input-row">
+                        <input type="text" id="disabled-domain-input" placeholder="e.g. google.com"
+                            class="filter-input">
+                        <button id="add-disabled-domain-btn" class="btn btn-primary">Add</button>
+                    </div>
+
+                    <ul id="disabled-domains-list" class="filter-list"></ul>
+                </div>
+
                 <div id="status" class="status-message"></div>
             </div>
 

@@ -9,6 +9,7 @@
 const GrabbitState = {
     isMouseDown: false,         // Flag to track if mouse is down
     isSelectionActive: false,   // Flag to track if drag threshold has been crossed
+    isDisabled: false,          // Master switch for the current page
     startX: 0,                  // Starting X position
     startY: 0,                  // Starting Y position
     lastMouseX: 0,              // Last mouse X position for tracking movement
@@ -26,6 +27,7 @@ const GrabbitState = {
     cachedLinks: [],            // Cache for link elements and their positions
     smartSelectActive: false,   // Flag for LinkClump-style smart select mode (only important links)
     exclusionFilters: [],       // Raw filter strings from user settings
+    disabledDomains: [],        // List of domains to block
     compiledExclusionFilters: [], // Pre-compiled RegExp objects for performance
     pressedKeys: new Set()      // Set of currently pressed letter keys (for A-Z modifiers)
 };

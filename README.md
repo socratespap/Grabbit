@@ -11,6 +11,7 @@
 *   **Smart Selection:** Dynamic filtering that prioritizes heading links (H1-H6).
 *   **Linkify:** Automatically converts plain text URLs on web pages into clickable links. Includes an **Aggressive Mode** for domain-only recognition (e.g., `google.com`) and support for links inside code blocks.
 *   **Exclusion Filters:** Global keyword and Regular Expression (Regex) filtering to automatically skip unwanted links during drag-selection. Manageable via a dynamic tag-based UI.
+*   **Disabled Domains:** Blocklist feature to completely disable Grabbit (Selection, Linkify, Visited tracking) on specific domains. Includes a visual "OFF" badge and a popup overlay with an "Enable" button.
 *   **Options Page:** Extensive customization for colors, behavior, and granular filtering rules.
 *   **Enhanced Copy Formatting:** expanded "Copy URLs with Titles" action with support for **Markdown**, **JSON**, and customizable separators (Comma, Dot, Tab, etc.).
 *   **Create Bookmarks:** Select multiple links and instantly save them as bookmarks in a folder named after the current page title.
@@ -39,9 +40,9 @@ The project is built using standard web technologies and the Chrome WebExtension
     *   `popup.js`: Logic for quick actions (e.g., "Copy all tabs"). Handles dynamic success states for nested button elements.
     *   `popup.css`: **Complete Redesign** featuring animated background orbs, dark glassmorphism cards, and gradient icon boxes. Standardized using global variables.
 *   **`options.html` / `js/options/`**: The full settings page for configuring actions and appearance, now refactored into ES modules.
-*   **`advancedOptions/`**: Dedicated sub-page for power-user settings.
-    *   `advancedOptions.html`: Layout for experimental features including Linkify and **Exclusion Filters**.
-    *   `advancedOptions.js`: Logic for saving/loading advanced settings and managing the exclusion filter list.
+*   **Advanced Options:** Dedicated sub-page for power-user settings.
+    *   `advancedOptions.html`: Layout for experimental features including Linkify, **Exclusion Filters**, and **Disabled Domains**.
+    *   `advancedOptions.js`: Logic for saving/loading advanced settings, managing the exclusion filter list, and the domain blocklist.
     *   `advancedOptions.css`: Specific styling for advanced controls (toggle switches, filter tags).
 *   **`js/linkify.js`**: (New) Scans the page for plain text URLs and converts them to clickable `<a>` tags if enabled.
 *   **`js/visited.js`**: (New) Handles persistent tracking and visual marking of visited links to bypass browser redirect limitations.
