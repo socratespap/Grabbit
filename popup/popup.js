@@ -113,4 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Display version from manifest
+    const versionBadge = document.querySelector('.version-badge');
+    if (versionBadge) {
+        const manifest = chrome.runtime.getManifest();
+        versionBadge.textContent = `v${manifest.version}`;
+    }
 });
