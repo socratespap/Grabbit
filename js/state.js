@@ -26,7 +26,8 @@ const GrabbitState = {
     cachedLinks: [],            // Cache for link elements and their positions
     smartSelectActive: false,   // Flag for LinkClump-style smart select mode (only important links)
     exclusionFilters: [],       // Raw filter strings from user settings
-    compiledExclusionFilters: [] // Pre-compiled RegExp objects for performance
+    compiledExclusionFilters: [], // Pre-compiled RegExp objects for performance
+    pressedKeys: new Set()      // Set of currently pressed letter keys (for A-Z modifiers)
 };
 
 //=============================================================================

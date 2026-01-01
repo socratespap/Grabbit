@@ -68,6 +68,16 @@ function initialize() {
         saveBoxColorToStorage(e.target.value);
     });
 
+    // Set up letter key warning handler
+    combinedKeySelect.addEventListener('change', (e) => {
+        const letterKeyWarning = document.getElementById('letterKeyWarning');
+        if (letterKeyWarning) {
+            // Check if selected value is a single letter (a-z)
+            const isLetterKey = /^[a-z]$/.test(e.target.value);
+            letterKeyWarning.classList.toggle('visible', isLetterKey);
+        }
+    });
+
     // Set up extension management buttons
     setupExtensionButtons();
 

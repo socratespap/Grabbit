@@ -61,6 +61,8 @@ export function closeModal() {
     document.getElementById('borderStyle').value = 'solid';
     // Reset all error messages
     document.querySelectorAll('.error-message').forEach(error => error.classList.remove('visible'));
+    // Reset warning messages
+    document.querySelectorAll('.warning-message').forEach(warning => warning.classList.remove('visible'));
     // Hide conditional UI elements by default
     document.getElementById('delayOptionContainer').style.display = 'none';
     document.getElementById('openAtEndContainer').style.display = 'none';

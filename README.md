@@ -7,7 +7,7 @@
 ## Key Features
 
 *   **Drag-Select:** Intuitive visual selection box.
-*   **Custom Actions:** Configurable mouse/keyboard combinations (e.g., Ctrl + Drag to Copy).
+*   **Custom Actions:** Configurable mouse/keyboard combinations including **A-Z keys** (e.g., G + Right Click to Copy).
 *   **Smart Selection:** Dynamic filtering that prioritizes heading links (H1-H6).
 *   **Linkify:** Automatically converts plain text URLs on web pages into clickable links. Includes an **Aggressive Mode** for domain-only recognition (e.g., `google.com`) and support for links inside code blocks.
 *   **Exclusion Filters:** Global keyword and Regular Expression (Regex) filtering to automatically skip unwanted links during drag-selection. Manageable via a dynamic tag-based UI.
@@ -155,6 +155,7 @@ Access the options page to:
 ## Known Issues
 
 - 🔴 ESC will cancel selection but have a conflict with windows shortcuts if pressed with ctrl || shift || alt
+- 🔴 **Letter keys (A-Z)** as modifiers may not work correctly with some laptop trackpads due to palm rejection or hardware limitations.
 - 🔴 Unknown compatibility with other browsers or operating systems.
 - 🟢 Add two actions. Action 1: Ctrl + Right Mouse for copy link. Action 2: Right mouse for open links - Copy links with CTRL + Right Mouse, release the CTRL, it does not change to open links while the opposite works.
 - 🟢 Add two actions. Action 1: Ctrl + Right Mouse for copy link. Action 2: Ctrl + Left mouse for open links. Only action with right mouse works
@@ -168,6 +169,7 @@ Access the options page to:
 - 🟢 Open Links/tabs in reverse order
 - 🟢 Copy links with titles
 - 🟢  Provide different color on add new action
+- 🟢  Added A-Z keys as modifier options for actions
 - 🔴 Append Urls to clipboard. Clipboard = selected links + clipboard
 - 🟢 Add rating button
 - 🟢 Open tabs next to active tab

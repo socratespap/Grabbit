@@ -1,3 +1,10 @@
+## Version 3.4.0 Changelog:
+- **New Feature: A-Z Modifier Support**: Users can now use any letter key (A-Z) as a modifier for actions, in addition to Ctrl, Shift, and Alt.
+- **Improved Action Flexibility**: Significantly expanded the range of possible custom keyboard + mouse shortcuts.
+- **Smart Key Tracking**: Implemented a robust real-time tracking system for letter keys to ensure reliable multi-key activation.
+- **Trackpad Compatibility Warning**: Added an intelligent warning notice in the options UI to alert users about potential palm rejection or hardware limitations on some laptop trackpads when using letter keys.
+- **State Management Update**: Integrated a new `pressedKeys` state container for consistent handling of non-standard modifier combinations.
+
 ## Version 3.3.0 Changelog:
 - **New Feature: Create Bookmarks**: Users can now select multiple links and save them directly to a bookmark folder.
 - **Dynamic Folder Management**: Automatically creates bookmark folders named after the current page title and intelligently reuses existing folders with the same name.

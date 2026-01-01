@@ -149,6 +149,13 @@ function openEditModal(action, card, modal) {
     // Populate the modal with current action data
     document.getElementById('combinedKey').value = action.combination.key;
     document.getElementById('mouseButton').value = action.combination.mouseButton;
+
+    // Show/hide letter key warning based on the action's key
+    const letterKeyWarning = document.getElementById('letterKeyWarning');
+    if (letterKeyWarning) {
+        const isLetterKey = /^[a-z]$/.test(action.combination.key);
+        letterKeyWarning.classList.toggle('visible', isLetterKey);
+    }
     document.getElementById('actionType').value = action.openLinks ? 'openLinks' :
         (action.openWindow ? 'openWindow' :
             (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' :

@@ -695,6 +695,28 @@ h1 {
     display: block;
 }
 
+/* Warning Messages */
+.warning-message {
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    display: none;
+}
+
+.warning-message.visible {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.warning-icon {
+    font-size: 0.9rem;
+}
+
 /* Tooltip Styles */
 .smart-select-info {
     position: relative;

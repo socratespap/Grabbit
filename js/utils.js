@@ -42,13 +42,17 @@ function checkKeyCombination(e, mouseButton) {
         let keyMatch = false;
 
         if (action.combination.key === 'none') {
-            keyMatch = !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
+            // No modifier key required - ensure no modifiers are pressed
+            keyMatch = !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && GrabbitState.pressedKeys.size === 0;
         } else if (action.combination.key === 'ctrl') {
             // Use metaKey (Command ⌘) on Mac, ctrlKey on other platforms
             keyMatch = isMac ? e.metaKey : e.ctrlKey;
-        } else {
-            // For other keys (shift, alt), use standard properties
+        } else if (action.combination.key === 'shift' || action.combination.key === 'alt') {
+            // For shift and alt, use standard properties
             keyMatch = e[`${action.combination.key}Key`];
+        } else if (action.combination.key.length === 1 && /^[a-z]$/i.test(action.combination.key)) {
+            // For letter keys (A-Z), check if the key is in pressedKeys
+            keyMatch = GrabbitState.pressedKeys.has(action.combination.key.toLowerCase());
         }
 
         return keyMatch && mouseMatch;

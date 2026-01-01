@@ -250,6 +250,11 @@ document.addEventListener('contextmenu', (e) => {
  * Handles keydown events during selection to update the action
  */
 document.addEventListener('keydown', (e) => {
+  // Track letter keys (A-Z) for modifier key support
+  if (e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
+    GrabbitState.pressedKeys.add(e.key.toLowerCase());
+  }
+
   // Handle ESC key to cancel selection
   // Cancel if ESC is pressed during mouse down OR with any modifier key held
   if (e.key === 'Escape') {
@@ -284,6 +289,11 @@ document.addEventListener('keydown', (e) => {
  * Handles keyup events during selection to revert to previous action
  */
 document.addEventListener('keyup', (e) => {
+  // Remove letter keys from pressedKeys when released
+  if (e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
+    GrabbitState.pressedKeys.delete(e.key.toLowerCase());
+  }
+
   if (GrabbitState.isMouseDown && GrabbitState.selectionBox) {
     const currentKeyState = {
       ctrlKey: e.ctrlKey,
@@ -302,6 +312,7 @@ document.addEventListener('keyup', (e) => {
  * Cleans up the selection when the window loses focus
  */
 window.addEventListener('blur', () => {
+  GrabbitState.pressedKeys.clear(); // Clear all pressed letter keys
   cleanupSelection();
 });
 
