@@ -258,6 +258,14 @@ function createActionCard(action) {
         // Show the modal and mark it as editing
         modal.classList.add('active');
         modal.editingCard = card;
+
+        // Set modal title for editing
+        const modalTitleEl = document.getElementById('modalTitle');
+        if (modalTitleEl) modalTitleEl.textContent = 'Edit Action';
+
+        // Expand advanced options when editing (so user can see current settings)
+        const collapsibleSectionEl = document.querySelector('.collapsible-section');
+        if (collapsibleSectionEl) collapsibleSectionEl.classList.remove('collapsed');
     });
 
     // Add delete functionality to the card
@@ -311,9 +319,27 @@ function generateUniqueColor() {
 // MODAL MANAGEMENT
 // ============================================================================
 
+// Get references to collapsible elements
+const advancedOptionsToggle = document.getElementById('advancedOptionsToggle');
+const collapsibleSection = advancedOptionsToggle?.closest('.collapsible-section');
+const modalTitle = document.getElementById('modalTitle');
+
+// Initialize collapsible toggle functionality
+if (advancedOptionsToggle && collapsibleSection) {
+    advancedOptionsToggle.addEventListener('click', () => {
+        collapsibleSection.classList.toggle('collapsed');
+    });
+}
+
 // Open the modal when the "Add New Action" button is clicked
 actionButton.addEventListener('click', () => {
     modal.classList.add('active');
+
+    // Set modal title for creating new action
+    if (modalTitle) modalTitle.textContent = 'Create New Action';
+
+    // Collapse advanced options by default when creating new action
+    if (collapsibleSection) collapsibleSection.classList.add('collapsed');
 
     // Set a unique color when opening the modal
     document.getElementById('boxColor').value = generateUniqueColor();
@@ -329,6 +355,8 @@ const closeModal = () => {
     document.getElementById('combinedKey').value = 'none';
     document.getElementById('mouseButton').value = '';
     document.getElementById('actionType').value = '';
+    document.getElementById('smartSelect').value = 'off';
+    document.getElementById('avoidDuplicates').value = 'on';
     document.getElementById('reverseOrder').checked = false;
     document.getElementById('openAtEnd').checked = false;
     document.getElementById('tabDelay').value = 0;
