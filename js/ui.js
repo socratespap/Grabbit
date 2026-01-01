@@ -62,7 +62,8 @@ function updateVisualStyles() {
     // Update counter label
     if (GrabbitState.counterLabel) {
         const urls = Array.from(GrabbitState.selectedLinks).map(link => link.href);
-        const count = GrabbitState.currentMatchedAction.smartSelect === 'on' ?
+        const shouldDedupe = GrabbitState.currentMatchedAction.avoidDuplicates !== 'off';
+        const count = shouldDedupe ?
             new Set(urls).size :
             urls.length;
 
@@ -97,6 +98,7 @@ function cleanupSelection() {
     GrabbitState.selectedLinks.forEach(link => link.style.backgroundColor = '');
     GrabbitState.selectedLinks.clear();
     GrabbitState.cachedLinks = []; // Clear cache
+    GrabbitState.smartSelectActive = false; // Reset smart select mode
 
     if (GrabbitState.scrollInterval) {
         clearInterval(GrabbitState.scrollInterval);

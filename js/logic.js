@@ -75,6 +75,8 @@ function handleScroll(mouseY) {
 
 /**
  * Updates the selected links based on the current selection box
+ * Implements LinkClump-style smart select: dynamically filters to "important" links
+ * (those inside heading tags H1-H6) when any important link is touched
  */
 function updateSelectedLinks() {
     if (!GrabbitState.selectionBox || !GrabbitState.isMouseDown) return;
@@ -90,30 +92,58 @@ function updateSelectedLinks() {
     const boxRight = boxLeft + boxWidth;
     const boxBottom = boxTop + boxHeight;
 
-    // Use cached links instead of querying DOM
+    // Check if smart select is enabled for current action
+    const smartSelectEnabled = GrabbitState.currentMatchedAction?.smartSelect === 'on';
+
+    // First pass: find all links in the box and count important ones
+    const linksInBox = [];
+    let importantCount = 0;
+
     GrabbitState.cachedLinks.forEach(item => {
-        const { link, box } = item;
+        const { link, box, isImportant } = item;
 
         // Check if link is within selection box
-        // All coordinates are document-relative
         const isInBox = !(box.left > boxRight ||
             box.right < boxLeft ||
             box.top > boxBottom ||
             box.bottom < boxTop);
 
-        // If the link is in the box, add it to selectedLinks and highlight it
         if (isInBox) {
-            if (!GrabbitState.selectedLinks.has(link)) {
-                GrabbitState.selectedLinks.add(link);
-                if (GrabbitState.currentMatchedAction) {
-                    link.style.backgroundColor = `${GrabbitState.currentMatchedAction.boxColor}33`;
-                }
-            }
-        } else {
-            // If not in the box, remove from selectedLinks and clear highlight
-            if (GrabbitState.selectedLinks.has(link)) {
-                GrabbitState.selectedLinks.delete(link);
-                link.style.backgroundColor = '';
+            linksInBox.push({ link, isImportant });
+            if (isImportant) importantCount++;
+        }
+    });
+
+    // Smart select mode switching logic
+    if (smartSelectEnabled) {
+        // If we touch an important link and not in smart mode, activate smart mode
+        if (!GrabbitState.smartSelectActive && importantCount > 0) {
+            GrabbitState.smartSelectActive = true;
+        }
+        // If no important links in box and we're in smart mode, deactivate
+        else if (GrabbitState.smartSelectActive && importantCount === 0) {
+            GrabbitState.smartSelectActive = false;
+        }
+    }
+
+    // Clear previous selection
+    GrabbitState.selectedLinks.forEach(link => {
+        link.style.backgroundColor = '';
+    });
+    GrabbitState.selectedLinks.clear();
+
+    // Second pass: select links based on current mode
+    linksInBox.forEach(({ link, isImportant }) => {
+        // If smart select is active, only select important links
+        // Otherwise, select all links in box
+        const shouldSelect = !smartSelectEnabled ||
+            !GrabbitState.smartSelectActive ||
+            isImportant;
+
+        if (shouldSelect) {
+            GrabbitState.selectedLinks.add(link);
+            if (GrabbitState.currentMatchedAction) {
+                link.style.backgroundColor = `${GrabbitState.currentMatchedAction.boxColor}33`;
             }
         }
     });
@@ -138,9 +168,9 @@ function processSelectedLinks(matchedAction) {
 
     let urls = Array.from(GrabbitState.selectedLinks).map(link => link.href);
 
-    // Apply smart select if enabled
-    let finalUrls = matchedAction.smartSelect === 'on' ?
-        [...new Set(urls)] : urls;
+    // Apply deduplication if avoidDuplicates is enabled (default: on for backward compatibility)
+    const shouldDedupe = matchedAction.avoidDuplicates !== 'off';
+    let finalUrls = shouldDedupe ? [...new Set(urls)] : urls;
 
     // Apply reverse order if enabled
     if (matchedAction.reverseOrder) {

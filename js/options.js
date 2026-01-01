@@ -135,6 +135,7 @@ function createActionCard(action) {
     if (action.openWindow) features.push('Open in Window');
     if (action.copyUrls) features.push('Copy URLs');
     if (action.smartSelect === 'on') features.push('Smart Select');
+    if (action.avoidDuplicates === 'on') features.push('Avoid Duplicates');
     if (action.copyUrlsAndTitles) {
         features.push('Copy URLs & Titles');
         // Add formatting details for Copy URLs & Titles
@@ -209,7 +210,8 @@ function createActionCard(action) {
             (action.openWindow ? 'openWindow' :
                 (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' :
                     (action.copyTitles ? 'copyTitles' : 'copyUrls')));
-        document.getElementById('smartSelect').value = action.smartSelect;
+        document.getElementById('smartSelect').value = action.smartSelect || 'off';
+        document.getElementById('avoidDuplicates').value = action.avoidDuplicates || 'on';
         document.getElementById('reverseOrder').checked = action.reverseOrder || false;
         document.getElementById('openAtEnd').checked = action.openAtEnd || false;
         document.getElementById('boxColor').value = action.boxColor || '#2196F3'; // Load saved color or default
@@ -433,6 +435,7 @@ document.getElementById('saveButton').addEventListener('click', () => {
         copyUrlsAndTitles: actionType.value === 'copyUrlsAndTitles',
         copyTitles: actionType.value === 'copyTitles',
         smartSelect: document.getElementById('smartSelect').value,
+        avoidDuplicates: document.getElementById('avoidDuplicates').value,
         reverseOrder: document.getElementById('reverseOrder').checked,
         openAtEnd: document.getElementById('openAtEnd').checked,
         boxColor: document.getElementById('boxColor').value,

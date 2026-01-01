@@ -23,7 +23,8 @@ const GrabbitState = {
     currentMouseButton: null,   // Current mouse button being used
     scrollInterval: null,       // Interval ID for auto-scrolling
     savedActions: [],           // Saved actions from storage
-    cachedLinks: []             // Cache for link elements and their positions
+    cachedLinks: [],            // Cache for link elements and their positions
+    smartSelectActive: false    // Flag for LinkClump-style smart select mode (only important links)
 };
 
 //=============================================================================

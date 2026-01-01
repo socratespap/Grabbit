@@ -1,3 +1,8 @@
+## Version 2.0.7 Changelog:
+- Implemented LinkClump-style Smart Select: dynamic filtering that switches to heading-only (H1-H6) mode when a heading link is touched.
+- Split "Smart Select" into two independent features: "Smart Select (heading filter)" and "Avoid Duplicates".
+- Updated Options UI with separate toggles for granular control over filtering and deduplication.
+
 ## Version 2.0.6 Changelog:
 - Implemented Persistent Visited Link Marking.
 - Added `js/visited.js` to track and visually mark links opened via Grabbit using `chrome.storage.local`.

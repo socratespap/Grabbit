@@ -91,7 +91,19 @@ function activateSelection() {
 
     if (clientRect.width === 0 && clientRect.height === 0) return;
 
-    // Store document-relative coordinates
+    // Check if link is "important" (inside heading tag H1-H6) for smart select
+    const headingRegex = /^H[1-6]$/;
+    let isImportant = false;
+    let parentNode = link.parentNode;
+    while (parentNode && parentNode !== document.body) {
+      if (headingRegex.test(parentNode.nodeName)) {
+        isImportant = true;
+        break;
+      }
+      parentNode = parentNode.parentNode;
+    }
+
+    // Store document-relative coordinates and importance flag
     GrabbitState.cachedLinks.push({
       link: link,
       box: {
@@ -99,7 +111,8 @@ function activateSelection() {
         bottom: clientRect.bottom + scrollY,
         left: clientRect.left + scrollX,
         right: clientRect.right + scrollX
-      }
+      },
+      isImportant: isImportant
     });
   });
 

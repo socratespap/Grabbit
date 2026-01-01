@@ -223,14 +223,25 @@
             <div class="modal-section">
                 <h3>Advanced Options</h3>
                 <div class="advanced-options">
-                    <label>Smart select</label>
+                    <label>Smart select (heading filter)</label>
                     <select class="key-select" id="smartSelect">
                         <option value="on">On</option>
                         <option value="off">Off</option>
                     </select>
                     <div class="smart-select-info">
-                        <div class="tooltip">Smart select removes duplicate URLs when selecting multiple links with the
-                            same destination.</div>
+                        <div class="tooltip">When enabled, automatically filters to only select links inside heading
+                            tags (H1-H6) when any heading link is touched.</div>
+                    </div>
+                </div>
+                <div class="advanced-options" style="margin-top: 1rem;">
+                    <label>Avoid duplicates</label>
+                    <select class="key-select" id="avoidDuplicates">
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
+                    </select>
+                    <div class="smart-select-info">
+                        <div class="tooltip">Removes duplicate URLs when selecting multiple links pointing to the same
+                            destination.</div>
                     </div>
                 </div>
                 <div class="advanced-options" style="margin-top: 1rem;">
