@@ -1,3 +1,9 @@
+## Version 3.3.0 Changelog:
+- **New Feature: Create Bookmarks**: Users can now select multiple links and save them directly to a bookmark folder.
+- **Dynamic Folder Management**: Automatically creates bookmark folders named after the current page title and intelligently reuses existing folders with the same name.
+- **Improved UI Feedback**: The selection counter label now dynamically updates to "be saved as bookmarks" when the bookmarking action is active.
+- **Core Updates**: Added "bookmarks" permission support to core extension logic.
+
 ## Version 3.2.8 Changelog:
 - **Major Copy Action Upgrade**: Enhanced "Copy URLs with Titles" action with **Markdown** and **JSON** support.
 - **Custom Separators**: Added options for **Comma** and **Dot** separators in addition to Newline, Space, and Tab.

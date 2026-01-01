@@ -293,6 +293,41 @@ function processSelectedLinks(matchedAction) {
         }).join('\n');
 
         navigator.clipboard.writeText(titles);
+        navigator.clipboard.writeText(titles);
+    } else if (matchedAction.createBookmarks) {
+        // Create bookmarks in a folder named after the current page title
+        const bookmarks = [];
+        Array.from(GrabbitState.selectedLinks).forEach(link => {
+            // Re-check if this link is in our finalUrls list (to respect dedupe/reverse)
+            if (finalUrls.includes(link.href)) {
+                bookmarks.push({
+                    title: link.textContent.trim() || link.href, // Fallback to URL if title is empty
+                    url: link.href
+                });
+            }
+        });
+
+        // If deduplication or reverse happened, we might have multiple links with same URL but different titles?
+        // Actually, logic above iterates DOM elements. 
+        // Let's rely on mapping finalUrls back to titles to strictly follow the processed list (order/dedupe).
+
+        const processedBookmarks = finalUrls.map(url => {
+            // Find the first matching link element for this URL to get the title
+            // (If we deduped, we just take the first one found)
+            const linkElement = Array.from(GrabbitState.selectedLinks).find(l => l.href === url);
+            const title = linkElement ? linkElement.textContent.trim() : '';
+
+            return {
+                title: title || url,
+                url: url
+            };
+        });
+
+        chrome.runtime.sendMessage({
+            action: 'createBookmarks',
+            bookmarks: processedBookmarks,
+            folderName: document.title || 'Grabbit Bookmarks'
+        });
     }
 
 }

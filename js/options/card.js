@@ -87,6 +87,7 @@ export function createActionCard(action, savedActionsContainer, modal) {
         }
     }
     if (action.copyTitles) features.push('Copy Titles');
+    if (action.createBookmarks) features.push('Create Bookmarks');
     if (action.reverseOrder) features.push('Reverse Order');
     if (action.openLinks && action.openAtEnd) features.push('Open at End');
     if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.push(`${action.tabDelay}s Delay`);
@@ -151,7 +152,8 @@ function openEditModal(action, card, modal) {
     document.getElementById('actionType').value = action.openLinks ? 'openLinks' :
         (action.openWindow ? 'openWindow' :
             (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' :
-                (action.copyTitles ? 'copyTitles' : 'copyUrls')));
+                (action.copyTitles ? 'copyTitles' :
+                    (action.createBookmarks ? 'createBookmarks' : 'copyUrls'))));
     document.getElementById('smartSelect').value = action.smartSelect || 'off';
     document.getElementById('avoidDuplicates').value = action.avoidDuplicates || 'on';
     document.getElementById('reverseOrder').checked = action.reverseOrder || false;

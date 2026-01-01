@@ -70,9 +70,10 @@ function updateVisualStyles() {
         const actionType =
             GrabbitState.currentMatchedAction.openLinks ? 'be opened in new tabs' :
                 GrabbitState.currentMatchedAction.openWindow ? 'be opened in a new window' :
-                    GrabbitState.currentMatchedAction.copyUrlsAndTitles ? 'be copied including page titles' :
-                        GrabbitState.currentMatchedAction.copyTitles ? 'copy their page titles only' :
-                            'be copied to clipboard';
+                    GrabbitState.currentMatchedAction.createBookmarks ? 'be saved as bookmarks' :
+                        GrabbitState.currentMatchedAction.copyUrlsAndTitles ? 'be copied including page titles' :
+                            GrabbitState.currentMatchedAction.copyTitles ? 'copy their page titles only' :
+                                'be copied to clipboard';
 
         GrabbitState.counterLabel.textContent = `${count} URLs to ${actionType}`;
     }

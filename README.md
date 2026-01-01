@@ -13,6 +13,7 @@
 *   **Exclusion Filters:** Global keyword and Regular Expression (Regex) filtering to automatically skip unwanted links during drag-selection. Manageable via a dynamic tag-based UI.
 *   **Options Page:** Extensive customization for colors, behavior, and granular filtering rules.
 *   **Enhanced Copy Formatting:** expanded "Copy URLs with Titles" action with support for **Markdown**, **JSON**, and customizable separators (Comma, Dot, Tab, etc.).
+*   **Create Bookmarks:** Select multiple links and instantly save them as bookmarks in a folder named after the current page title.
 *   **Advanced Options:** Dedicated section for experimental and power-user features. Now includes a **dynamic UI** that hides/shows sub-settings based on primary features and a robust filter management system.
 *   **Modern Architecture:** Refactored into a modular structure for better maintainability.
 
@@ -23,7 +24,7 @@ The project is built using standard web technologies and the Chrome WebExtension
 ### Core Technologies
 *   **JavaScript (Vanilla):** Core logic, utilizing ES6+ features.
 *   **HTML/CSS:** UI for Popup and Options pages. Leveraging **CSS Variables** for a centralized design system.
-*   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `history`.
+*   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `history`, `bookmarks`.
 *   **Manifest V3:** Adheres to the latest Chrome extension security and background service worker requirements.
 
 ### Directory Structure
@@ -174,7 +175,7 @@ Access the options page to:
 - 🔴 Include Compatibility with Youtube Subscriptions links
 - 🟢 Add delay when opening tabs
 - 🟢 Include option when copying URLs ("Title tab Url, instead of Title \n Url")
-- 🔴 Create Bookmarks
+- 🟢 Create Bookmarks
 - 🔴 Fix compatibility with Netsuite
 
 ## Changelog

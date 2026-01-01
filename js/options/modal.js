@@ -124,6 +124,7 @@ export function handleSaveAction() {
         copyUrls: actionType.value === 'copyUrls',
         copyUrlsAndTitles: actionType.value === 'copyUrlsAndTitles',
         copyTitles: actionType.value === 'copyTitles',
+        createBookmarks: actionType.value === 'createBookmarks',
         smartSelect: document.getElementById('smartSelect').value,
         avoidDuplicates: document.getElementById('avoidDuplicates').value,
         reverseOrder: document.getElementById('reverseOrder').checked,
