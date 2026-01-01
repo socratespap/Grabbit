@@ -1,59 +1,117 @@
-# Grabbit Chrome Extension
+# Grabbit - Chrome Extension
 
-Grabbit is a powerful Chrome extension that allows users to select multiple links on a webpage using a drag-select interface and perform various actions like opening them in new tabs, new windows, or copying URLs to clipboard.
+**Grabbit** is a powerful Chrome Extension (Manifest V3) that enables users to select multiple links on a webpage using a customizable drag-select interface. Users can perform various actions on selected links, such as opening them in new tabs/windows or copying their URLs to the clipboard.
 
-## Features
+[Available on the Chrome Web Store](https://chromewebstore.google.com/detail/grabbit/madmdgpjgagdmmmiddpiggdnpgjglcdk)
 
-- Drag-select multiple links using customizable mouse and keyboard combinations
-- Smart selection to automatically remove duplicate URLs
-- Customizable selection box colors
-- Multiple action types:
-  - Open links in new tabs
-  - Open links in new windows
-  - Copy URLs to clipboard
-- Real-time link counter
-- Smooth auto-scrolling while selecting
-- Configurable settings through an options page
+## Key Features
 
-## File Structure
+*   **Drag-Select:** Intuitive visual selection box.
+*   **Custom Actions:** Configurable mouse/keyboard combinations (e.g., Ctrl + Drag to Copy).
+*   **Smart Selection:** Dynamic filtering that prioritizes heading links (H1-H6).
+*   **Linkify:** Automatically converts plain text URLs on web pages into clickable links. Includes an **Aggressive Mode** for domain-only recognition (e.g., `google.com`) and support for links inside code blocks.
+*   **Options Page:** Extensive customization for colors, behavior, and granular filtering rules.
+*   **Advanced Options:** Dedicated section for experimental features. Now includes a **dynamic UI** that hides/shows sub-settings based on primary features.
+*   **Modern Architecture:** Refactored into a modular structure for better maintainability.
 
-### manifest.json V3
-The extension manifest file that defines permissions, content scripts, and basic extension information. It specifies the extension's structure and required permissions like storage, clipboard access, and tab management.
+## Architecture & Technology
 
-### background.js
-A service worker that handles background tasks, specifically managing the creation of new tabs when links are opened.
+The project is built using standard web technologies and the Chrome WebExtensions API. It does **not** require a build step (no Webpack/Rollup) and runs directly as an unpacked extension.
 
-### grabbit.js
-The core content script that implements the drag-select functionality:
-- Handles mouse events and selection box creation
-- Manages link highlighting and selection
-- Implements auto-scrolling
-- Processes selected links based on user actions
+### Core Technologies
+*   **JavaScript (Vanilla):** Core logic, utilizing ES6+ features.
+*   **HTML/CSS:** UI for Popup and Options pages. Leveraging **CSS Variables** for a centralized design system.
+*   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `history`.
+*   **Manifest V3:** Adheres to the latest Chrome extension security and background service worker requirements.
 
-### popup.js & popup.html
-The extension's popup interface that appears when clicking the extension icon:
-- Allows quick copying of URLs from selected tabs
-- Provides functionality to open copied links
-- Features a clean, modern UI with visual feedback
+### Directory Structure
 
-### options.js & options.html
-The settings page that allows users to:
-- Create and manage custom actions
-- Configure key combinations
-- Customize selection box colors
-- Enable/disable smart selection
-- Set action types for different combinations
+*   **`manifest.json`**: The entry point. Defines permissions, background scripts, and the order of content script injection.
+*   **`css/`**: Global styles and design tokens.
+    *   `variables.css`: **Single Source of Truth** for design tokens (colors, gradients, fonts, shadows, transitions).
+    *   `options.css`: Main layout and component styles for the settings page.
+    *   `sidebar.css`: Styles for the navigation sidebar.
+*   **`popup/`**: The small window that appears when clicking the extension icon.
+    *   `popup.html`: Structure of the popup, featuring a **Modern Glassmorphism** design.
+    *   `popup.js`: Logic for quick actions (e.g., "Copy all tabs"). Handles dynamic success states for nested button elements.
+    *   `popup.css`: **Complete Redesign** featuring animated background orbs, dark glassmorphism cards, and gradient icon boxes. Standardized using global variables.
+*   **`options.html` / `js/options.js`**: The full settings page for configuring actions and appearance.
+*   **`advancedOptions/`**: Dedicated sub-page for power-user settings.
+    *   `advancedOptions.html`: Layout for experimental features.
+    *   `advancedOptions.js`: Logic for saving/loading advanced settings.
+    *   `advancedOptions.css`: Specific styling for advanced controls (e.g., toggle switches).
+*   **`js/linkify.js`**: (New) Scans the page for plain text URLs and converts them to clickable `<a>` tags if enabled.
+*   **`js/visited.js`**: (New) Handles persistent tracking and visual marking of visited links to bypass browser redirect limitations.
 
-## Installation
+## CSS Architecture & Design System
 
-1. Clone this repository
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode"
-4. Click "Load unpacked"
-5. Select the extension directory
+The project uses a **"No Build Step"** CSS architecture that leverages modern browser features to maintain a clean and scalable codebase.
 
-Or directly from the chome extension store:
-[https://chrome.google.com/webstore/detail/Grabbit/](https://chromewebstore.google.com/detail/grabbit/madmdgpjgagdmmmiddpiggdnpgjglcdk)
+### 1. Centralized Variables (`css/variables.css`)
+All design tokens are defined in the `:root` pseudo-class within `variables.css`. This file acts as the single source of truth for:
+*   **Color Palette**: Integrated primary/secondary colors and status colors (success, warning, error).
+*   **Gradients**: Standardized linear gradients for buttons, backgrounds, and the sidebar.
+*   **Typography**: A unified font stack across all extension pages.
+*   **Shadows & Transitions**: Consistent depth and motion tokens.
+
+### 2. Externalized & Redesigned Popup Styles
+To maintain separation of concerns and benefit from caching, styles have been extracted from `popup.html` into `popup.css`. The popup has been completely redesigned with a premium aesthetic:
+*   **Glassmorphism**: Using `backdrop-filter` and semi-transparent backgrounds for a modern "frosted glass" look.
+*   **Animated Components**: Decorative floating background orbs and pulsing logo glows for a living UI.
+*   **Visual Hierarchy**: Buttons now feature distinct icon boxes with custom gradients, primary titles, and descriptive subtitles.
+*   **Dynamic States**: Success states are handled gracefully with color transitions and content updates via JavaScript.
+
+### 3. Component-Based Styles
+Styles are organized by component area (Options, Sidebar, Popup), each inheriting variables from the global pool. This allows for rapid UI adjustments without global "find and replace" operations.
+
+## Codebase Reference
+
+### `js/grabbit.js`
+**Role:** Main Entry Point & Event Orchestrator
+*   **Initialization:** Loads saved actions from `chrome.storage.sync`.
+*   **Event Listeners:** `mousedown` (starts tracking), `mousemove` (checks drag threshold), `mouseup` (finalizes selection), `keydown` (handles modifiers/ESC), `window.blur` (cleanup).
+
+### `js/state.js`
+**Role:** State Management
+*   **GrabbitState:** Global state object (mouse position, selection status, cached links, smartSelectActive).
+*   **CONSTANTS:** Configuration values (drag threshold, scroll speed, debounce delay).
+
+### `js/ui.js`
+**Role:** DOM & Visuals
+*   Handles creation and updating of the selection box and counter label.
+
+### `js/utils.js`
+**Role:** Helper Functions
+*   OS detection, key combination matching, debounce implementation, and DOM traversal (including Shadow DOM).
+
+### `js/logic.js`
+**Role:** Core Business Logic
+*   **updateSelectionBox()**: Calculates geometry.
+*   **handleScroll()**: Auto-scrolling.
+*   **processSelectedLinks()**: Executes actions (open/copy), handles deduplication, and reverse ordering.
+*   **updateSelectedLinks()**: Collision detection and Smart Select (heading-based filtering).
+
+### `js/visited.js`
+**Role:** Persistent Visited State Management
+*   Bypasses privacy restrictions (like Google Search redirects) by using `chrome.storage.local` to track and style visited links.
+
+### `js/linkify.js`
+**Role:** Text-to-Link Conversion
+*   Converts plain text URLs to clickable links using sophisticated regex. Supports "Aggressive Mode" for domain-only recognition and works within code blocks and Shadow DOM.
+
+## Development & Installation
+
+Since there is no build process, you can work directly on the source files.
+
+1.  **Load Unpacked:**
+    *   Open Chrome and go to `chrome://extensions/`.
+    *   Enable **Developer Mode** (top right).
+    *   Click **Load unpacked**.
+    *   Select the root directory of this project (where `manifest.json` is located).
+
+2.  **Reloading Changes:**
+    *   After modifying any file (especially `manifest.json` or background scripts), go to `chrome://extensions/` and click the **Reload** (circular arrow) icon on the Grabbit card.
+    *   **Crucial:** You must also refresh any web pages where you are testing the content script for the changes to take effect.
 
 ## Usage
 
@@ -73,14 +131,6 @@ Access the options page to:
 - Manage existing actions
 - Set default behaviors
 
-## Technical Details
-
-The extension uses:
-- Chrome Storage Sync API for settings persistence
-- Modern JavaScript features for DOM manipulation
-- Chrome Extensions Manifest V3
-- Custom event handling for mouse and keyboard interactions
-
 ## Tested on
 
 - Windows 10
@@ -88,14 +138,13 @@ The extension uses:
 - Chrome Version (Version 131.0.6778.205 (Official Build) (64-bit))
 - Chrome Latest Version Version 133.0.6943.142 (Official Build) (64-bit)
 
-
 ## Known Issues
 
 - 🔴 ESC will cancel selection but have a conflict with windows shortcuts if pressed with ctrl || shift || alt
 - 🔴 Unknown compatibility with other browsers or operating systems.
 - 🟢 Add two actions. Action 1: Ctrl + Right Mouse for copy link. Action 2: Right mouse for open links - Copy links with CTRL + Right Mouse, release the CTRL, it does not change to open links while the opposite works.
 - 🟢 Add two actions. Action 1: Ctrl + Right Mouse for copy link. Action 2: Ctrl + Left mouse for open links. Only action with right mouse works
-- 🔴 Lifting keyboard key and no action is found for mouse only actions, is still selecting
+- 🟢 Lifting keyboard key and no action is found for mouse only actions, is still selecting
 - 🟢 Removed unused context menu permission
 - 🔴 Not compatible with Netsuite
 - 🔴 Fix naming of buttons in Mac
