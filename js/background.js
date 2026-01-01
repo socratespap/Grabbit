@@ -1,9 +1,51 @@
 //open options page on extension install
 chrome.runtime.onInstalled.addListener((details) => {
     // Enable Linkify by default for new installs OR existing users upgrading to this version
-    chrome.storage.sync.get(['linkifyEnabled'], (result) => {
+    chrome.storage.sync.get(['linkifyEnabled', 'savedActions'], (result) => {
         if (result.linkifyEnabled === undefined) {
             chrome.storage.sync.set({ linkifyEnabled: true });
+        }
+
+        // Check for saved actions and add defaults if none exist
+        if (!result.savedActions || result.savedActions.length === 0) {
+            const defaultActions = [
+                {
+                    combination: { key: 'none', mouseButton: 'right' },
+                    openLinks: true,
+                    openWindow: false,
+                    copyUrls: false,
+                    copyUrlsAndTitles: false,
+                    copyTitles: false,
+                    smartSelect: 'off',
+                    avoidDuplicates: 'on',
+                    reverseOrder: false,
+                    openAtEnd: false,
+                    boxColor: '#FF0000', // Red
+                    tabDelay: 0,
+                    borderThickness: 2,
+                    borderStyle: 'solid'
+                },
+                {
+                    combination: { key: 'ctrl', mouseButton: 'right' },
+                    openLinks: false,
+                    openWindow: false,
+                    copyUrls: true,
+                    copyUrlsAndTitles: false,
+                    copyTitles: false,
+                    smartSelect: 'off',
+                    avoidDuplicates: 'on',
+                    reverseOrder: false,
+                    openAtEnd: false,
+                    boxColor: '#0000FF', // Blue
+                    tabDelay: 0,
+                    borderThickness: 2,
+                    borderStyle: 'solid'
+                }
+            ];
+
+            chrome.storage.sync.set({ savedActions: defaultActions }, () => {
+                console.log('Default actions set:', defaultActions);
+            });
         }
     });
 
