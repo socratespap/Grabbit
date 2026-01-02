@@ -163,7 +163,7 @@ Access the options page to:
 - 🟢 Lifting keyboard key and no action is found for mouse only actions, is still selecting
 - 🟢 Removed unused context menu permission
 - 🔴 Not compatible with Netsuite
-- 🔴 Fix naming of buttons in Mac
+- 🟢 Fix naming of buttons in Mac
 
 ## Features to be added
 
@@ -175,7 +175,7 @@ Access the options page to:
 - 🟢 Add rating button
 - 🟢 Open tabs next to active tab
 - 🟢 Recognize <a> tags that are not visible
-- 🔴 Include Compatibility with Youtube Subscriptions links
+- 🟢 Include Compatibility with Youtube Subscriptions links
 - 🟢 Add delay when opening tabs
 - 🟢 Include option when copying URLs ("Title tab Url, instead of Title \n Url")
 - 🟢 Create Bookmarks
@@ -188,6 +188,10 @@ Please refer to the [changelog](changelog.md) for detailed changes in each versi
 ## Contributions
 - TheTacoScott - https://github.com/TheTacoScott
 - oaustegard - https://github.com/oaustegard
+
+## BrowserStack
+
+This project is tested with BrowserStack
 
 - This is a Linkclump replacement/alternative
 - This is a Copy All Urls replacement/alternative
