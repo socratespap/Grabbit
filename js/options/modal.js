@@ -51,8 +51,8 @@ export function closeModal() {
     document.getElementById('combinedKey').value = 'none';
     document.getElementById('mouseButton').value = '';
     document.getElementById('actionType').value = '';
-    document.getElementById('smartSelect').value = 'off';
-    document.getElementById('avoidDuplicates').value = 'on';
+    document.getElementById('smartSelect').checked = false;
+    document.getElementById('avoidDuplicates').checked = true;
     document.getElementById('reverseOrder').checked = false;
     document.getElementById('openAtEnd').checked = false;
     document.getElementById('tabDelay').value = 0;
@@ -127,8 +127,8 @@ export function handleSaveAction() {
         copyUrlsAndTitles: actionType.value === 'copyUrlsAndTitles',
         copyTitles: actionType.value === 'copyTitles',
         createBookmarks: actionType.value === 'createBookmarks',
-        smartSelect: document.getElementById('smartSelect').value,
-        avoidDuplicates: document.getElementById('avoidDuplicates').value,
+        smartSelect: document.getElementById('smartSelect').checked ? 'on' : 'off',
+        avoidDuplicates: document.getElementById('avoidDuplicates').checked ? 'on' : 'off',
         reverseOrder: document.getElementById('reverseOrder').checked,
         openAtEnd: document.getElementById('openAtEnd').checked,
         boxColor: document.getElementById('boxColor').value,

@@ -161,8 +161,8 @@ function openEditModal(action, card, modal) {
             (action.copyUrlsAndTitles ? 'copyUrlsAndTitles' :
                 (action.copyTitles ? 'copyTitles' :
                     (action.createBookmarks ? 'createBookmarks' : 'copyUrls'))));
-    document.getElementById('smartSelect').value = action.smartSelect || 'off';
-    document.getElementById('avoidDuplicates').value = action.avoidDuplicates || 'on';
+    document.getElementById('smartSelect').checked = action.smartSelect === 'on';
+    document.getElementById('avoidDuplicates').checked = action.avoidDuplicates !== 'off';
     document.getElementById('reverseOrder').checked = action.reverseOrder || false;
     document.getElementById('openAtEnd').checked = action.openAtEnd || false;
     document.getElementById('boxColor').value = action.boxColor || '#2196F3';

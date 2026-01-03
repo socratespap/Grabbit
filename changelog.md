@@ -1,3 +1,8 @@
+## Version 3.5.1 Changelog:
+- **UI Overhaul: Modern Toggle Switches**: Replaced all advanced option checkboxes and "On/Off" dropdowns in the Action Modal with beautiful, animated toggle switches.
+- **Improved UX**: Enhanced the visual consistency of the configuration modal with sleek gradients and smoother interaction feedback.
+- **Premium Aesthetics**: Integrated the same high-end toggle style from the Advanced Options page into the main Action Modal for a cohesive design experience.
+
 ## Version 3.5.0 Changelog:
 - **New Feature: Disabled Domains (Blocklist)**: Users can now specify domains where Grabbit will be completely inactive.
 - **Visual "OFF" State**: The extension icon now displays a dark gray "OFF" badge when browsing a blocked domain.

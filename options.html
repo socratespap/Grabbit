@@ -291,10 +291,10 @@
                                             navigation menus, footers, and other clutter.</div>
                                     </div>
                                 </div>
-                                <select class="key-select compact-select" id="smartSelect">
-                                    <option value="on">On</option>
-                                    <option value="off" selected>Off</option>
-                                </select>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="smartSelect">
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
 
                             <div class="advanced-option-row">
@@ -304,10 +304,10 @@
                                         <div class="tooltip">Removes duplicate URLs when selecting multiple links.</div>
                                     </div>
                                 </div>
-                                <select class="key-select compact-select" id="avoidDuplicates">
-                                    <option value="on">On</option>
-                                    <option value="off">Off</option>
-                                </select>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="avoidDuplicates" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
 
                             <div class="advanced-option-row">
@@ -317,9 +317,10 @@
                                         <div class="tooltip">Open/copy links in reverse order of selection.</div>
                                     </div>
                                 </div>
-                                <div class="checkbox-wrapper">
+                                <label class="toggle-switch">
                                     <input type="checkbox" id="reverseOrder">
-                                </div>
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
 
                             <div class="advanced-option-row" id="openAtEndContainer">
@@ -330,9 +331,10 @@
                                             current tab.</div>
                                     </div>
                                 </div>
-                                <div class="checkbox-wrapper">
+                                <label class="toggle-switch">
                                     <input type="checkbox" id="openAtEnd">
-                                </div>
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
 
                             <div class="advanced-option-row" id="delayOptionContainer">
