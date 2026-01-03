@@ -1,3 +1,7 @@
+## Version 3.5.2 Changelog:
+- **Removed `history` Permission**: Addressed user complaints about the "Read your browsing history" permission request by removing the `chrome.history` API usage.
+- **Reduced Permission Footprint**: The extension no longer explicitly adds opened links to browser history; Chrome handles this natively when tabs are viewed.
+
 ## Version 3.5.1 Changelog:
 - **UI Overhaul: Modern Toggle Switches**: Replaced all advanced option checkboxes and "On/Off" dropdowns in the Action Modal with beautiful, animated toggle switches.
 - **Improved UX**: Enhanced the visual consistency of the configuration modal with sleek gradients and smoother interaction feedback.

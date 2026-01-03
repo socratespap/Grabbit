@@ -66,10 +66,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             url: request.urls[0],
             focused: true,
         }, (newWindow) => {
-            // Mark first URL as visited
-            if (request.urls[0]) {
-                chrome.history.addUrl({ url: request.urls[0] });
-            }
+
             // Create tabs for remaining URLs in the new window with delay
             if (delay > 0) {
                 // Open tabs with delay - only process the remaining URLs (not the first one)
@@ -80,7 +77,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             url: url,
                             active: false
                         });
-                        chrome.history.addUrl({ url: url });
                     }, delay * 1000 * (index + 1)); // Convert seconds to milliseconds and multiply by index
                 });
             } else {
@@ -91,7 +87,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         url: url,
                         active: false
                     });
-                    chrome.history.addUrl({ url: url });
                 });
             }
         });
@@ -117,7 +112,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         index: tabCount + index, // Place at the end
                         active: false
                     });
-                    chrome.history.addUrl({ url: url });
                 });
             });
         } else if (openAtEnd && delay > 0) {
@@ -132,7 +126,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             index: tabCount, // Place at the end
                             active: false
                         });
-                        chrome.history.addUrl({ url: url });
                     });
                 }, delay * 1000 * index);
             });
@@ -146,7 +139,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         index: currentIndex + index + 1,
                         active: false
                     });
-                    chrome.history.addUrl({ url: url });
                 }, delay * 1000 * index); // Convert seconds to milliseconds and multiply by index
             });
         } else {
@@ -158,7 +150,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     index: currentIndex + index + 1,
                     active: false
                 });
-                chrome.history.addUrl({ url: url });
             });
         }
     }
