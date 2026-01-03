@@ -25,7 +25,7 @@ The project is built using standard web technologies and the Chrome WebExtension
 ### Core Technologies
 *   **JavaScript (Vanilla):** Core logic, utilizing ES6+ features.
 *   **HTML/CSS:** UI for Popup and Options pages. Leveraging **CSS Variables** for a centralized design system.
-*   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `history`, `bookmarks`.
+*   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `bookmarks`.
 *   **Manifest V3:** Adheres to the latest Chrome extension security and background service worker requirements.
 
 ### Directory Structure
