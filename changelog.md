@@ -1,3 +1,7 @@
+## Version 3.5.5 Changelog:
+- **Universal Adaptive Smart Select**: Upgraded Smart Select to "learn" from your first selection. If you start dragging on a specific type of link (e.g., a YouTube video title, a DeviantArt card, or a bold Reddit post), Grabbit will automatically filter subsequent selections to match that exact type, ignoring clutter like channel names or author links.
+- **Deep Inspection Engine**: Enhanced the detection logic to support modern complex websites where links wrap headings or bold text (common in card/grid layouts), ensuring robust performance across virtually all sites.
+
 ## Version 3.5.4 Changelog:
 - **Improved Link Detection (Google Search)**: Implemented smart filtering for Google Search results to only capture primary results.
 - **Internal Link Filtering**: Automatically skips Google tracking URLs, search query links, and embedded ngrams when browsing Google Search.

@@ -134,7 +134,7 @@ function updateSelectedLinks() {
             box.bottom < boxTop);
 
         if (isInBox) {
-            linksInBox.push({ link, isImportant });
+            linksInBox.push({ link, isImportant, signature: item.signature });
             if (isImportant) importantCount++;
         }
     });
@@ -144,10 +144,41 @@ function updateSelectedLinks() {
         // If we touch an important link and not in smart mode, activate smart mode
         if (!GrabbitState.smartSelectActive && importantCount > 0) {
             GrabbitState.smartSelectActive = true;
+
+            // ADAPTIVE SMART SELECT:
+            // Find the "first" important link the user touched (closest to drag start)
+            // to use as a reference for filtering.
+            let firstImportantLink = null;
+            let minDistance = Infinity;
+
+            // Calculate distance from start point (GrabbitState.startX/Y) to link center
+            linksInBox.forEach(({ link, isImportant, signature }) => {
+                if (isImportant) {
+                    // We need the box for this link from cachedLinks to compute center
+                    // But linksInBox is a simplified array. 
+                    // Let's look up the full cached item.
+                    const cachedItem = GrabbitState.cachedLinks.find(c => c.link === link);
+                    if (cachedItem) {
+                        const centerX = (cachedItem.box.left + cachedItem.box.right) / 2;
+                        const centerY = (cachedItem.box.top + cachedItem.box.bottom) / 2;
+                        const dist = Math.hypot(centerX - GrabbitState.startX, centerY - GrabbitState.startY);
+
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            firstImportantLink = cachedItem;
+                        }
+                    }
+                }
+            });
+
+            if (firstImportantLink) {
+                GrabbitState.smartSelectReference = firstImportantLink.signature;
+            }
         }
         // If no important links in box and we're in smart mode, deactivate
         else if (GrabbitState.smartSelectActive && importantCount === 0) {
             GrabbitState.smartSelectActive = false;
+            GrabbitState.smartSelectReference = null;
         }
     }
 
@@ -158,12 +189,24 @@ function updateSelectedLinks() {
     GrabbitState.selectedLinks.clear();
 
     // Second pass: select links based on current mode
-    linksInBox.forEach(({ link, isImportant }) => {
-        // If smart select is active, only select important links
+    linksInBox.forEach(({ link, isImportant, signature }) => {
+        // If smart select is active, only select important links that MATCH the reference signature
         // Otherwise, select all links in box
-        const shouldSelect = !smartSelectEnabled ||
-            !GrabbitState.smartSelectActive ||
-            isImportant;
+        let isMatch = true;
+
+        if (smartSelectEnabled && GrabbitState.smartSelectActive) {
+            // Must be important AND match signature
+            if (!isImportant) {
+                isMatch = false;
+            } else if (GrabbitState.smartSelectReference) {
+                // Adaptive check
+                if (!signaturesMatch(GrabbitState.smartSelectReference, signature)) {
+                    isMatch = false;
+                }
+            }
+        }
+
+        const shouldSelect = isMatch;
 
         if (shouldSelect) {
             GrabbitState.selectedLinks.add(link);

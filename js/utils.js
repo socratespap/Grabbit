@@ -139,3 +139,143 @@ function getAllLinks(root = document) {
 
     return links;
 }
+
+/**
+ * Determines if a link is "important" based on heuristics
+ * (Headings, ARIA roles, Font weight/size, deep visual check)
+ * @param {HTMLAnchorElement} link - The link element
+ * @param {CSSStyleDeclaration} style - The computed style of the link
+ * @returns {boolean} True if the link is considered important
+ */
+function isLinkImportant(link, style) {
+    // 1. Semantic Headings (H1-H6) - Check Upwards
+    const headingRegex = /^H[1-6]$/;
+    // Check immediate parent first (fastest)
+    if (link.parentElement && headingRegex.test(link.parentElement.tagName)) return true;
+
+    // Walk up a few levels (e.g. 3) to find a heading tag
+    let parentNode = link.parentNode;
+    for (let i = 0; i < 3 && parentNode && parentNode !== document.body; i++) {
+        if (headingRegex.test(parentNode.nodeName)) {
+            return true;
+        }
+        parentNode = parentNode.parentNode;
+    }
+
+    // 2. ARIA Roles
+    if (link.getAttribute('role') === 'heading') return true;
+    if (link.closest && link.closest('[role="heading"]')) return true;
+
+    // 3. Visual Prominence (Self)
+    if (isVisuallyProminent(style)) return true;
+
+    // 4. Deep Inspection (Children)
+    // If the link itself isn't bold/large, check if it WRAPS something important
+    // Check for H tags inside
+    if (link.querySelector('h1, h2, h3, h4, h5, h6')) return true;
+
+    // Check immediate children for visual importance
+    // We limit depth to avoid perf hit, just check direct children and maybe one level down
+    const children = Array.from(link.children);
+    for (const child of children) {
+        if (headingRegex.test(child.tagName)) return true; // Direct child is H tag
+
+        const childStyle = window.getComputedStyle(child);
+        if (isVisuallyProminent(childStyle)) return true;
+
+        // One more level deep? (e.g. Link > Div > Span(Bold))
+        if (child.children.length > 0) {
+            const grandChildren = Array.from(child.children);
+            for (const grandChild of grandChildren) {
+                if (headingRegex.test(grandChild.tagName)) return true;
+                const grandChildStyle = window.getComputedStyle(grandChild);
+                if (isVisuallyProminent(grandChildStyle)) return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Helper to check visual prominence based on style object
+ */
+function isVisuallyProminent(style) {
+    // Check for bold (>= 600 or 'bold')
+    const weight = style.fontWeight;
+    if (weight === 'bold' || parseInt(weight) >= 600) {
+        return true;
+    }
+    // Check for large font (>= 16px)
+    const fontSize = parseFloat(style.fontSize);
+    if (fontSize >= 16) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Generates a signature for a link to identifying its "type" for adaptive selection.
+ * @param {HTMLAnchorElement} link - The link element
+ * @param {CSSStyleDeclaration} style - The computed style of the link
+ * @returns {Object} The signature object
+ */
+function getLinkSignature(link, style) {
+    // improved signature to capture "deep" structure
+    let structureType = 'standard'; // standard, wrapper-heading, wrapper-bold
+    let primaryTag = link.tagName;
+
+    // Check if it's a wrapper
+    if (link.querySelector('h1, h2, h3, h4, h5, h6')) {
+        structureType = 'wrapper-heading';
+        primaryTag = link.querySelector('h1, h2, h3, h4, h5, h6').tagName;
+    } else {
+        // Check parent for heading
+        const headingRegex = /^H[1-6]$/;
+        let parentNode = link.parentNode;
+        for (let i = 0; i < 3 && parentNode && parentNode !== document.body; i++) {
+            if (headingRegex.test(parentNode.nodeName)) {
+                structureType = 'inside-heading';
+                primaryTag = parentNode.tagName;
+                break;
+            }
+            parentNode = parentNode.parentNode;
+        }
+    }
+
+    return {
+        structureType: structureType,
+        primaryTag: primaryTag,
+        classList: Array.from(link.classList),
+        // If it's a wrapper, 'isBold' might be false on the link itself, but true on child
+        // For signature matching, we care about the link's own class/style consistency mostly
+        isBold: style.fontWeight === 'bold' || parseInt(style.fontWeight) >= 600,
+        fontSize: parseFloat(style.fontSize) || 0
+    };
+}
+
+/**
+ * Checks if a candidate signature matches the reference signature
+ * @param {Object} refSig - The signature of the reference link
+ * @param {Object} candSig - The signature of the candidate link
+ * @returns {boolean} True if they match
+ */
+function signaturesMatch(refSig, candSig) {
+    if (!refSig || !candSig) return false;
+
+    // 1. Structure Match (Wrapper vs Inside-Heading vs Standard)
+    if (refSig.structureType !== candSig.structureType) return false;
+
+    // 2. Visual Weight Match (only if not a wrapper, as wrappers might vary on outer style)
+    if (refSig.structureType === 'standard' || refSig.structureType === 'inside-heading') {
+        if (refSig.isBold !== candSig.isBold) return false;
+    }
+
+    // 3. Class Intersection
+    if (refSig.classList.length > 0 && candSig.classList.length > 0) {
+        const intersection = refSig.classList.filter(c => candSig.classList.includes(c));
+        if (intersection.length === 0) return false;
+    }
+
+    return true;
+}
