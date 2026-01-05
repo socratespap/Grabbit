@@ -54,6 +54,7 @@ export function closeModal() {
     document.getElementById('smartSelect').checked = false;
     document.getElementById('avoidDuplicates').checked = true;
     document.getElementById('reverseOrder').checked = false;
+    document.getElementById('markVisited').checked = false;
     document.getElementById('openAtEnd').checked = false;
     document.getElementById('tabDelay').value = 0;
     document.getElementById('delayValue').textContent = '0.0s';
@@ -130,6 +131,7 @@ export function handleSaveAction() {
         smartSelect: document.getElementById('smartSelect').checked ? 'on' : 'off',
         avoidDuplicates: document.getElementById('avoidDuplicates').checked ? 'on' : 'off',
         reverseOrder: document.getElementById('reverseOrder').checked,
+        markVisited: document.getElementById('markVisited').checked,
         openAtEnd: document.getElementById('openAtEnd').checked,
         boxColor: document.getElementById('boxColor').value,
         tabDelay: parseFloat(document.getElementById('tabDelay').value),

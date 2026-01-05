@@ -13,10 +13,11 @@
 *   **Exclusion Filters:** Global keyword and Regular Expression (Regex) filtering to automatically skip unwanted links during drag-selection. Manageable via a dynamic tag-based UI.
 *   **Disabled Domains:** Blocklist feature to completely disable Grabbit (Selection, Linkify, Visited tracking) on specific domains. Includes a visual "OFF" badge and a popup overlay with an "Enable" button.
 *   **Options Page:** Extensive customization for colors, behavior, and granular filtering rules.
-*   **Enhanced Copy Formatting:** expanded "Copy URLs with Titles" action with support for **Markdown**, **JSON**, and customizable separators (Comma, Dot, Tab, etc.).
+*   **Enhanced Copy Formatting:** Expanded "Copy URLs with Titles" action with support for **Markdown**, **JSON**, and customizable separators (Comma, Dot, Tab, etc.).
 *   **Create Bookmarks:** Select multiple links and instantly save them as bookmarks in a folder named after the current page title.
-*   **Advanced Options:** Dedicated section for experimental and power-user features. Now includes a **dynamic UI** that hides/shows sub-settings based on primary features and a robust filter management system.
-*   **Modern Architecture:** Refactored into a modular structure for better maintainability.
+*   **Advanced Options:** Dedicated section for power-user features. Now includes **animated toggle switches**, a dynamic UI that adapts to selected features, and a robust filter/domain management system.
+*   **Configurable "Mark as Visited":** (New) Per-action setting in Advanced Options to visually mark links as visited (purple) in the browser.
+*   **Modern Architecture:** Refactored into a modular structure for better maintainability and performance.
 
 ## Architecture & Technology
 
@@ -46,6 +47,16 @@ The project is built using standard web technologies and the Chrome WebExtension
     *   `advancedOptions.css`: Specific styling for advanced controls (toggle switches, filter tags).
 *   **`js/linkify.js`**: (New) Scans the page for plain text URLs and converts them to clickable `<a>` tags if enabled.
 *   **`js/visited.js`**: (New) Handles persistent tracking and visual marking of visited links to bypass browser redirect limitations.
+
+### 4. Modular Options Page
+The options page has been refactored from a single monolithic file into multiple ES modules, improving code reuse and testing:
+- **`main.js`**: Orchestrates initialization.
+- **`env.js`**: Environment constants (OS detection, Extension context).
+- **`storage.js`**: Handles saving/loading actions to `chrome.storage.sync`.
+- **`utils.js`**: Helpers for colors, key labels, and tooltips.
+- **`preview.js`**: Live format preview for "Copy URLs & Titles".
+- **`card.js`**: Component for managing action cards.
+- **`modal.js`**: Manages the "Add/Edit Action" modal lifecycle.
 
 ## CSS Architecture & Design System
 
@@ -83,16 +94,6 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 ### `js/ui.js`
 **Role:** DOM & Visuals
 *   Handles creation and updating of the selection box and counter label.
-
-### `js/options/` (Modular Options Page)
-**Role:** Main Options Page Logic (Refactored)
-*   **`main.js`**: Entry point. Imports modules and orchestrates initialization.
-*   **`env.js`**: Environment constants (OS detection, Extension context).
-*   **`storage.js`**: Handles saving/loading actions to `chrome.storage.sync`.
-*   **`utils.js`**: Helpers for colors, key labels, and tooltips.
-*   **`card.js`**: Generates and manages Action Card UI.
-*   **`modal.js`**: Manages the "Add/Edit Action" modal lifecycle.
-*   **`preview.js`**: Live format preview for "Copy URLs & Titles".
 
 ### `js/utils.js`
 **Role:** Helper Functions
@@ -180,6 +181,8 @@ Access the options page to:
 - 🟢 Include option when copying URLs ("Title tab Url, instead of Title \n Url")
 - 🟢 Create Bookmarks
 - 🔴 Fix compatibility with Netsuite
+- 🔴 Improve trackpad compatibility for letter key modifiers
+
 
 ## Changelog
 

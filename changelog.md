@@ -1,3 +1,6 @@
+## Version 3.5.3 Changelog:
+- **New Feature: Configurable "Mark as Visited"**: Users can now enable or disable the "Mark links as visited" behavior on a per-action basis via the Advanced Options in the Action Modal.
+
 ## Version 3.5.2 Changelog:
 - **Removed `history` Permission**: Addressed user complaints about the "Read your browsing history" permission request by removing the `chrome.history` API usage.
 - **Reduced Permission Footprint**: The extension no longer explicitly adds opened links to browser history; Chrome handles this natively when tabs are viewed.

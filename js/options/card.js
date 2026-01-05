@@ -88,6 +88,7 @@ export function createActionCard(action, savedActionsContainer, modal) {
     }
     if (action.copyTitles) features.push('Copy Titles');
     if (action.createBookmarks) features.push('Create Bookmarks');
+    if (action.markVisited) features.push('Mark Visited');
     if (action.reverseOrder) features.push('Reverse Order');
     if (action.openLinks && action.openAtEnd) features.push('Open at End');
     if ((action.openLinks || action.openWindow) && action.tabDelay > 0) features.push(`${action.tabDelay}s Delay`);
@@ -164,6 +165,7 @@ function openEditModal(action, card, modal) {
     document.getElementById('smartSelect').checked = action.smartSelect === 'on';
     document.getElementById('avoidDuplicates').checked = action.avoidDuplicates !== 'off';
     document.getElementById('reverseOrder').checked = action.reverseOrder || false;
+    document.getElementById('markVisited').checked = action.markVisited || false;
     document.getElementById('openAtEnd').checked = action.openAtEnd || false;
     document.getElementById('boxColor').value = action.boxColor || '#2196F3';
     document.getElementById('tabDelay').value = action.tabDelay || 0;

@@ -210,8 +210,10 @@ function processSelectedLinks(matchedAction) {
             delay: matchedAction.tabDelay || 0,
             openAtEnd: matchedAction.openAtEnd || false
         });
-        // Mark links as visited (persistent storage)
-        markLinksAsGrabbitVisited(finalUrls, Array.from(GrabbitState.selectedLinks));
+        // Mark links as visited (persistent storage) if enabled for this action
+        if (matchedAction.markVisited) {
+            markLinksAsGrabbitVisited(finalUrls, Array.from(GrabbitState.selectedLinks));
+        }
 
     } else if (matchedAction.openWindow) {
         // Send message to background script to handle window creation
@@ -220,8 +222,10 @@ function processSelectedLinks(matchedAction) {
             urls: finalUrls,
             delay: matchedAction.tabDelay || 0
         });
-        // Mark links as visited (persistent storage)
-        markLinksAsGrabbitVisited(finalUrls, Array.from(GrabbitState.selectedLinks));
+        // Mark links as visited (persistent storage) if enabled for this action
+        if (matchedAction.markVisited) {
+            markLinksAsGrabbitVisited(finalUrls, Array.from(GrabbitState.selectedLinks));
+        }
 
     } else if (matchedAction.copyUrls) {
         // Copy URLs to clipboard
