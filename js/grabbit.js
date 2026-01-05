@@ -154,11 +154,11 @@ function activateSelection() {
 
     if (clientRect.width === 0 && clientRect.height === 0) return;
 
-    // Check if link is "important" (using enhanced heuristics)
-    const isImportant = isLinkImportant(link, style);
+    // Check if link is "important" (using SmartSelect heuristics)
+    const isImportant = SmartSelect.isLinkImportant(link, style);
 
     // Generate signature for adaptive smart select
-    const signature = getLinkSignature(link, style);
+    const signature = SmartSelect.getLinkSignature(link, style);
 
     // Store document-relative coordinates and importance flag
     GrabbitState.cachedLinks.push({

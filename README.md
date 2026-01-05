@@ -8,7 +8,7 @@
 
 *   **Drag-Select:** Intuitive visual selection box.
 *   **Custom Actions:** Configurable mouse/keyboard combinations including **A-Z keys** (e.g., G + Right Click to Copy).
-*   **Smart Selection:** Dynamic filtering that prioritizes heading links (H1-H6).
+*   **Adaptive Smart Selection:** Intelligent pattern-based filtering that automatically detects and selects consistent groups of links (e.g., repeating video titles, grid items) while ignoring clutter.
 *   **Linkify:** Automatically converts plain text URLs on web pages into clickable links. Includes an **Aggressive Mode** for domain-only recognition (e.g., `google.com`) and support for links inside code blocks.
 *   **Exclusion Filters:** Global keyword and Regular Expression (Regex) filtering to automatically skip unwanted links during drag-selection. Manageable via a dynamic tag-based UI.
 *   **Disabled Domains:** Blocklist feature to completely disable Grabbit (Selection, Linkify, Visited tracking) on specific domains. Includes a visual "OFF" badge and a popup overlay with an "Enable" button.
@@ -106,6 +106,10 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 *   **isLinkExcluded()**: Checks URLs against keyword and regex exclusion patterns.
 *   **processSelectedLinks()**: Executes actions (open/copy), handles deduplication, and reverse ordering.
 *   **updateSelectedLinks()**: Collision detection, Smart Select (heading-based filtering), and Exclusion Filtering.
+
+### `js/smart-select.js`
+**Role:** Adaptive Pattern-Based Selection
+*   **Purpose:** Implements the "Adaptive Smart Select" algorithm that finds and selects links based on repeating visual/structural patterns.
 
 ### `js/visited.js`
 **Role:** Persistent Visited State Management

@@ -1,3 +1,9 @@
+## Version 3.5.6 Changelog:
+- **Simplified Pattern-Based Smart Select**: Completely rewrote the Smart Select algorithm. It now detects repeating link patterns and automatically filters to select only consistent link types.
+- **Frequency-Based Filtering**: If a link pattern appears 2+ times, only those matching links are selected. If all links are unique, all are selected.
+- **Important Pattern Priority**: When multiple patterns repeat, "important" patterns (headings, bold text) are prioritized over standard ones.
+- **New Module: `js/smart-select.js`**: Extracted Smart Select logic into a standalone module for better maintainability.
+
 ## Version 3.5.5 Changelog:
 - **Universal Adaptive Smart Select**: Upgraded Smart Select to "learn" from your first selection. If you start dragging on a specific type of link (e.g., a YouTube video title, a DeviantArt card, or a bold Reddit post), Grabbit will automatically filter subsequent selections to match that exact type, ignoring clutter like channel names or author links.
 - **Deep Inspection Engine**: Enhanced the detection logic to support modern complex websites where links wrap headings or bold text (common in card/grid layouts), ensuring robust performance across virtually all sites.
