@@ -1,3 +1,8 @@
+## Version 3.5.4 Changelog:
+- **Improved Link Detection (Google Search)**: Implemented smart filtering for Google Search results to only capture primary results.
+- **Internal Link Filtering**: Automatically skips Google tracking URLs, search query links, and embedded ngrams when browsing Google Search.
+- **Nested Link Prevention**: Added a global safeguard to skip anchor tags that are descendants of other anchor tags, preventing duplicate/junk selections on complex pages.
+
 ## Version 3.5.3 Changelog:
 - **New Feature: Configurable "Mark as Visited"**: Users can now enable or disable the "Mark links as visited" behavior on a per-action basis via the Advanced Options in the Action Modal.
 

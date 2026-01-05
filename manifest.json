@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Grabbit",
-  "version": "3.5.3",
+  "version": "3.5.4",
   "description": "Drag to select multiple links, open in new tabs, copy URLs with formatting, or create bookmarks instantly.",
   "icons": {
     "16": "icons/icon16.png",

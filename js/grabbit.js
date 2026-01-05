@@ -94,6 +94,41 @@ function activateSelection() {
     // Skip links without href
     if (!link.href) return;
 
+    // Skip nested links (links that are descendants of other links)
+    // This prevents selecting duplicate/internal links like those in Google search results
+    let isNested = false;
+    let parentElement = link.parentElement;
+    while (parentElement && parentElement !== document.body) {
+      if (parentElement.tagName === 'A') {
+        isNested = true;
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+    if (isNested) return;
+
+    // On Google Search pages, filter out Google's internal navigation/tracking links
+    // This only affects google.com/search pages - other sites are unaffected
+    const isGoogleSearch = window.location.hostname.includes('google.') &&
+      window.location.pathname.startsWith('/search');
+    if (isGoogleSearch) {
+      try {
+        const linkUrl = new URL(link.href);
+        const linkHost = linkUrl.hostname.toLowerCase();
+        // Skip Google internal links (search, tracking, books, ngrams, etc.)
+        if (linkHost.includes('google.') &&
+          (linkUrl.pathname.startsWith('/search') ||
+            linkUrl.pathname.startsWith('/url') ||
+            linkHost.includes('books.google') ||
+            linkHost.includes('ngrams'))) {
+          return;
+        }
+      } catch (e) {
+        // Invalid URL, skip it
+        return;
+      }
+    }
+
     // Visibility check
     // Note: getComputedStyle can be expensive, but doing it once on activation
     // is much better than on every mousemove
