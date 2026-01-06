@@ -1,3 +1,9 @@
+## Version 3.5.7 Changelog:
+- **Storage Migration & Validation**: Implemented automatic migration logic that validates and repairs saved actions on extension install/update.
+- **Upgrade Compatibility Fix**: Prevents extension breakage when users upgrade from very old versions with incompatible storage schemas.
+- **Data Preservation**: Actions with missing properties are automatically repaired with sensible defaults; only completely corrupted actions are removed.
+- **Console Logging**: Added informative console messages when migration or repair occurs.
+
 ## Version 3.5.6 Changelog:
 - **Simplified Pattern-Based Smart Select**: Completely rewrote the Smart Select algorithm. It now detects repeating link patterns and automatically filters to select only consistent link types.
 - **Frequency-Based Filtering**: If a link pattern appears 2+ times, only those matching links are selected. If all links are unique, all are selected.

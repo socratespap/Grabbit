@@ -1,3 +1,126 @@
+//=============================================================================
+// STORAGE MIGRATION & VALIDATION
+//=============================================================================
+
+/**
+ * Required properties for each action with their default values.
+ * Used to repair actions that may be missing properties after upgrades.
+ */
+const REQUIRED_ACTION_PROPERTIES = {
+    combination: { key: 'none', mouseButton: 'right' },
+    openLinks: false,
+    openWindow: false,
+    copyUrls: false,
+    copyUrlsAndTitles: false,
+    copyTitles: false,
+    createBookmarks: false,
+    smartSelect: 'off',
+    avoidDuplicates: 'on',
+    reverseOrder: false,
+    openAtEnd: false,
+    boxColor: '#FF0000',
+    tabDelay: 0,
+    borderThickness: 2,
+    borderStyle: 'solid',
+    markAsVisited: true
+};
+
+/**
+ * Validates if an action has the minimum required structure.
+ * An action is valid if it's an object with a combination property.
+ * @param {Object} action - The action to validate
+ * @returns {boolean} True if action has valid base structure
+ */
+function validateAction(action) {
+    if (!action || typeof action !== 'object') return false;
+    if (!action.combination || typeof action.combination !== 'object') return false;
+    // Must have at least a mouseButton defined
+    if (!action.combination.mouseButton) return false;
+    return true;
+}
+
+/**
+ * Repairs an action by filling in missing properties with defaults.
+ * Preserves all existing valid properties.
+ * @param {Object} action - The action to repair
+ * @returns {Object} A new action object with all required properties
+ */
+function repairAction(action) {
+    const repairedAction = {};
+
+    // For each required property, use existing value or default
+    for (const [key, defaultValue] of Object.entries(REQUIRED_ACTION_PROPERTIES)) {
+        if (key === 'combination') {
+            // Special handling for combination object
+            repairedAction.combination = {
+                key: action.combination?.key ?? defaultValue.key,
+                mouseButton: action.combination?.mouseButton ?? defaultValue.mouseButton
+            };
+        } else if (action.hasOwnProperty(key)) {
+            // Keep existing value
+            repairedAction[key] = action[key];
+        } else {
+            // Use default value
+            repairedAction[key] = defaultValue;
+        }
+    }
+
+    // Preserve any extra properties not in REQUIRED_ACTION_PROPERTIES
+    // (for forward compatibility)
+    for (const [key, value] of Object.entries(action)) {
+        if (!repairedAction.hasOwnProperty(key)) {
+            repairedAction[key] = value;
+        }
+    }
+
+    return repairedAction;
+}
+
+/**
+ * Migrates stored actions by validating and repairing each one.
+ * @param {Array} actions - The stored actions array
+ * @returns {Object} Object with: { actions: Array, wasRepaired: boolean, invalidCount: number }
+ */
+function migrateStoredActions(actions) {
+    // If not an array or empty, return null to trigger default action creation
+    if (!Array.isArray(actions) || actions.length === 0) {
+        return null;
+    }
+
+    const repairedActions = [];
+    let wasRepaired = false;
+    let invalidCount = 0;
+
+    for (const action of actions) {
+        if (validateAction(action)) {
+            // Check if repair is needed by comparing property count
+            const originalKeys = Object.keys(action).length;
+            const repaired = repairAction(action);
+            const repairedKeys = Object.keys(repaired).length;
+
+            if (repairedKeys > originalKeys) {
+                wasRepaired = true;
+            }
+            repairedActions.push(repaired);
+        } else {
+            // Action is too corrupted to repair, skip it
+            invalidCount++;
+            wasRepaired = true;
+        }
+    }
+
+    // If all actions were invalid, return null to trigger defaults
+    if (repairedActions.length === 0) {
+        return null;
+    }
+
+    return { actions: repairedActions, wasRepaired, invalidCount };
+}
+
+//=============================================================================
+// EXTENSION LIFECYCLE
+//=============================================================================
+
 //open options page on extension install
 chrome.runtime.onInstalled.addListener((details) => {
     // Enable Linkify by default for new installs OR existing users upgrading to this version
@@ -6,8 +129,11 @@ chrome.runtime.onInstalled.addListener((details) => {
             chrome.storage.sync.set({ linkifyEnabled: true });
         }
 
-        // Check for saved actions and add defaults if none exist
-        if (!result.savedActions || result.savedActions.length === 0) {
+        // Migrate/validate stored actions
+        const migrationResult = migrateStoredActions(result.savedActions);
+
+        if (migrationResult === null) {
+            // No valid actions found, set defaults
             const defaultActions = [
                 {
                     combination: { key: 'none', mouseButton: 'right' },
@@ -16,6 +142,7 @@ chrome.runtime.onInstalled.addListener((details) => {
                     copyUrls: false,
                     copyUrlsAndTitles: false,
                     copyTitles: false,
+                    createBookmarks: false,
                     smartSelect: 'off',
                     avoidDuplicates: 'on',
                     reverseOrder: false,
@@ -23,7 +150,8 @@ chrome.runtime.onInstalled.addListener((details) => {
                     boxColor: '#FF0000', // Red
                     tabDelay: 0,
                     borderThickness: 2,
-                    borderStyle: 'solid'
+                    borderStyle: 'solid',
+                    markAsVisited: false
                 },
                 {
                     combination: { key: 'ctrl', mouseButton: 'right' },
@@ -32,6 +160,7 @@ chrome.runtime.onInstalled.addListener((details) => {
                     copyUrls: true,
                     copyUrlsAndTitles: false,
                     copyTitles: false,
+                    createBookmarks: false,
                     smartSelect: 'off',
                     avoidDuplicates: 'on',
                     reverseOrder: false,
@@ -39,14 +168,22 @@ chrome.runtime.onInstalled.addListener((details) => {
                     boxColor: '#0000FF', // Blue
                     tabDelay: 0,
                     borderThickness: 2,
-                    borderStyle: 'solid'
+                    borderStyle: 'solid',
+                    markAsVisited: false
                 }
             ];
 
             chrome.storage.sync.set({ savedActions: defaultActions }, () => {
-                console.log('Default actions set:', defaultActions);
+                console.log('Grabbit: Default actions set.');
+            });
+        } else if (migrationResult.wasRepaired) {
+            // Actions were repaired, save them
+            chrome.storage.sync.set({ savedActions: migrationResult.actions }, () => {
+                console.log(`Grabbit: Migrated ${migrationResult.actions.length} actions. ` +
+                    `${migrationResult.invalidCount} invalid actions were removed.`);
             });
         }
+        // If no repair was needed, do nothing (keep existing actions)
     });
 
     if (details.reason === 'install') {
