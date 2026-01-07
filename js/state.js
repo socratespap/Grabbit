@@ -29,7 +29,8 @@ const GrabbitState = {
     exclusionFilters: [],       // Raw filter strings from user settings
     disabledDomains: [],        // List of domains to block
     compiledExclusionFilters: [], // Pre-compiled RegExp objects for performance
-    pressedKeys: new Set()      // Set of currently pressed letter keys (for A-Z modifiers)
+    pressedKeys: new Set(),     // Set of currently pressed letter keys (for A-Z modifiers)
+    linkRefreshInterval: null   // Interval ID for periodic link re-caching during selection
 };
 
 //=============================================================================
@@ -46,5 +47,6 @@ const CONSTANTS = {
     SCROLL_INTERVAL: 16,        // Milliseconds between scroll updates (~60fps)
     DEBOUNCE_DELAY: 5,          // Milliseconds for debouncing link selection
     DEFAULT_BOX_COLOR: '#2196F3', // Default selection box color
-    DRAG_THRESHOLD: 5           // Pixels to drag before activating selection
+    DRAG_THRESHOLD: 5,          // Pixels to drag before activating selection
+    LINK_REFRESH_INTERVAL: 500  // Milliseconds between link re-caching during selection
 };

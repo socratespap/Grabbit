@@ -105,4 +105,9 @@ function cleanupSelection() {
         clearInterval(GrabbitState.scrollInterval);
         GrabbitState.scrollInterval = null;
     }
+
+    if (GrabbitState.linkRefreshInterval) {
+        clearInterval(GrabbitState.linkRefreshInterval);
+        GrabbitState.linkRefreshInterval = null;
+    }
 }

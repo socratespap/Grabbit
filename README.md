@@ -17,7 +17,9 @@
 *   **Create Bookmarks:** Select multiple links and instantly save them as bookmarks in a folder named after the current page title.
 *   **Advanced Options:** Dedicated section for power-user features. Now includes **animated toggle switches**, a dynamic UI that adapts to selected features, and a robust filter/domain management system.
 *   **Configurable "Mark as Visited":** (New) Per-action setting in Advanced Options to visually mark links as visited (purple) in the browser.
+*   **Dynamic Link Detection:** (New) Automatically detects and allows selection of new links that appear during a drag (e.g., from **infinite scroll** or lazy loading).
 *   **Modern Architecture:** Refactored into a modular structure for better maintainability and performance.
+
 
 ## Architecture & Technology
 

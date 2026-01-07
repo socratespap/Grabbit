@@ -1,3 +1,9 @@
+## Version 3.5.9 Changelog:
+- **Dynamic Link Detection**: Implemented periodic link re-caching (every 500ms) while the selection box is active.
+- **Support for Infinite Scroll**: Newly loaded links (e.g., from lazy loading or infinite scrolling) are now automatically recognized and selectable without restarting the selection.
+- **Performance Optimized**: Re-caching only scans for new link elements that weren't already in the cache.
+- **Robust Cleanup**: Improved state management to ensure all intervals are correctly cleared when selection ends.
+
 ## Version 3.5.8 Changelog:
 - **Update Notification System**: Added a new notification system to alert users when a new version is installed.
 - **Extension Icon Badge**: Shows a green "!" badge on the extension logo across all tabs when an update occurs.

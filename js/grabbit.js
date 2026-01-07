@@ -190,6 +190,113 @@ function activateSelection() {
   GrabbitState.counterLabel = createCounterLabel();
   document.body.appendChild(GrabbitState.counterLabel);
   GrabbitState.selectedLinks.clear();
+
+  // Start periodic link re-caching to detect dynamically loaded content
+  GrabbitState.linkRefreshInterval = setInterval(() => {
+    refreshCachedLinks();
+  }, CONSTANTS.LINK_REFRESH_INTERVAL);
+}
+
+/**
+ * Refreshes the cached links to detect any new links that appeared
+ * (e.g., from lazy loading, infinite scroll, or dynamic content).
+ * This is called periodically while the selection is active.
+ */
+function refreshCachedLinks() {
+  if (!GrabbitState.isSelectionActive) return;
+
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+
+  // Get current cached link elements for comparison
+  const existingLinkElements = new Set(GrabbitState.cachedLinks.map(item => item.link));
+
+  // Query all links (including those in Shadow DOM)
+  const allLinks = getAllLinks();
+
+  allLinks.forEach(link => {
+    // Skip if already cached
+    if (existingLinkElements.has(link)) return;
+
+    // Skip links without href
+    if (!link.href) return;
+
+    // Skip nested links (links that are descendants of other links)
+    let isNested = false;
+    let parentElement = link.parentElement;
+    while (parentElement && parentElement !== document.body) {
+      if (parentElement.tagName === 'A') {
+        isNested = true;
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+    if (isNested) return;
+
+    // On Google Search pages, filter out Google's internal navigation/tracking links
+    const isGoogleSearch = window.location.hostname.includes('google.') &&
+      window.location.pathname.startsWith('/search');
+    if (isGoogleSearch) {
+      try {
+        const linkUrl = new URL(link.href);
+        const linkHost = linkUrl.hostname.toLowerCase();
+        if (linkHost.includes('google.') &&
+          (linkUrl.pathname.startsWith('/search') ||
+            linkUrl.pathname.startsWith('/url') ||
+            linkHost.includes('books.google') ||
+            linkHost.includes('ngrams'))) {
+          return;
+        }
+      } catch (e) {
+        return;
+      }
+    }
+
+    // Visibility check
+    const style = window.getComputedStyle(link);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+      return;
+    }
+
+    // Sticky/Fixed check
+    const isYouTubeSubscription = window.location.hostname.includes('youtube.com') &&
+      (link.href.includes('/channel/') || link.href.includes('/c/') ||
+        link.href.includes('/user/') || link.href.includes('@'));
+
+    if (!isYouTubeSubscription && isElementSticky(link)) {
+      return;
+    }
+
+    // Get dimensions
+    let clientRect = link.getBoundingClientRect();
+    if ((clientRect.width === 0 || clientRect.height === 0) && link.children.length > 0) {
+      clientRect = link.children[0].getBoundingClientRect();
+    }
+
+    if (clientRect.width === 0 && clientRect.height === 0) return;
+
+    // Check if link is "important" (using SmartSelect heuristics)
+    const isImportant = SmartSelect.isLinkImportant(link, style);
+
+    // Generate signature for adaptive smart select
+    const signature = SmartSelect.getLinkSignature(link, style);
+
+    // Add to cache with document-relative coordinates
+    GrabbitState.cachedLinks.push({
+      link: link,
+      box: {
+        top: clientRect.top + scrollY,
+        bottom: clientRect.bottom + scrollY,
+        left: clientRect.left + scrollX,
+        right: clientRect.right + scrollX
+      },
+      isImportant: isImportant,
+      signature: signature
+    });
+  });
+
+  // Trigger link selection update to include any new links
+  debouncedUpdateLinks();
 }
 
 /**
