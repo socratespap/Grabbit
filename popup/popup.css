@@ -342,6 +342,9 @@ body {
 }
 
 .version-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 10px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.4);
@@ -349,6 +352,54 @@ body {
     padding: 4px 8px;
     border-radius: 6px;
     letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.version-badge:hover {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.version-badge.has-update {
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    animation: gentleGlow 2s ease-in-out infinite;
+}
+
+.version-badge.has-update:hover {
+    background: rgba(76, 175, 80, 0.25);
+}
+
+@keyframes gentleGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 12px rgba(76, 175, 80, 0.5);
+    }
+}
+
+.update-dot {
+    width: 6px;
+    height: 6px;
+    background: #4CAF50;
+    border-radius: 50%;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
 }
 
 /* Scrollbar Styling */

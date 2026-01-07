@@ -12,7 +12,8 @@
         <div id="disabled-state" class="disabled-overlay" style="display: none;">
             <div class="disabled-content">
                 <div class="disabled-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef5350" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef5350" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
                     </svg>
@@ -118,7 +119,10 @@
                 <span>Settings</span>
             </a>
             <div class="footer-divider"></div>
-            <span class="version-badge"></span>
+            <a id="version-link" class="version-badge" title="View changelog">
+                <span class="version-text"></span>
+                <span class="update-dot" style="display: none;"></span>
+            </a>
         </div>
     </div>
     <script src="popup.js"></script>

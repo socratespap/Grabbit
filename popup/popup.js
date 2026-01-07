@@ -113,11 +113,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Display version from manifest
+    // Display version from manifest and handle update notification
     const versionBadge = document.querySelector('.version-badge');
-    if (versionBadge) {
+    const versionText = document.querySelector('.version-text');
+    const updateDot = document.querySelector('.update-dot');
+
+    if (versionBadge && versionText) {
         const manifest = chrome.runtime.getManifest();
-        versionBadge.textContent = `v${manifest.version}`;
+        versionText.textContent = `v${manifest.version}`;
+
+        // Check if there's an update notification
+        chrome.storage.local.get(['updateAvailable'], (result) => {
+            if (result.updateAvailable) {
+                // Show update notification styling
+                versionBadge.classList.add('has-update');
+                versionBadge.title = 'New update! Click to view changelog';
+                if (updateDot) {
+                    updateDot.style.display = 'inline-block';
+                }
+            }
+        });
+
+        // Add click handler to open changelog
+        versionBadge.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Clear the update notification
+            chrome.storage.local.set({ updateAvailable: false });
+            chrome.action.setBadgeText({ text: '' });
+
+            // Open changelog in new tab
+            chrome.tabs.create({
+                url: 'https://github.com/socratespap/Grabbit/blob/main/changelog.md'
+            });
+        });
     }
 
     // Check for disabled domain
@@ -133,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chrome.storage.sync.get(['disabledDomains'], (result) => {
             const disabledDomains = result.disabledDomains || [];
-            
+
             // Simple domain check logic (similar to utils.js but inline to avoid dependencies)
             const isDisabled = disabledDomains.some(domain => hostname.includes(domain));
 
@@ -146,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (disabledState) {
                     disabledState.style.display = 'flex';
                 }
-                
+
                 if (actionsSection) {
                     actionsSection.style.opacity = '0.3';
                     actionsSection.style.pointerEvents = 'none';

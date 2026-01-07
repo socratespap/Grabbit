@@ -1,3 +1,9 @@
+## Version 3.5.8 Changelog:
+- **Update Notification System**: Added a new notification system to alert users when a new version is installed.
+- **Extension Icon Badge**: Shows a green "!" badge on the extension logo across all tabs when an update occurs.
+- **Interactive Version Badge**: The version label in the popup footer is now interactive and shows a pulsing notification dot when an update is pending.
+- **Changelog Integration**: Clicking the version badge automatically clears the notification and opens the official changelog in a new tab.
+
 ## Version 3.5.7 Changelog:
 - **Storage Migration & Validation**: Implemented automatic migration logic that validates and repairs saved actions on extension install/update.
 - **Upgrade Compatibility Fix**: Prevents extension breakage when users upgrade from very old versions with incompatible storage schemas.

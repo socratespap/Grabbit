@@ -189,6 +189,15 @@ chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
         // Open options page on first install
         chrome.runtime.openOptionsPage();
+    } else if (details.reason === 'update') {
+        // Extension was updated - show badge on icon and set flag for popup
+        const manifest = chrome.runtime.getManifest();
+        chrome.action.setBadgeText({ text: '!' });
+        chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
+        chrome.storage.local.set({
+            updateAvailable: true,
+            updatedVersion: manifest.version
+        });
     }
 });
 
