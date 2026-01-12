@@ -15,7 +15,9 @@
     "clipboardWrite",
     "clipboardRead",
     "tabs",
-    "windows",
+    "windows"
+  ],
+  "optional_permissions": [
     "bookmarks"
   ],
   "action": {
