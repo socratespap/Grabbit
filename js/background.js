@@ -303,16 +303,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'createBookmarks') {
-        const { bookmarks, folderName } = request;
+    if (request.action !== 'createBookmarks') return;
 
-        if (!bookmarks || bookmarks.length === 0) return;
+    const { bookmarks, folderName } = request;
+    if (!bookmarks || bookmarks.length === 0) return;
 
+    const runWithPermission = () => {
         // Function to create bookmarks in a specific folder
-        const createBookmarksInFolder = (parentId) => {
+        const createBookmarksInFolder = parentId => {
             bookmarks.forEach(bookmark => {
                 chrome.bookmarks.create({
-                    parentId: parentId,
+                    parentId,
                     title: bookmark.title,
                     url: bookmark.url
                 });
@@ -320,7 +321,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         };
 
         // Search for existing folder with the same name
-        chrome.bookmarks.search({ title: folderName }, (results) => {
+        chrome.bookmarks.search({ title: folderName }, results => {
             // Filter to find a folder (not a bookmark) with the exact name
             const existingFolder = results.find(item => !item.url && item.title === folderName);
 
@@ -329,14 +330,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 createBookmarksInFolder(existingFolder.id);
             } else {
                 // Folder doesn't exist, create it then add bookmarks
-                // We'll create it under "Other Bookmarks" (usually id '2') or '1' depending on browser, 
+                // We'll create it under "Other Bookmarks" (usually id '2') or '1' depending on browser,
                 // but not specifying parentId usually defaults to "Other Bookmarks" in Chrome.
-                chrome.bookmarks.create({ title: folderName }, (newFolder) => {
+                chrome.bookmarks.create({ title: folderName }, newFolder => {
                     createBookmarksInFolder(newFolder.id);
                 });
             }
         });
-    }
+    };
+
+    chrome.permissions.contains({ permissions: ["bookmarks"] }, hasPermission => {
+        if (hasPermission) {
+            runWithPermission();
+        } else {
+            chrome.permissions.request({ permissions: ["bookmarks"] }, granted => {
+                if (granted) {
+                    runWithPermission();
+                }
+            });
+        }
+    });
 });
 
 /**
