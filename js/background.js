@@ -309,6 +309,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (!bookmarks || bookmarks.length === 0) return;
 
     const runWithPermission = () => {
+        // Function to create bookmarks in a specific folder
         const createBookmarksInFolder = parentId => {
             bookmarks.forEach(bookmark => {
                 chrome.bookmarks.create({
@@ -319,12 +320,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             });
         };
 
+        // Search for existing folder with the same name
         chrome.bookmarks.search({ title: folderName }, results => {
+            // Filter to find a folder (not a bookmark) with the exact name
             const existingFolder = results.find(item => !item.url && item.title === folderName);
 
             if (existingFolder) {
+                // Folder exists, add bookmarks to it
                 createBookmarksInFolder(existingFolder.id);
             } else {
+                // Folder doesn't exist, create it then add bookmarks
+                // We'll create it under "Other Bookmarks" (usually id '2') or '1' depending on browser,
+                // but not specifying parentId usually defaults to "Other Bookmarks" in Chrome.
                 chrome.bookmarks.create({ title: folderName }, newFolder => {
                     createBookmarksInFolder(newFolder.id);
                 });
