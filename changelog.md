@@ -1,3 +1,8 @@
+## Version 3.6.0 Changelog:
+- **Optional Bookmarks Permission**: Moved the "bookmarks" permission to optional permissions to improve user privacy.
+- **Runtime Permission Request**: The extension now only requests bookmark access when you specifically use the "Create Bookmarks" action.
+- **Improved Transparency**: Reduced initial installation permission footprint.
+
 ## Version 3.5.9 Changelog:
 - **Dynamic Link Detection**: Implemented periodic link re-caching (every 500ms) while the selection box is active.
 - **Support for Infinite Scroll**: Newly loaded links (e.g., from lazy loading or infinite scrolling) are now automatically recognized and selectable without restarting the selection.
