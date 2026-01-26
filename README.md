@@ -4,6 +4,10 @@
 
 [Available on the Chrome Web Store](https://chromewebstore.google.com/detail/grabbit/madmdgpjgagdmmmiddpiggdnpgjglcdk)
 
+## BrowserStack
+
+This project is tested with BrowserStack
+
 ## Key Features
 
 *   **Drag-Select:** Intuitive visual selection box.
@@ -195,16 +199,15 @@ Access the options page to:
 Please refer to the [changelog](changelog.md) for detailed changes in each version.
 
 ## Contributions
-- TheTacoScott - https://github.com/TheTacoScott
-- oaustegard - https://github.com/oaustegard
-
-## BrowserStack
-
-This project is tested with BrowserStack
-
-- This is a Linkclump replacement/alternative
-- This is a Copy All Urls replacement/alternative
+- @TheTacoScott - https://github.com/TheTacoScott
+- @oaustegard - https://github.com/oaustegard
+- @digirat - https://github.com/digirat
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Tags
+
+- This is a Linkclump replacement/alternative
+- This is a Copy All Urls replacement/alternative
