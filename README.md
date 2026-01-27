@@ -1,5 +1,8 @@
 # Grabbit - Chrome Extension
 
+![Users](https://img.shields.io/badge/Users-50,000%2B-blue?style=for-the-badge&logo=googlechrome&logoColor=white)
+![Rating](https://img.shields.io/badge/Rating-4.1%20%2F%205%20Stars-brightgreen?style=for-the-badge&logo=starship&logoColor=white)
+
 **Grabbit** is a powerful Chrome Extension (Manifest V3) that enables users to select multiple links on a webpage using a customizable drag-select interface. Users can perform various actions on selected links, such as opening them in new tabs/windows or copying their URLs to the clipboard.
 
 [Available on the Chrome Web Store](https://chromewebstore.google.com/detail/grabbit/madmdgpjgagdmmmiddpiggdnpgjglcdk)
