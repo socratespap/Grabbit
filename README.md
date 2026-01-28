@@ -239,4 +239,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Tags
 
 - This is a Linkclump replacement/alternative
+<<<<<<< HEAD
 - This is a Copy All Urls replacement/alternative
+=======
+- This is a Copy All Urls replacement/alternative
+>>>>>>> 56f2601e76693752b55e20595e06f62569b6a4a6
