@@ -1,3 +1,6 @@
+import { Premium } from './premium.js';
+// AI comparison now handled server-side for security
+
 //=============================================================================
 // STORAGE MIGRATION & VALIDATION
 //=============================================================================
@@ -173,15 +176,10 @@ chrome.runtime.onInstalled.addListener((details) => {
                 }
             ];
 
-            chrome.storage.sync.set({ savedActions: defaultActions }, () => {
-                console.log('Grabbit: Default actions set.');
-            });
+            chrome.storage.sync.set({ savedActions: defaultActions });
         } else if (migrationResult.wasRepaired) {
             // Actions were repaired, save them
-            chrome.storage.sync.set({ savedActions: migrationResult.actions }, () => {
-                console.log(`Grabbit: Migrated ${migrationResult.actions.length} actions. ` +
-                    `${migrationResult.invalidCount} invalid actions were removed.`);
-            });
+            chrome.storage.sync.set({ savedActions: migrationResult.actions });
         }
         // If no repair was needed, do nothing (keep existing actions)
     });
@@ -392,3 +390,486 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
         }
     });
 });
+
+
+//=============================================================================
+// PREMIUM FEATURES
+//=============================================================================
+
+// Initialize Premium module (ExtPay listeners)
+Premium.init();
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'checkPremiumStatus') {
+        Premium.getUser().then(user => {
+            sendResponse({ isPremium: user.paid });
+        });
+        return true; // Keep channel open for async response
+    }
+
+    if (request.action === 'openPaymentPage') {
+        Premium.openPaymentPage();
+    }
+});
+
+// Handle compareProducts action
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'compareProducts') {
+        handleProductComparison(request.tabs)
+            .then(results => sendResponse({ results }))
+            .catch(error => sendResponse({ error: error.message }));
+        return true;
+    }
+});
+
+// Handle summarizePage action
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'summarizePage') {
+        handleArticleSummary(request.tab)
+            .then(results => sendResponse({ results }))
+            .catch(error => sendResponse({ error: error.message }));
+        return true;
+    }
+});
+
+/**
+ * Fetch API token for authenticated requests
+ */
+async function getApiToken(email) {
+    const stored = await chrome.storage.local.get(['grabbit_api_token']);
+    if (stored.grabbit_api_token) return stored.grabbit_api_token;
+
+    const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/get-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        await chrome.storage.local.set({ grabbit_api_token: data.token });
+        return data.token;
+    }
+
+    // Try to get more error details
+    let errorDetails = '';
+    try {
+        const errorData = await response.json();
+        errorDetails = errorData.message || JSON.stringify(errorData);
+    } catch (e) {
+        errorDetails = response.statusText || 'Unknown error';
+    }
+
+    console.error('[Grabbit] Failed to get API token. Status:', response.status, 'Details:', errorDetails);
+    throw new Error(`Failed to get API token (${response.status}: ${errorDetails})`);
+}
+
+/**
+ * Main handler for AI Product Comparison
+ * Uses server-side proxy - API key never sent to client
+ */
+async function handleProductComparison(tabs) {
+    // 1. Verify premium status (client-side check)
+    const user = await Premium.getUser();
+
+    if (!user.paid) {
+        throw new Error('Premium required');
+    }
+
+    if (!user.email) {
+        throw new Error('No email associated with your account. Please log in to ExtPay.');
+    }
+
+    // 2. Fetch API token
+    const token = await getApiToken(user.email);
+
+    // 3. Extract content from each tab
+    const products = [];
+    for (const tab of tabs) {
+        try {
+            const [result] = await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: extractProductDataFromPage
+            });
+            products.push({
+                title: result.result?.title || tab.title,
+                price: result.result?.price || '',
+                rawContent: result.result?.rawContent || '',
+                siteName: result.result?.siteName || new URL(tab.url).hostname,
+                url: tab.url
+            });
+        } catch (e) {
+            console.warn('Could not extract from tab ' + tab.id + ':', e);
+            products.push({
+                title: tab.title,
+                price: '',
+                rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url,
+                siteName: new URL(tab.url).hostname,
+                url: tab.url
+            });
+        }
+    }
+
+    // 4. Send to server-side proxy (API key stays on server)
+    const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/compare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: user.email,
+            token: token,
+            products: products
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        // Handle specific errors
+        if (response.status === 403) {
+            throw new Error('Subscription not active. Please check your payment status.');
+        } else if (response.status === 429) {
+            throw new Error(data.message || 'Daily limit reached. Try again tomorrow.');
+        } else {
+            throw new Error(data.message || 'Comparison failed. Please try again.');
+        }
+    }
+
+    // Return comparison results (and remaining quota info)
+    return {
+        ...data.comparison,
+        _remaining: data.remaining_today
+    };
+}
+
+/**
+ * Main handler for AI Article Summary
+ * Uses server-side proxy - API key never sent to client
+ */
+async function handleArticleSummary(tab) {
+    // 1. Verify premium status (client-side check)
+    const user = await Premium.getUser();
+
+    if (!user.paid) {
+        throw new Error('Premium required');
+    }
+
+    if (!user.email) {
+        throw new Error('No email associated with your account. Please log in to ExtPay.');
+    }
+
+    // 2. Fetch API token
+    const token = await getApiToken(user.email);
+
+    // 3. Extract article content from the tab
+    try {
+        const [result] = await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: extractArticleDataFromPage
+        });
+
+        const pageData = {
+            title: result.result?.title || tab.title,
+            url: tab.url,
+            rawContent: result.result?.rawContent || ''
+        };
+
+        // 4. Send to server-side proxy (API key stays on server)
+        const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/summarize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: user.email,
+                token: token,
+                pageData: pageData
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Handle specific errors
+            if (response.status === 403) {
+                throw new Error('Subscription not active. Please check your payment status.');
+            } else if (response.status === 429) {
+                throw new Error(data.message || 'Daily limit reached. Try again tomorrow.');
+            } else {
+                throw new Error(data.message || 'Summary failed. Please try again.');
+            }
+        }
+
+        // Return summary results (and remaining quota info)
+        return {
+            ...data.summary,
+            _remaining: data.remaining_today
+        };
+
+    } catch (e) {
+        console.warn('Could not extract from tab ' + tab.id + ':', e);
+
+        // Fallback: send minimal data
+        const pageData = {
+            title: tab.title,
+            url: tab.url,
+            rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url
+        };
+
+        const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/summarize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: user.email,
+                token: token,
+                pageData: pageData
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error('Subscription not active. Please check your payment status.');
+            } else if (response.status === 429) {
+                throw new Error(data.message || 'Daily limit reached. Try again tomorrow.');
+            } else {
+                throw new Error(data.message || 'Summary failed. Please try again.');
+            }
+        }
+
+        return {
+            ...data.summary,
+            _remaining: data.remaining_today
+        };
+    }
+}
+
+/**
+ * This function is injected into each tab to extract product data.
+ * Simplified - just extract raw content and let AI identify the product name.
+ */
+function extractProductDataFromPage() {
+    const url = window.location.href;
+    const siteName = window.location.hostname;
+
+    // Try to get basic info, but don't stress about perfect extraction
+    let title = document.title || '';
+    let price = '';
+    let description = '';
+    let features = [];
+    let specs = [];
+
+    // Quick price extraction (just one attempt)
+    const priceEl = document.querySelector('[data-price], .price, .product-price, [itemprop="price"]');
+    if (priceEl?.textContent?.trim()) {
+        price = priceEl.textContent.trim().replace(/\s+/g, ' ');
+    }
+
+    // Quick description extraction (just one attempt)
+    const descEl = document.querySelector('.product-description, #productDescription, [itemprop="description"]');
+    if (descEl) {
+        description = (descEl.content || descEl.textContent?.trim() || '').substring(0, 3000);
+    }
+
+    // Grab feature bullets if present
+    document.querySelectorAll('#feature-bullets li, .feature-list li').forEach(el => {
+        const text = el.textContent?.trim();
+        if (text && text.length > 10 && text.length < 500 && features.length < 10) {
+            features.push(text);
+        }
+    });
+
+    // Grab main product content
+    const mainContent = document.querySelector('main, #content, article, .product-page');
+    let contentText = mainContent?.innerText?.substring(0, 8000) || document.body.innerText?.substring(0, 8000) || '';
+
+    // Build raw content - let AI figure out the real product name
+    let rawContent = `URL: ${url}\n`;
+    rawContent += `Site: ${siteName}\n`;
+    rawContent += `Page Title: ${title}\n`;
+
+    if (price) {
+        rawContent += `Price: ${price}\n`;
+    }
+
+    if (description) {
+        rawContent += `\nDescription:\n${description}\n`;
+    }
+
+    if (features.length > 0) {
+        rawContent += `\nKey Features:\n${features.join('\n• ')}\n`;
+    }
+
+    rawContent += `\nPage Content:\n${contentText}\n`;
+
+    return {
+        title: title, // Just send page title - AI will identify real product name
+        url: url,
+        siteName: siteName,
+        rawContent: rawContent
+    };
+}
+
+/**
+ * This function is injected into the tab to extract article/blog post data.
+ * Optimized for long-form text content like articles, blog posts, documentation.
+ */
+function extractArticleDataFromPage() {
+    const data = {
+        title: '',
+        author: '',
+        date: '',
+        content: '',
+        headings: [],
+        rawContent: ''
+    };
+
+    // Title - prioritize article/blog post titles
+    const titleSelectors = [
+        'h1',
+        'article h1',
+        '.post-title',
+        '.entry-title',
+        '[itemprop="headline"]',
+        '.article-title',
+        '.blog-title',
+        '#article-title',
+        '.post-title h1'
+    ];
+
+    for (const selector of titleSelectors) {
+        const el = document.querySelector(selector);
+        if (el?.textContent?.trim()) {
+            data.title = el.textContent.trim();
+            break;
+        }
+    }
+
+    // Fallback to document.title
+    if (!data.title) {
+        data.title = document.title;
+    }
+
+    // Author
+    const authorSelectors = [
+        '[itemprop="author"]',
+        '.author',
+        '.post-author',
+        '.entry-author',
+        '.article-author',
+        '.byline',
+        '.writer',
+        '[class*="author"]'
+    ];
+
+    for (const selector of authorSelectors) {
+        const el = document.querySelector(selector);
+        if (el?.textContent?.trim()) {
+            data.author = el.textContent.trim();
+            break;
+        }
+    }
+
+    // Date
+    const dateSelectors = [
+        '[itemprop="datePublished"]',
+        'time',
+        '.post-date',
+        '.entry-date',
+        '.publish-date',
+        '.article-date',
+        '[class*="date"]',
+        '[datetime]'
+    ];
+
+    for (const selector of dateSelectors) {
+        const el = document.querySelector(selector);
+        const date = el?.getAttribute('datetime') || el?.textContent?.trim();
+        if (date) {
+            data.date = date;
+            break;
+        }
+    }
+
+    // Main article content - comprehensive selectors
+    const contentSelectors = [
+        'article',
+        '[itemprop="articleBody"]',
+        '.post-content',
+        '.entry-content',
+        '.article-content',
+        '.content',
+        '#content',
+        'main',
+        '.blog-content',
+        '.post-body'
+    ];
+
+    let mainContent = '';
+    for (const selector of contentSelectors) {
+        const el = document.querySelector(selector);
+        if (el) {
+            mainContent = el.innerText || el.textContent;
+            break;
+        }
+    }
+
+    // If no main content found, grab body but filter out nav/footer
+    if (!mainContent || mainContent.length < 200) {
+        const body = document.body;
+        if (body) {
+            // Clone to avoid modifying actual page
+            const clone = body.cloneNode(true);
+
+            // Remove unwanted elements
+            const unwantedSelectors = [
+                'nav', 'header', 'footer', '.sidebar', '.navigation',
+                '.menu', '.comments', '.related-posts', '.advertisement',
+                'script', 'style', 'noscript', 'iframe'
+            ];
+
+            unwantedSelectors.forEach(sel => {
+                clone.querySelectorAll(sel).forEach(el => el.remove());
+            });
+
+            mainContent = clone.innerText || clone.textContent;
+        }
+    }
+
+    // Extract headings for structure
+    const headingElements = document.querySelectorAll('h1, h2, h3, h4');
+    headingElements.forEach(h => {
+        const text = h.textContent?.trim();
+        if (text && text.length > 0 && text.length < 200) {
+            data.headings.push(`[${h.tagName}] ${text}`);
+        }
+    });
+
+    // Build comprehensive rawContent
+    let rawContent = `Title: ${data.title}\n`;
+
+    if (data.author) {
+        rawContent += `Author: ${data.author}\n`;
+    }
+
+    if (data.date) {
+        rawContent += `Published: ${data.date}\n`;
+    }
+
+    rawContent += `URL: ${window.location.href}\n\n`;
+
+    if (data.headings.length > 0) {
+        rawContent += `--- ARTICLE STRUCTURE ---\n`;
+        rawContent += data.headings.join('\n') + '\n\n';
+    }
+
+    rawContent += `--- ARTICLE CONTENT ---\n`;
+    rawContent += mainContent.substring(0, 12000); // Limit to 12K chars for context
+
+    return {
+        title: data.title,
+        author: data.author,
+        date: data.date,
+        url: window.location.href,
+        rawContent: rawContent
+    };
+}
+

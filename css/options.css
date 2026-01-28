@@ -179,95 +179,6 @@ h1 {
     }
 }
 
-.footer {
-    text-align: center;
-    padding: 2rem 0;
-    margin-top: 2rem;
-    border-top: 1px solid #eee;
-}
-
-.support-section {
-    margin-top: 1rem;
-}
-
-.support-section p {
-    margin-bottom: 0.8rem;
-    font-weight: 500;
-    color: #666;
-}
-
-.support-buttons {
-    display: flex;
-    gap: 0.8rem;
-    justify-content: center;
-}
-
-.support-button {
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 180px;
-    justify-content: center;
-}
-
-.support-button svg {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-}
-
-.revolut-button svg {
-    width: 70px;
-    height: 16px;
-    margin-right: 0;
-}
-
-.paypal-button svg {
-    width: 16px;
-    height: 16px;
-}
-
-.support-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.paypal-button {
-    background-color: #0070BA;
-}
-
-.paypal-button:hover {
-    background-color: #005ea6;
-}
-
-.paypal-button span {
-    color: white;
-}
-
-.revolut-button {
-    background-color: #000000;
-}
-
-.revolut-button:hover {
-    background-color: #1a1a1a;
-}
-
-.footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.footer a:hover {
-    text-decoration: underline;
-}
-
 /* Modal Styles */
 .modal {
     display: none;
@@ -1067,3 +978,196 @@ h1 {
     color: #6a9955;
     opacity: 0.7;
 }
+/* =========================================================================
+   Popup Customization Card
+   ========================================================================= */
+
+.popup-config-card {
+    margin-bottom: 2rem;
+}
+
+.popup-config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.popup-config-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--color-text);
+}
+
+.reset-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    background: var(--button-secondary-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-button:hover {
+    background: var(--color-surface-alt);
+    border-color: var(--color-text-muted);
+}
+
+.config-description {
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    margin-bottom: 1.5rem;
+}
+
+.config-warning {
+    color: #f59e0b;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+/* Button List */
+.popup-button-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.popup-button-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: move;
+    transition: all 0.2s ease;
+}
+
+.popup-button-item:hover {
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.popup-button-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+.popup-button-item.drag-over {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+/* Drag Handle */
+.drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-muted);
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-handle svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Button Preview */
+.button-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.button-icon-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.button-icon-preview svg {
+    width: 18px;
+    height: 18px;
+    color: white;
+}
+
+/* Color variants */
+.button-icon-preview.blue {
+    background: var(--button-primary-bg);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+}
+
+.button-icon-preview.purple {
+    background: var(--button-purple-bg);
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+}
+
+.button-icon-preview.orange {
+    background: var(--button-orange-bg);
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+}
+
+.button-icon-preview.premium {
+    background: linear-gradient(135deg, #a855f7, #6366f1);
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
+/* Button Info */
+.button-info {
+    flex: 1;
+}
+
+.button-info-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.125rem;
+}
+
+.button-info-subtitle {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+}
+
+.pro-badge-mini {
+    display: inline-block;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #000;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    margin-left: 0.5rem;
+}
+
+/* Toggle Switch */
+.button-toggle {
+    flex-shrink: 0;
+}
+
+/* Disabled state */
+.popup-button-item.disabled {
+    opacity: 0.5;
+}
+
+.popup-button-item.disabled .button-preview {
+    pointer-events: none;
+}
+

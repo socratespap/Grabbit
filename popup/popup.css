@@ -9,6 +9,10 @@
     font-family: var(--font-stack);
 }
 
+html {
+    background-color: #0f0f23;
+}
+
 body {
     width: 320px;
     min-height: 280px;
@@ -24,15 +28,15 @@ body {
     filter: blur(60px);
     opacity: 0.5;
     pointer-events: none;
-    animation: float 8s ease-in-out infinite;
+    will-change: transform;
 }
 
 .orb-1 {
     width: 120px;
     height: 120px;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    top: -30px;
-    right: -30px;
+    top: -20px;
+    right: -20px;
     animation-delay: 0s;
 }
 
@@ -40,8 +44,8 @@ body {
     width: 100px;
     height: 100px;
     background: linear-gradient(135deg, #f093fb, #f5576c);
-    bottom: 40px;
-    left: -40px;
+    bottom: 50px;
+    left: -30px;
     animation-delay: -3s;
 }
 
@@ -49,8 +53,8 @@ body {
     width: 80px;
     height: 80px;
     background: linear-gradient(135deg, #4facfe, #00f2fe);
-    bottom: -20px;
-    right: 20px;
+    bottom: -10px;
+    right: 30px;
     animation-delay: -5s;
 }
 
@@ -62,11 +66,11 @@ body {
     }
 
     33% {
-        transform: translate(10px, -15px) scale(1.05);
+        transform: translate(8px, -12px) scale(1.02);
     }
 
     66% {
-        transform: translate(-5px, 10px) scale(0.95);
+        transform: translate(-4px, 8px) scale(0.98);
     }
 }
 
@@ -78,7 +82,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
@@ -475,4 +478,40 @@ body {
 
 .action-button.small:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* Premium Action Button */
+.action-button.premium {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(99, 102, 241, 0.15));
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.action-button.premium .button-icon {
+    background: linear-gradient(135deg, #a855f7, #6366f1);
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
+.action-button.premium:hover {
+    border-color: rgba(168, 85, 247, 0.5);
+    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);
+}
+
+.pro-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #000;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+body.modal-open {
+    width: 600px;
+    height: 500px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

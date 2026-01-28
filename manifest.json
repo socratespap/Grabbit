@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Grabbit",
-  "version": "3.6.0",
-  "description": "Drag to select multiple links, open in new tabs, copy URLs with formatting, or create bookmarks instantly.",
+  "version": "3.7.0",
+  "description": "Drag to open multiple links, copy URLs with formatting, or create bookmarks instantly. Premium: AI-powered product comparison.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
@@ -15,7 +15,13 @@
     "clipboardWrite",
     "clipboardRead",
     "tabs",
-    "windows"
+    "windows",
+    "scripting",
+    "management"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "https://grabbit.socratisp.com/*"
   ],
   "optional_permissions": [
     "bookmarks"
@@ -43,14 +49,23 @@
         "js/smart-select.js",
         "js/logic.js",
         "js/linkify.js",
-        "js/grabbit.js",
-        "popup/popup.js"
+        "js/grabbit.js"
       ],
       "all_frames": true,
       "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://extensionpay.com/*"
+      ],
+      "js": [
+        "js/ExtPay.js"
+      ],
+      "run_at": "document_start"
     }
   ],
   "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "js/background.js",
+    "type": "module"
   }
 }

@@ -1,0 +1,197 @@
+/**
+ * Footer Component Styles
+ */
+
+.footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid #eee;
+}
+
+.footer p {
+    margin-bottom: 0.5rem;
+}
+
+/* Support Section */
+.support-section {
+    margin-top: 1rem;
+}
+
+.support-section p {
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.support-buttons {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.support-button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 180px;
+    justify-content: center;
+}
+
+.support-button svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.revolut-button svg {
+    width: 70px;
+    height: 16px;
+    margin-right: 0;
+}
+
+.paypal-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.support-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.paypal-button {
+    background-color: #0070BA;
+}
+
+.paypal-button:hover {
+    background-color: #005ea6;
+}
+
+.paypal-button span {
+    color: white;
+}
+
+.revolut-button {
+    background-color: #000000;
+}
+
+.revolut-button:hover {
+    background-color: #1a1a1a;
+}
+
+/* Contributors Section */
+.contributors-section {
+    margin-top: 1.5rem;
+}
+
+.contributors-section p {
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.contributors-list {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.contributor-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.contributor-link:hover {
+    background: #f5f5f5;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contributor-link .github-icon {
+    width: 18px;
+    height: 18px;
+    fill: #333;
+    transition: fill 0.2s ease;
+}
+
+.contributor-link:hover .github-icon {
+    fill: var(--primary-color);
+}
+
+.contributor-name {
+    color: #333;
+    transition: color 0.2s ease;
+}
+
+.contributor-link:hover .contributor-name {
+    color: var(--primary-color);
+}
+
+/* Contribute Callout */
+.contribute-callout {
+    margin-top: 1.2rem;
+    text-align: center;
+}
+
+.contribute-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+
+.contribute-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+}
+
+.contribute-button .github-icon {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+.contribute-button span {
+    color: white;
+}
+
+/* Footer Links */
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}

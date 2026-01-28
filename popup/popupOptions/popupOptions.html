@@ -2,9 +2,11 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grabbit - Popup Options</title>
     <link rel="stylesheet" href="/css/variables.css">
-    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/components/sidebar.css">
     <link rel="stylesheet" href="/css/options.css">
     <link rel="stylesheet" href="popupOptions.css">
 </head>
@@ -19,20 +21,29 @@
                 <h1 style="margin: 0;">Popup Options</h1>
             </div>
 
-            <div class="card">
-                <h3>Quick Settings</h3>
-                <p>Customize how the popup behaves when you click the Grabbit icon.</p>
-                <!-- Add actual popup settings here later -->
-                <div
-                    style="margin-top: 2rem; padding: 2rem; border: 2px dashed #eee; border-radius: 8px; text-align: center; color: #666;">
-                    Popup-specific toggles and preferences will appear here.
+            <div class="card popup-config-card">
+                <div class="popup-config-header">
+                    <h2>Popup Button Customization</h2>
+                    <button id="resetPopupConfig" class="reset-button">Reset to Default</button>
                 </div>
+                <p class="config-description">Configure which buttons appear in the popup and their order</p>
+
+                <div id="popupButtonList" class="popup-button-list">
+                    <!-- Buttons will be rendered here via JS -->
+                </div>
+
+                <p class="config-warning">⚠️ At least one button must remain enabled</p>
             </div>
+
+            <footer class="footer">
+                <p style="color: #999; font-size: 0.85rem;">These features are experimental and may change in future
+                    updates.</p>
+            </footer>
         </div>
     </div>
 
     <script src="/js/components/sidebar.js"></script>
-    <script src="popupOptions.js"></script>
+    <script type="module" src="popupOptions.js"></script>
 </body>
 
 </html>

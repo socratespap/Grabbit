@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Comparison | Grabbit</title>
+    <link rel="stylesheet" href="compare.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../icons/icon48.png" alt="Grabbit" width="24" height="24">
+                    <span>Grabbit</span>
+                </div>
+                <div class="header-actions">
+                    <a href="#" class="close-link" id="close-btn">Done</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state">
+            <div class="loading-animation">
+                <div class="pulse-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <h2>Looking at your options...</h2>
+            <p class="loading-subtitle">This will just take a moment</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden">
+            <div class="error-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3>Oops, something went wrong</h3>
+            <p id="error-message" class="error-message">Please try again</p>
+            <button id="retry-btn" class="btn-primary">Try Again</button>
+        </div>
+
+        <!-- Results State -->
+        <div id="results-state" class="results-state hidden">
+
+            <!-- Top Pick Banner -->
+            <div class="top-pick-banner">
+                <div class="top-pick-content">
+                    <div class="top-pick-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Top Pick
+                    </div>
+                    <div class="top-pick-info">
+                        <h2 id="top-pick-name">Finding the best option...</h2>
+                        <p id="top-pick-reason">Analyzing what makes this one special</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Summary -->
+            <div class="summary-section">
+                <h3>Here's what matters</h3>
+                <p id="summary-text" class="summary-text">Looking at the details for you...</p>
+            </div>
+
+            <!-- Products -->
+            <h3 class="section-heading">Your Options</h3>
+            <div id="products-grid" class="products-grid">
+                <!-- Cards injected via JS -->
+            </div>
+
+            <!-- Feature Comparison -->
+            <div class="comparison-section">
+                <h3 class="section-heading">Side by side</h3>
+                <div class="comparison-table-wrapper">
+                    <table id="comparison-table" class="comparison-table">
+                        <thead>
+                            <tr id="table-header"></tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bottom Line -->
+            <div class="bottom-line-section">
+                <h3>The Bottom Line</h3>
+                <p id="verdict-text" class="bottom-line-text">...</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-bar">
+                <button id="open-top-pick" class="btn-primary">Open Top Pick</button>
+                <button id="copy-summary" class="btn-secondary">Copy Summary</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="compare.js"></script>
+</body>
+</html>

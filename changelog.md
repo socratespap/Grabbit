@@ -1,3 +1,21 @@
+## Version 3.7.0 Changelog:
+- **New Feature: AI Product Comparison**: Select multiple product tabs (2-5) and generate comprehensive AI-powered comparisons.
+  - Winner selection with clear reasoning
+  - Detailed pros/cons analysis for each product
+  - Side-by-side feature comparison table
+  - Product scores (1-10 scale) and ratings
+  - Premium feature with daily quota tracking
+- **New Feature: AI Article Summarization**: Summarize articles and blog posts with AI-generated insights.
+  - 3-4 sentence comprehensive summary
+  - 5 key takeaways highlighting main points
+  - Topic tags for categorization
+  - Bottom line verdict with recommendations
+  - Works on current active tab
+  - Premium feature with daily quota tracking
+- **Secure Backend Integration**: Both features use WordPress plugin as secure proxy for AI API.
+- **Enhanced Rate Limiting**: Enforced daily quotas (default 25) per premium subscriber across both AI features
+- **Premium UI Updates**: Added new "Summarize Page" button to popup with premium styling and PRO badge
+
 ## Version 3.6.0 Changelog:
 - **Optional Bookmarks Permission**: Moved the "bookmarks" permission to optional permissions to improve user privacy.
 - **Runtime Permission Request**: The extension now only requests bookmark access when you specifically use the "Create Bookmarks" action.

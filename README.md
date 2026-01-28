@@ -1,8 +1,15 @@
 # Grabbit - Chrome Extension
 
+![Users](https://img.shields.io/badge/Users-50,000%2B-blue?style=for-the-badge&logo=googlechrome&logoColor=white)
+![Rating](https://img.shields.io/badge/Rating-4.1%20%2F%205%20Stars-brightgreen?style=for-the-badge&logo=starship&logoColor=white)
+
 **Grabbit** is a powerful Chrome Extension (Manifest V3) that enables users to select multiple links on a webpage using a customizable drag-select interface. Users can perform various actions on selected links, such as opening them in new tabs/windows or copying their URLs to the clipboard.
 
 [Available on the Chrome Web Store](https://chromewebstore.google.com/detail/grabbit/madmdgpjgagdmmmiddpiggdnpgjglcdk)
+
+## BrowserStack
+
+This project is tested with BrowserStack
 
 ## Key Features
 
@@ -18,6 +25,8 @@
 *   **Advanced Options:** Dedicated section for power-user features. Now includes **animated toggle switches**, a dynamic UI that adapts to selected features, and a robust filter/domain management system.
 *   **Configurable "Mark as Visited":** (New) Per-action setting in Advanced Options to visually mark links as visited (purple) in the browser.
 *   **Dynamic Link Detection:** (New) Automatically detects and allows selection of new links that appear during a drag (e.g., from **infinite scroll** or lazy loading).
+*   **AI Product Comparison:** (New) Select multiple product tabs and generate a comprehensive AI-powered comparison table with a clear winner, pros/cons, and feature breakdown.
+*   **AI Article Summarization:** (New) Summarize articles and blog posts with AI-generated key takeaways, topic tags, and bottom line analysis.
 *   **Modern Architecture:** Refactored into a modular structure for better maintainability and performance.
 
 
@@ -30,6 +39,7 @@ The project is built using standard web technologies and the Chrome WebExtension
 *   **HTML/CSS:** UI for Popup and Options pages. Leveraging **CSS Variables** for a centralized design system.
 *   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `bookmarks`.
 *   **Manifest V3:** Adheres to the latest Chrome extension security and background service worker requirements.
+*   **Backend (PHP/WordPress):** Secure server-side proxy for handling Gemini AI requests and Stripe integration.
 
 ### Directory Structure
 
@@ -47,6 +57,17 @@ The project is built using standard web technologies and the Chrome WebExtension
     *   `advancedOptions.html`: Layout for experimental features including Linkify, **Exclusion Filters**, and **Disabled Domains**.
     *   `advancedOptions.js`: Logic for saving/loading advanced settings, managing the exclusion filter list, and the domain blocklist.
     *   `advancedOptions.css`: Specific styling for advanced controls (toggle switches, filter tags).
+*   **`compare/`**: (New) Standalone page for AI-powered product comparisons.
+    *   `compare.html`: Comparison page structure.
+    *   `compare.js`: Logic for comparison workflow and UI.
+    *   `compare.css`: Premium Glassmorphism styling.
+*   **`summarize/`**: (New) Standalone page for AI-powered article summarization.
+    *   `summarize.html`: Summary page structure.
+    *   `summarize.js`: Logic for summarization workflow and UI.
+    *   `summarize.css`: Premium Glassmorphism styling.
+*   **`wordpress-plugin/`**: Server-side backend code.
+    *   `grabbit-backend.php`: Secure proxy and user management plugin.
+    *   `README.md`: Backend setup guide.
 *   **`js/linkify.js`**: (New) Scans the page for plain text URLs and converts them to clickable `<a>` tags if enabled.
 *   **`js/visited.js`**: (New) Handles persistent tracking and visual marking of visited links to bypass browser redirect limitations.
 
@@ -121,6 +142,18 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 **Role:** Text-to-Link Conversion
 *   Converts plain text URLs to clickable links using sophisticated regex. Supports "Aggressive Mode" for domain-only recognition and works within code blocks and Shadow DOM.
 
+### `compare/compare.js`
+**Role:** AI Comparison Logic
+*   Orchestrates the 3-step comparison process (Extract -> Analyze -> Build), handles API errors, and renders the dynamic comparison results table.
+
+### `summarize/summarize.js`
+**Role:** AI Summarization Logic
+*   Orchestrates the article summarization workflow (Extract -> Summarize -> Render), handles API errors, and renders the summary results with key takeaways and topics.
+
+### `wordpress-plugin/grabbit-backend.php`
+**Role:** Backend Infrastructure
+*   Acts as a secure server-side proxy for Gemini API requests to protect the API key. Handles user validation, Stripe webhook integration, and daily rate limiting.
+
 ## Development & Installation
 
 Since there is no build process, you can work directly on the source files.
@@ -153,12 +186,12 @@ Access the options page to:
 - Manage existing actions
 - Set default behaviors
 
-## Tested on
+## Tested via BrowserStack on
 
 - Windows 10
-- Windows 11
-- Chrome Version (Version 131.0.6778.205 (Official Build) (64-bit))
-- Chrome Latest Version Version 133.0.6943.142 (Official Build) (64-bit)
+- Windows 11, Chrome Latest Version (28 Jan 2026)
+- MacOS Tahoe, Chrome Latest Version (28 Jan 2026)
+- Linux, Chrome Latest Version (28 Jan 2026)
 
 ## Known Issues
 
@@ -195,16 +228,15 @@ Access the options page to:
 Please refer to the [changelog](changelog.md) for detailed changes in each version.
 
 ## Contributions
-- TheTacoScott - https://github.com/TheTacoScott
-- oaustegard - https://github.com/oaustegard
-
-## BrowserStack
-
-This project is tested with BrowserStack
-
-- This is a Linkclump replacement/alternative
-- This is a Copy All Urls replacement/alternative
+- @TheTacoScott - https://github.com/TheTacoScott
+- @oaustegard - https://github.com/oaustegard
+- @digirat - https://github.com/digirat
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Tags
+
+- This is a Linkclump replacement/alternative
+- This is a Copy All Urls replacement/alternative

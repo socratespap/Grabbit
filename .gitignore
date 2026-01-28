@@ -3,10 +3,9 @@ refactor_plan.md
 test_links.html
 zendesk_repro.html
 rules.md
-plan_cross_platform_keys.md
-plan_drag_threshold.md
-plan_mark_links_visited.md
 features_to_add.md
 smart_select.md
-css_refactoring_plan.md
 Grabbit.zip
+.agent
+CLAUDE.md
+wordpress-plugin/
