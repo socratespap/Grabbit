@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // 3. Open the comparison page in a new tab
                 chrome.tabs.create({
-                    url: chrome.runtime.getURL('compare/compare.html')
+                    url: chrome.runtime.getURL('AI Features/compare/compare.html')
                 });
 
                 // Close popup
@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // 3. Open the summary page in a new tab
                 chrome.tabs.create({
-                    url: chrome.runtime.getURL('summarize/summarize.html')
+                    url: chrome.runtime.getURL('AI Features/summarize/summarize.html')
                 });
 
                 // Close popup

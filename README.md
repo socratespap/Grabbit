@@ -58,8 +58,8 @@ Frontend (Chrome Extension)
 │   ├── Tab management (copy/open URLs)
 │   └── AI feature triggers (compare, summarize)
 └── AI Features Pages
-    ├── Product Comparison (compare/)
-    └── Article Summarization (summarize/)
+    ├── Product Comparison (AI Features/compare/)
+    └── Article Summarization (AI Features/summarize/)
 
 Backend (WordPress Plugin)
 ├── Secure API proxy
@@ -104,11 +104,11 @@ Backend (WordPress Plugin)
     *   `advancedOptions.html`: Layout for experimental features including Linkify, **Exclusion Filters**, and **Disabled Domains**.
     *   `advancedOptions.js`: Logic for saving/loading advanced settings, managing the exclusion filter list, and the domain blocklist.
     *   `advancedOptions.css`: Specific styling for advanced controls (toggle switches, filter tags).
-*   **`compare/`**: (New) Standalone page for AI-powered product comparisons.
+*   **`AI Features/compare/`**: (New) Standalone page for AI-powered product comparisons.
     *   `compare.html`: Comparison page structure.
     *   `compare.js`: Logic for comparison workflow and UI.
     *   `compare.css`: Premium Glassmorphism styling.
-*   **`summarize/`**: (New) Standalone page for AI-powered article summarization.
+*   **`AI Features/summarize/`**: (New) Standalone page for AI-powered article summarization.
     *   `summarize.html`: Summary page structure.
     *   `summarize.js`: Logic for summarization workflow and UI.
     *   `summarize.css`: Premium Glassmorphism styling.
@@ -278,7 +278,7 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 
 ### AI Features Pages
 
-**`compare/compare.js`** - Comparison Workflow & UI
+**`AI Features/compare/compare.js`** - Comparison Workflow & UI
 - Checks for pending comparison data from `chrome.storage.local`
 - `runComparison()`: Orchestrates 3-step process (Extract → Analyze → Build)
 - Communicates with `background.js` to trigger AI analysis
@@ -286,7 +286,7 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 - `renderResults(data)`: Builds Winner Banner, Products Grid, Features Table
 - `updateStep(stepNumber)`: Progress tracker visualization
 
-**`summarize/summarize.js`** - Summarization Workflow & UI
+**`AI Features/summarize/summarize.js`** - Summarization Workflow & UI
 - Checks for pending summary data from `chrome.storage.local`
 - `runSummary()`: Orchestrates summarization process (Extract → Summarize → Render)
 - Communicates with `background.js` to trigger AI analysis
