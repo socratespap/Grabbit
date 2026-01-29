@@ -401,7 +401,7 @@ document.addEventListener('contextmenu', (e) => {
 document.addEventListener('keydown', (e) => {
   if (GrabbitState.isDisabled) return;
   // Track letter keys (A-Z) for modifier key support
-  if (e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
+  if (e.key && e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
     GrabbitState.pressedKeys.add(e.key.toLowerCase());
   }
 
@@ -441,7 +441,7 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
   if (GrabbitState.isDisabled) return;
   // Remove letter keys from pressedKeys when released
-  if (e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
+  if (e.key && e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
     GrabbitState.pressedKeys.delete(e.key.toLowerCase());
   }
 
