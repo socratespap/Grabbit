@@ -125,6 +125,16 @@ function setupExtensionButtons() {
             });
         });
     }
+
+    // Handle report issue button
+    const reportIssueButton = document.getElementById('reportIssueButton');
+    if (reportIssueButton) {
+        reportIssueButton.addEventListener('click', () => {
+            chrome.tabs.create({
+                url: 'https://chromewebstore.google.com/detail/madmdgpjgagdmmmiddpiggdnpgjglcdk/support'
+            });
+        });
+    }
 }
 
 // ============================================================================

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Summary | Grabbit</title>
+    <link rel="stylesheet" href="youtube-summary.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../../icons/icon48.png" alt="Grabbit" width="24" height="24">
+                    <span>Grabbit</span>
+                </div>
+                <div class="header-actions">
+                    <a href="#" class="close-link" id="close-btn">Done</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state">
+            <div class="loading-animation">
+                <div class="youtube-loader">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="#FF0000">
+                        <path
+                            d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
+                        <polygon fill="white" points="9.545,15.568 15.818,12 9.545,8.432" />
+                    </svg>
+                </div>
+            </div>
+            <h2>Reading the transcript...</h2>
+            <p class="loading-subtitle">Analyzing video content with AI</p>
+            <p class="loading-credit">Feature by <a href="https://subtiltee.com/all-extensions"
+                    target="_blank">Subtiltee</a></p>
+            <div class="loading-steps">
+                <div class="step active" id="step-extract">Extracting transcript...</div>
+                <div class="step" id="step-analyze">Analyzing with AI...</div>
+                <div class="step" id="step-render">Building summary...</div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden">
+            <div class="error-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3>Oops, something went wrong</h3>
+            <p id="error-message" class="error-message">Please try again</p>
+            <button id="retry-btn" class="btn-primary">Try Again</button>
+        </div>
+
+        <!-- Results State -->
+        <div id="results-state" class="results-state hidden">
+            <div class="results-layout">
+
+                <!-- Left Sidebar - Video Info -->
+                <aside class="video-sidebar">
+                    <div class="video-card">
+                        <div class="thumbnail-wrapper">
+                            <img id="video-thumbnail" src="" alt="Video Thumbnail" class="video-thumbnail">
+                            <div class="play-overlay">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+                                    <polygon points="5,3 19,12 5,21" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 id="video-title" class="video-title">Video Title</h2>
+                        <p id="video-channel" class="video-channel">Channel Name</p>
+                    </div>
+
+                    <!-- Chapters Navigation -->
+                    <div class="chapters-nav" id="chapters-nav">
+                        <h3 class="chapters-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg>
+                            Chapters
+                        </h3>
+                        <ul id="chapters-list" class="chapters-list">
+                            <!-- Chapters injected via JS -->
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Main Content - Summary -->
+                <main class="summary-content">
+
+                    <!-- Overall Summary -->
+                    <section class="summary-section overall-summary">
+                        <div class="section-header">
+                            <div class="section-badge ai-badge">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                    <path d="M2 17l10 5 10-5"></path>
+                                    <path d="M2 12l10 5 10-5"></path>
+                                </svg>
+                                AI Summary
+                            </div>
+                        </div>
+                        <p id="overall-summary" class="summary-text">
+                            Loading summary...
+                        </p>
+                    </section>
+
+                    <!-- Key Points -->
+                    <section class="summary-section key-points-section">
+                        <h3>Key Takeaways</h3>
+                        <ul id="key-points-list" class="key-points-list">
+                            <!-- Key points injected via JS -->
+                        </ul>
+                    </section>
+
+                    <!-- Chapter Summaries -->
+                    <section class="summary-section chapters-section" id="chapters-section">
+                        <h3>Chapter Breakdown</h3>
+                        <div id="chapter-summaries" class="chapter-summaries">
+                            <!-- Chapter summaries injected via JS -->
+                        </div>
+                    </section>
+
+                    <!-- Topics -->
+                    <section id="topics-section" class="summary-section topics-section hidden">
+                        <h3>Topics Covered</h3>
+                        <div id="topics-list" class="topics-list">
+                            <!-- Topics injected via JS -->
+                        </div>
+                    </section>
+
+                    <!-- Actions -->
+                    <div class="actions-bar">
+                        <button id="open-video" class="btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                            Open Video
+                        </button>
+                        <button id="copy-summary" class="btn-secondary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy Summary
+                        </button>
+                        <button id="download-txt" class="btn-secondary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Download Text
+                        </button>
+                        <button id="download-html" class="btn-secondary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            Download Page
+                        </button>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="youtube-summary.js"></script>
+</body>
+
+</html>

@@ -27,6 +27,7 @@ This project is tested with BrowserStack
 *   **Dynamic Link Detection:** (New) Automatically detects and allows selection of new links that appear during a drag (e.g., from **infinite scroll** or lazy loading).
 *   **AI Product Comparison:** (New) Select multiple product tabs and generate a comprehensive AI-powered comparison table with a clear winner, pros/cons, and feature breakdown.
 *   **AI Article Summarization:** (New) Summarize articles and blog posts with AI-generated key takeaways, topic tags, and bottom line analysis.
+*   **AI YouTube Video Summarization:** (New) Summarize YouTube videos with chapter-by-chapter breakdowns, key points, and detailed summaries for each section. Automatically extracts transcripts and creates intelligent chapter markers.
 *   **Modern Architecture:** Refactored into a modular structure for better maintainability and performance.
 
 
@@ -60,12 +61,13 @@ Frontend (Chrome Extension)
 └── AI Features Pages
     ├── Product Comparison (AI Features/compare/)
     └── Article Summarization (AI Features/summarize/)
+    └── YouTube Video Summarization (AI Features/youtube-summary/)
 
 Backend (WordPress Plugin)
-├── Secure API proxy
+├── Secure API proxy (OpenRouter API)
 ├── ExtPay integration (payment validation)
-├── Rate limiting (daily quotas)
-└── User management (subscribers, usage tracking)
+├── Rate limiting (monthly quotas with automatic reset)
+└── User management (subscribers, usage tracking, manual subscriber management)
 ```
 
 ### Component Interaction Flow
@@ -84,8 +86,8 @@ Backend (WordPress Plugin)
 *   **HTML/CSS:** UI for Popup and Options pages. Leveraging **CSS Variables** for a centralized design system.
 *   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `bookmarks`.
 *   **Manifest V3:** Adheres to the latest Chrome extension security and background service worker requirements.
-*   **Backend (PHP/WordPress):** Secure server-side proxy for handling AI requests and Stripe integration.
-*   **AI:** OpenRouter API for product comparison and article summarization.
+*   **Backend (PHP/WordPress):** Secure server-side proxy for handling OpenRouter AI requests and Stripe integration.
+*   **AI:** OpenRouter API for product comparison, article summarization, and YouTube video summarization.
 *   **Payments:** ExtPay (Chrome extension payment platform), Stripe API.
 
 ### Directory Structure
@@ -112,6 +114,10 @@ Backend (WordPress Plugin)
     *   `summarize.html`: Summary page structure.
     *   `summarize.js`: Logic for summarization workflow and UI.
     *   `summarize.css`: Premium Glassmorphism styling.
+*   **`AI Features/youtube-summary/`**: (New) Standalone page for AI-powered YouTube video summarization.
+    *   `youtube-summary.html`: YouTube summary page structure with loading states and chapter-by-chapter result views.
+    *   `youtube-summary.js`: Logic for YouTube summarization workflow, handles transcript extraction via InnerTube API, and renders chapter summaries.
+    *   `youtube-summary.css`: Premium Glassmorphism styling specific to the YouTube summary interface.
 *   **`wordpress-plugin/`**: Server-side backend code.
     *   `grabbit-backend.php`: Secure proxy and user management plugin.
     *   `README.md`: Backend setup guide.
@@ -282,7 +288,7 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 - Checks for pending comparison data from `chrome.storage.local`
 - `runComparison()`: Orchestrates 3-step process (Extract → Analyze → Build)
 - Communicates with `background.js` to trigger AI analysis
-- Handles error states (premium required, daily limit reached)
+- Handles error states (premium required, monthly limit reached)
 - `renderResults(data)`: Builds Winner Banner, Products Grid, Features Table
 - `updateStep(stepNumber)`: Progress tracker visualization
 
@@ -290,8 +296,16 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 - Checks for pending summary data from `chrome.storage.local`
 - `runSummary()`: Orchestrates summarization process (Extract → Summarize → Render)
 - Communicates with `background.js` to trigger AI analysis
-- Handles error states (premium required, daily limit reached)
+- Handles error states (premium required, monthly limit reached)
 - `renderResults(data)`: Builds Summary Banner, Key Takeaways, Topics, Bottom Line
+
+**`AI Features/youtube-summary/youtube-summary.js`** - YouTube Summary Workflow & UI
+- Checks for pending YouTube summary data from `chrome.storage.local`
+- `runSummary()`: Orchestrates YouTube summarization process (Extract Transcript → Summarize → Render Chapters)
+- Communicates with `background.js` to trigger transcript extraction via YouTube InnerTube API
+- Handles error states (premium required, monthly limit reached, no transcript available)
+- `renderResults(data)`: Builds Summary Banner, Key Points, Chapter-by-Chapter Breakdown with detailed summaries
+- Each chapter includes timestamp, short summary (2 sentences), and detailed summary (8-10 sentences)
 
 ### Popup (Quick Access Interface)
 
@@ -349,6 +363,53 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 - Handles subscription management, trial periods, payment processing
 - Injected as content script on `extensionpay.com` domain
 - DO NOT MODIFY - External dependency
+
+### AI Features Handlers (background.js)
+
+**`handleYouTubeSummary()`** - YouTube Video Summarization Orchestrator
+- Verifies premium status and fetches API token
+- Extracts YouTube video data via `extractYouTubeDataFromPage()` using InnerTube API
+- Sends transcript and metadata to WordPress backend `/youtube-summary` endpoint
+- Handles monthly quota limits and error states (no captions, subscription inactive)
+- Returns structured chapter-by-chapter summary with timestamps and detailed summaries
+
+**`extractYouTubeDataFromPage()`** - YouTube Data Extraction (Injected Function)
+- **Executed in MAIN world** to access YouTube's `window.ytcfg` object
+- **Extracts**:
+  - Video title from `h1.ytd-video-primary-info-renderer`
+  - Channel name from channel element
+  - Chapters from video player or description (timestamp pattern matching)
+  - InnerTube API key for authenticated requests
+- **InnerTube Player API Call**:
+  - Uses ANDROID client (bypasses restrictions)
+  - Fetches caption tracks in JSON3 format
+  - Prefers English captions, falls back to first available
+- **Transcript Processing**:
+  - Inserts timestamp markers every 30 seconds for AI chapter accuracy
+  - Formats timestamps as `[MM:SS]` or `[HH:MM:SS]`
+  - Limits to 60,000 characters for long videos
+  - Stores video duration for validation
+- **Error Handling**: Returns structured error object if transcript unavailable
+
+**`handleArticleSummary()`** - Article Summarization Orchestrator
+- Verifies premium status and fetches API token
+- Extracts article content via `extractArticleDataFromPage()`
+- Sends to WordPress backend `/summarize` endpoint
+- Handles monthly quota limits and subscription validation
+- Returns structured summary with key takeaways and topics
+
+**`handleProductComparison()`** - Product Comparison Orchestrator
+- Verifies premium status and fetches API token
+- Extracts product data from multiple tabs via `extractProductDataFromPage()`
+- Sends to WordPress backend `/compare` endpoint
+- Handles monthly quota limits and subscription validation
+- Returns structured comparison with winner, pros/cons, and feature tables
+
+**`getApiToken()`** - API Token Management
+- Caches API token in `chrome.storage.local` to reduce backend requests
+- Fetches token from `/get-token` endpoint with email authentication
+- Throws descriptive errors with status codes and details
+- Used by all AI feature handlers for authenticated requests
 
 ### Content Extraction
 
@@ -622,6 +683,7 @@ Please refer to the [changelog](changelog.md) for detailed changes in each versi
 - @TheTacoScott - https://github.com/TheTacoScott
 - @oaustegard - https://github.com/oaustegard
 - @digirat - https://github.com/digirat
+- Subtiltee - https://subtiltee.com/all-extensions
 
 ## License
 
@@ -630,5 +692,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Tags
 
 - This is a Linkclump replacement/alternative
-- This is a Copy All Urls replacement/alternative
 - This is a Copy All Urls replacement/alternative

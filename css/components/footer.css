@@ -1,197 +1,261 @@
 /**
  * Footer Component Styles
+ * Modern Grid Layout
  */
 
 .footer {
-    text-align: center;
-    padding: 2rem 0;
-    margin-top: 2rem;
-    border-top: 1px solid #eee;
-}
-
-.footer p {
-    margin-bottom: 0.5rem;
-}
-
-/* Support Section */
-.support-section {
-    margin-top: 1rem;
-}
-
-.support-section p {
-    margin-bottom: 0.8rem;
-    font-weight: 500;
-    color: #666;
-}
-
-.support-buttons {
-    display: flex;
-    gap: 0.8rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.support-button {
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    color: white;
+    width: 100%;
+    background-color: #f8f9fa; /* Light gray background to separate from content */
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin-top: 4rem;
+    padding: 3rem 0;
+    color: var(--text-color, #333);
     font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+}
+
+/* Container for the grid */
+.footer-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 3rem;
+    max-width: 1000px; /* Restrain width for readability */
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Headings */
+.footer-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b; /* Slate-500 */
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+}
+
+/* --- Brand Column --- */
+.brand-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 2rem;
+}
+
+.footer-brand {
     display: flex;
     align-items: center;
-    gap: 8px;
-    min-width: 180px;
-    justify-content: center;
+    gap: 0.75rem;
 }
 
-.support-button svg {
+.footer-logo {
+    width: 32px;
+    height: 32px;
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color, #2196F3);
+    letter-spacing: -0.02em;
+}
+
+.brand-desc {
+    color: #666;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    max-width: 300px;
+    margin: 0;
+}
+
+.footer-meta {
+    margin-top: auto; /* Push to bottom of flex container if height is fixed */
+    padding-top: 1rem;
+    font-size: 0.85rem;
+    color: #999;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dot {
+    font-size: 0.6rem;
+    opacity: 0.5;
+}
+
+/* --- Community Column --- */
+.community-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.contributors-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.contributor-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.contributor-tag svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    opacity: 0.7;
+}
+
+.contributor-tag:hover {
+    border-color: var(--primary-color, #2196F3);
+    color: var(--primary-color, #2196F3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.github-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--text-color, #333);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    transition: color 0.2s ease;
+}
+
+.github-cta svg {
     width: 18px;
     height: 18px;
     fill: currentColor;
 }
 
-.revolut-button svg {
-    width: 70px;
-    height: 16px;
-    margin-right: 0;
+.github-cta:hover {
+    color: var(--primary-color, #2196F3);
 }
 
-.paypal-button svg {
-    width: 16px;
-    height: 16px;
+/* --- Support Column --- */
+.support-col {
+    display: flex;
+    flex-direction: column;
 }
 
-.support-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.support-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
 }
 
+.support-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.footer-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.footer-btn svg {
+    height: 24px;
+    width: auto;
+    fill: currentColor;
+}
+
+/* PayPal Button */
 .paypal-button {
-    background-color: #0070BA;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .paypal-button:hover {
-    background-color: #005ea6;
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.paypal-button span {
-    color: white;
-}
-
+/* Revolut Button */
 .revolut-button {
-    background-color: #000000;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .revolut-button:hover {
-    background-color: #1a1a1a;
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Contributors Section */
-.contributors-section {
-    margin-top: 1.5rem;
+.revolut-button svg {
+    /* Use default size from .footer-btn svg */
 }
 
-.contributors-section p {
-    margin-bottom: 0.8rem;
-    font-weight: 500;
-    color: #666;
-}
-
-.contributors-list {
-    display: flex;
-    gap: 0.8rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.contributor-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 8px 16px;
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 20px;
+/* General Links */
+.text-link {
+    color: inherit;
     text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    border-bottom: 1px dotted #999;
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.contributor-link:hover {
-    background: #f5f5f5;
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.text-link:hover {
+    color: var(--primary-color, #2196F3);
+    border-bottom-color: var(--primary-color, #2196F3);
 }
 
-.contributor-link .github-icon {
-    width: 18px;
-    height: 18px;
-    fill: #333;
-    transition: fill 0.2s ease;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
 
-.contributor-link:hover .github-icon {
-    fill: var(--primary-color);
-}
+    .brand-col {
+        padding-right: 0;
+        align-items: center;
+        text-align: center;
+    }
 
-.contributor-name {
-    color: #333;
-    transition: color 0.2s ease;
-}
+    .footer-brand {
+        justify-content: center;
+    }
 
-.contributor-link:hover .contributor-name {
-    color: var(--primary-color);
-}
+    .footer-heading {
+        text-align: center;
+    }
 
-/* Contribute Callout */
-.contribute-callout {
-    margin-top: 1.2rem;
-    text-align: center;
-}
+    .contributors-wrapper {
+        justify-content: center;
+    }
 
-.contribute-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    border: none;
-    border-radius: 25px;
-    text-decoration: none;
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
-}
+    .github-cta {
+        margin: 0 auto;
+    }
 
-.contribute-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
-    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-}
-
-.contribute-button .github-icon {
-    width: 20px;
-    height: 20px;
-    fill: white;
-}
-
-.contribute-button span {
-    color: white;
-}
-
-/* Footer Links */
-.footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.footer a:hover {
-    text-decoration: underline;
+    .support-col {
+        text-align: center;
+    }
 }

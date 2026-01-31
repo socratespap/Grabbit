@@ -432,6 +432,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
+// Handle summarizeYoutube action
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'summarizeYoutube') {
+        handleYouTubeSummary(request.tab)
+            .then(results => sendResponse({ results }))
+            .catch(error => sendResponse({ error: error.message }));
+        return true;
+    }
+});
+
 /**
  * Fetch API token for authenticated requests
  */
@@ -487,6 +497,22 @@ async function handleProductComparison(tabs) {
     const products = [];
     for (const tab of tabs) {
         try {
+            // Check if tab still exists before injecting script
+            let targetTab;
+            try {
+                targetTab = await chrome.tabs.get(tab.id);
+            } catch (tabError) {
+                console.warn('Product tab was closed:', tab.id);
+                products.push({
+                    title: tab.title,
+                    price: '',
+                    rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url,
+                    siteName: new URL(tab.url).hostname,
+                    url: tab.url
+                });
+                continue; // Skip to next tab
+            }
+
             const [result] = await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 func: extractProductDataFromPage
@@ -528,7 +554,7 @@ async function handleProductComparison(tabs) {
         if (response.status === 403) {
             throw new Error('Subscription not active. Please check your payment status.');
         } else if (response.status === 429) {
-            throw new Error(data.message || 'Daily limit reached. Try again tomorrow.');
+            throw new Error(data.message || 'Monthly limit reached. Try again next month.');
         } else {
             throw new Error(data.message || 'Comparison failed. Please try again.');
         }
@@ -537,7 +563,7 @@ async function handleProductComparison(tabs) {
     // Return comparison results (and remaining quota info)
     return {
         ...data.comparison,
-        _remaining: data.remaining_today
+        _remaining: data.remaining_month
     };
 }
 
@@ -562,6 +588,15 @@ async function handleArticleSummary(tab) {
 
     // 3. Extract article content from the tab
     try {
+        // Check if tab still exists before injecting script
+        let targetTab;
+        try {
+            targetTab = await chrome.tabs.get(tab.id);
+        } catch (tabError) {
+            console.warn('Article tab was closed:', tab.id);
+            throw new Error('The article tab was closed. Please reopen the article and try again.');
+        }
+
         const [result] = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: extractArticleDataFromPage
@@ -591,7 +626,7 @@ async function handleArticleSummary(tab) {
             if (response.status === 403) {
                 throw new Error('Subscription not active. Please check your payment status.');
             } else if (response.status === 429) {
-                throw new Error(data.message || 'Daily limit reached. Try again tomorrow.');
+                throw new Error(data.message || 'Monthly limit reached. Try again next month.');
             } else {
                 throw new Error(data.message || 'Summary failed. Please try again.');
             }
@@ -600,7 +635,7 @@ async function handleArticleSummary(tab) {
         // Return summary results (and remaining quota info)
         return {
             ...data.summary,
-            _remaining: data.remaining_today
+            _remaining: data.remaining_month
         };
 
     } catch (e) {
@@ -629,7 +664,7 @@ async function handleArticleSummary(tab) {
             if (response.status === 403) {
                 throw new Error('Subscription not active. Please check your payment status.');
             } else if (response.status === 429) {
-                throw new Error(data.message || 'Daily limit reached. Try again tomorrow.');
+                throw new Error(data.message || 'Monthly limit reached. Try again next month.');
             } else {
                 throw new Error(data.message || 'Summary failed. Please try again.');
             }
@@ -637,7 +672,7 @@ async function handleArticleSummary(tab) {
 
         return {
             ...data.summary,
-            _remaining: data.remaining_today
+            _remaining: data.remaining_month
         };
     }
 }
@@ -873,3 +908,270 @@ function extractArticleDataFromPage() {
     };
 }
 
+/**
+ * Main handler for AI YouTube Summary
+ * Uses server-side proxy - API key never sent to client
+ */
+async function handleYouTubeSummary(tab) {
+    // 1. Verify premium status (client-side check)
+    const user = await Premium.getUser();
+
+    if (!user.paid) {
+        throw new Error('Premium required');
+    }
+
+    if (!user.email) {
+        throw new Error('No email associated with your account. Please log in to ExtPay.');
+    }
+
+    // 2. Fetch API token
+    const token = await getApiToken(user.email);
+
+    // 3. Extract YouTube data (transcript, chapters, metadata) from the tab
+    try {
+        // Check if tab still exists before injecting script
+        let targetTab;
+        try {
+            targetTab = await chrome.tabs.get(tab.id);
+        } catch (tabError) {
+            console.warn('YouTube video tab was closed:', tab.id);
+            throw new Error('The YouTube video tab was closed. Please reopen the video and try again.');
+        }
+
+        const [result] = await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: extractYouTubeDataFromPage,
+            world: 'MAIN' // Required to access window.ytcfg from YouTube's page
+        });
+
+        const videoData = result.result;
+
+        // Check for extraction errors
+        if (videoData && videoData.error) {
+            console.error('YouTube extraction failed:', videoData.error);
+            throw new Error(videoData.error);
+        }
+
+        if (!videoData || !videoData.transcript) {
+            throw new Error('No transcript available for this video. The video may not have captions enabled.');
+        }
+
+        // 4. Send to server-side proxy (API key stays on server)
+        const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/youtube-summary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: user.email,
+                token: token,
+                videoData: videoData
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Handle specific errors
+            if (response.status === 403) {
+                throw new Error('Subscription not active. Please check your payment status.');
+            } else if (response.status === 429) {
+                throw new Error(data.message || 'Monthly limit reached. Try again next month.');
+            } else {
+                throw new Error(data.message || 'YouTube summary failed. Please try again.');
+            }
+        }
+
+        // Return summary results (and remaining quota info)
+        return {
+            ...data.summary,
+            _remaining: data.remaining_month
+        };
+
+    } catch (e) {
+        console.error('YouTube extraction error:', e);
+        throw new Error(e.message || 'Failed to extract video data. Please try again.');
+    }
+}
+
+/**
+ * This function is injected into the YouTube tab to extract video data using InnerTube API.
+ * Extracts: title, channel, transcript, chapters
+ */
+async function extractYouTubeDataFromPage() {
+    const data = {
+        title: '',
+        channel: '',
+        videoId: '',
+        transcript: '',
+        chapters: [],
+        url: window.location.href
+    };
+
+    try {
+        // Extract video ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        data.videoId = urlParams.get('v') || '';
+
+        if (!data.videoId) {
+            throw new Error('Could not find video ID');
+        }
+
+        // Get title from page
+        const titleEl = document.querySelector('h1.ytd-video-primary-info-renderer, h1.ytd-watch-metadata');
+        data.title = titleEl?.textContent?.trim() || document.title.replace(' - YouTube', '');
+
+        // Get channel name
+        const channelEl = document.querySelector('#channel-name a, ytd-channel-name a, #owner-name a');
+        data.channel = channelEl?.textContent?.trim() || '';
+
+        // Try to get chapters from description or chapter markers
+        const chapters = [];
+
+        // Method 1: Check for chapter markers in the video player
+        const chapterElements = document.querySelectorAll('.ytp-chapter-container [class*="title"]');
+        if (chapterElements.length > 0) {
+            chapterElements.forEach((el, i) => {
+                chapters.push({
+                    timestamp: '',
+                    title: el.textContent?.trim() || `Chapter ${i + 1}`
+                });
+            });
+        }
+
+        // Method 2: Parse chapters from description
+        const descriptionEl = document.querySelector('#description-inline-expander, #description');
+        const descriptionText = descriptionEl?.textContent || '';
+
+        // Look for timestamp patterns like "0:00 Introduction" or "00:00 - Introduction"
+        const timestampRegex = /(\d{1,2}:\d{2}(?::\d{2})?)\s*[-–—]?\s*(.+?)(?=\n|$)/gm;
+        let match;
+        while ((match = timestampRegex.exec(descriptionText)) !== null) {
+            const timestamp = match[1].trim();
+            const title = match[2].trim();
+            if (title.length > 2 && title.length < 100) {
+                chapters.push({ timestamp, title });
+            }
+        }
+
+        data.chapters = chapters.slice(0, 20); // Limit to 20 chapters
+
+        // Get InnerTube API key
+        const apiKey = window.ytcfg?.get?.('INNERTUBE_API_KEY');
+
+        if (!apiKey) {
+            throw new Error('Could not get InnerTube API key');
+        }
+
+        // Call InnerTube Player API to get caption tracks
+        // Use ANDROID client - returns directly accessible subtitle URLs without restrictions
+        const playerResponse = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                context: {
+                    client: {
+                        clientName: 'ANDROID',
+                        clientVersion: '19.29.37',
+                        hl: window.ytcfg?.get?.('HL') || 'en',
+                    },
+                },
+                videoId: data.videoId,
+            }),
+        });
+
+        if (!playerResponse.ok) {
+            throw new Error('Failed to get player data');
+        }
+
+        const playerData = await playerResponse.json();
+
+        // Get caption tracks
+        const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+
+        if (!captionTracks || captionTracks.length === 0) {
+            throw new Error('No captions available');
+        }
+
+        // Prefer English captions, fallback to first available
+        let selectedTrack = captionTracks.find(t => t.languageCode === 'en') ||
+            captionTracks.find(t => t.languageCode?.startsWith('en')) ||
+            captionTracks[0];
+
+        if (!selectedTrack?.baseUrl) {
+            throw new Error('No valid caption track found');
+        }
+
+        // Fetch transcript in json3 format (JSON - avoids Trusted Types restrictions with DOMParser)
+        const transcriptUrl = new URL(selectedTrack.baseUrl);
+        transcriptUrl.searchParams.set('fmt', 'json3');
+
+        const transcriptResponse = await fetch(transcriptUrl.toString());
+
+        if (!transcriptResponse.ok) {
+            throw new Error('Failed to fetch transcript');
+        }
+
+        const transcriptJson = await transcriptResponse.json();
+
+        // Parse JSON transcript with timestamps
+        let fullTranscript = '';
+        let timestampedTranscript = '';
+        let lastTimestamp = -1;
+
+        // Helper to format milliseconds to MM:SS or HH:MM:SS
+        const formatTime = (ms) => {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            if (hours > 0) {
+                return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+            return `${minutes}:${String(seconds).padStart(2, '0')}`;
+        };
+
+        if (transcriptJson.events) {
+            transcriptJson.events.forEach(event => {
+                if (event.segs) {
+                    const startMs = event.tStartMs || 0;
+                    const startSeconds = Math.floor(startMs / 1000);
+
+                    // Add timestamp marker every 30 seconds for AI reference
+                    if (startSeconds >= lastTimestamp + 30 || lastTimestamp === -1) {
+                        const timestamp = formatTime(startMs);
+                        timestampedTranscript += `\n[${timestamp}] `;
+                        lastTimestamp = startSeconds;
+                    }
+
+                    event.segs.forEach(seg => {
+                        const text = seg.utf8 || '';
+                        const cleanText = text.replace(/\s+/g, ' ').trim();
+                        if (cleanText && cleanText !== '\n') {
+                            fullTranscript += cleanText + ' ';
+                            timestampedTranscript += cleanText + ' ';
+                        }
+                    });
+                }
+            });
+        }
+
+        // Store video duration from last timestamp for validation
+        if (transcriptJson.events && transcriptJson.events.length > 0) {
+            const lastEvent = transcriptJson.events[transcriptJson.events.length - 1];
+            if (lastEvent.tStartMs) {
+                data.videoDuration = formatTime(lastEvent.tStartMs);
+            }
+        }
+
+        // Use timestamped transcript for AI (more accurate) - 60K chars for long videos
+        data.transcript = timestampedTranscript.trim().substring(0, 60000);
+
+        return data;
+
+    } catch (error) {
+        console.error('YouTube extraction error:', error);
+        // Return what we have, even if incomplete
+        data.error = error.message;
+        return data;
+    }
+}

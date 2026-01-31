@@ -1,3 +1,14 @@
+## Version 3.8.0 Changelog:
+- **New Feature: AI YouTube Video Summarization**: Summarize YouTube videos with AI-generated insights from video transcripts.
+  - Comprehensive video overview with AI-generated summary
+  - Chapter-by-chapter breakdown with timestamps for easy navigation
+  - Short and detailed summaries for each chapter (expandable UI)
+  - Key takeaways highlighting main points from the video
+  - Topic tags for content categorization
+  - Video thumbnail, title, and channel information display
+  - Export options: Copy summary to clipboard, Download as Text file, Download as standalone HTML page
+  - Works on YouTube video pages (youtube.com/watch) via popup button
+  
 ## Version 3.7.0 Changelog:
 - **New Feature: AI Product Comparison**: Select multiple product tabs (2-5) and generate comprehensive AI-powered comparisons.
   - Winner selection with clear reasoning

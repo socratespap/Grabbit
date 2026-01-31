@@ -66,9 +66,9 @@ async function runSummary() {
                 return;
             }
 
-            if (response.error.includes('Daily limit') ||
+            if (response.error.includes('Monthly limit') ||
                 response.error.includes('limit reached')) {
-                showError('Daily summary limit reached. Try again tomorrow!');
+                showError('Monthly summary limit reached. Try again next month!');
                 return;
             }
 
@@ -88,7 +88,7 @@ async function runSummary() {
                 const quotaEl = document.createElement('div');
                 quotaEl.id = 'quota-display';
                 quotaEl.style.cssText = 'width: 100%; text-align: center; font-size: 0.8125rem; color: var(--color-text-muted); margin-top: 1rem; opacity: 0.8;';
-                quotaEl.textContent = `Summaries remaining today: ${summaryData._remaining}`;
+                quotaEl.textContent = `AI calls remaining this month: ${summaryData._remaining}`;
 
                 actionsBar.insertAdjacentElement('afterend', quotaEl);
             }
