@@ -44,6 +44,14 @@ export const POPUP_BUTTONS = {
         color: 'premium',
         icon: 'document',
         isPremium: true
+    },
+    youtubeSummary: {
+        id: 'youtubeSummary',
+        title: 'YouTube Summary',
+        subtitle: 'Summarize Video by AI',
+        color: 'premium',
+        icon: 'youtube',
+        isPremium: true
     }
 };
 
@@ -54,7 +62,8 @@ const DEFAULT_CONFIG = {
         { id: 'copyAllUrls', enabled: true, order: 1 },
         { id: 'openUrls', enabled: true, order: 2 },
         { id: 'compareProducts', enabled: true, order: 3 },
-        { id: 'summarizePage', enabled: true, order: 4 }
+        { id: 'summarizePage', enabled: true, order: 4 },
+        { id: 'youtubeSummary', enabled: true, order: 5 }
     ]
 };
 
@@ -153,6 +162,10 @@ export function getButtonIcon(iconName) {
             <line x1="16" y1="13" x2="8" y2="13"></line>
             <line x1="16" y1="17" x2="8" y2="17"></line>
             <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>`,
+        youtube: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
+            <polygon fill="white" points="9.545,15.568 15.818,12 9.545,8.432"/>
         </svg>`
     };
 
