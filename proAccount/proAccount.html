@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Grabbit - Pro Account</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/options.css">
+    <link rel="stylesheet" href="proAccount.css">
+</head>
+
+<body>
+    <div id="sidebar-placeholder" data-active-section="pro-account"></div>
+
+    <div class="container">
+        <div id="pro-account">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+                <img src="/icons/icon128.png" alt="Grabbit Logo" style="width: 64px; height: 64px;">
+                <h1 style="margin: 0;">Pro Account</h1>
+            </div>
+
+            <!-- Account Status Card -->
+            <div class="card account-status-card">
+                <h2>
+                    <svg viewBox="0 0 24 24" width="24" height="24"
+                        style="vertical-align: middle; margin-right: 0.5rem;">
+                        <path
+                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                            fill="currentColor" />
+                    </svg>
+                    Account Status
+                </h2>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="status-section">
+                    <div class="loading-spinner"></div>
+                    <p>Loading account information...</p>
+                </div>
+
+                <!-- Status Display (hidden by default) -->
+                <div id="status-display" class="status-section" style="display: none;">
+                    <div class="status-row">
+                        <span class="status-label">Status:</span>
+                        <span id="subscription-badge" class="status-badge badge-free">FREE</span>
+                    </div>
+                    <div class="status-row" id="email-row" style="display: none;">
+                        <span class="status-label">Email:</span>
+                        <span id="user-email" class="status-value">-</span>
+                    </div>
+                    <div class="status-row" id="subscribed-since-row" style="display: none;">
+                        <span class="status-label">Subscribed since:</span>
+                        <span id="subscribed-since" class="status-value">-</span>
+                    </div>
+                    <div class="status-row" id="next-billing-row" style="display: none;">
+                        <span class="status-label">Next billing date:</span>
+                        <span id="next-billing" class="status-value">-</span>
+                    </div>
+
+                    <!-- Credits Section -->
+                    <div id="credits-section" class="credits-section" style="display: none;">
+                        <div class="credits-header">
+                            <span class="credits-title">Monthly AI Credits</span>
+                            <span id="credits-reset" class="credits-reset">Resets in - days</span>
+                        </div>
+                        <div class="credits-single-display">
+                            <div class="credits-main-value">
+                                <span class="credit-icon">⚡</span>
+                                <span id="credits-total" class="credit-value">-</span>
+                            </div>
+                            <p class="credits-description">Shared credits for all AI features (Compare, Summarize,
+                                YouTube)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="error-state" class="status-section" style="display: none;">
+                    <div class="error-icon">⚠️</div>
+                    <p id="error-message">Unable to load account information. Please try again.</p>
+                    <button id="retry-btn" class="btn btn-secondary">Retry</button>
+                </div>
+            </div>
+
+            <!-- Actions Card -->
+            <div class="card actions-card">
+                <h2>
+                    <svg viewBox="0 0 24 24" width="24" height="24"
+                        style="vertical-align: middle; margin-right: 0.5rem;">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor" />
+                    </svg>
+                    Actions
+                </h2>
+
+                <!-- Actions for non-subscribed users -->
+                <div id="free-actions" class="actions-container">
+                    <p class="actions-description">Unlock premium AI features with a Pro subscription!</p>
+                    <div class="action-buttons-row">
+                        <button id="login-btn" class="btn btn-secondary">
+                            <svg viewBox="0 0 24 24" width="18" height="18">
+                                <path
+                                    d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"
+                                    fill="currentColor" />
+                            </svg>
+                            Log In
+                        </button>
+                        <button id="subscribe-btn" class="btn btn-primary btn-premium">
+                            <svg viewBox="0 0 24 24" width="18" height="18">
+                                <path
+                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                                    fill="currentColor" />
+                            </svg>
+                            Subscribe to Pro
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Actions for subscribed users -->
+                <div id="pro-actions" class="actions-container" style="display: none;">
+                    <p class="actions-description pro-description">
+                        <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle;">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#4CAF50" />
+                        </svg>
+                        You're enjoying Grabbit Pro!
+                    </p>
+                    <button id="manage-subscription-btn" class="btn btn-secondary btn-full">
+                        <svg viewBox="0 0 24 24" width="18" height="18">
+                            <path
+                                d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                                fill="currentColor" />
+                        </svg>
+                        Manage Subscription
+                    </button>
+                </div>
+            </div>
+
+            <!-- Features Card -->
+            <div class="card features-card">
+                <h2>
+                    <svg viewBox="0 0 24 24" width="24" height="24"
+                        style="vertical-align: middle; margin-right: 0.5rem;">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                            fill="currentColor" />
+                    </svg>
+                    Pro Features
+                </h2>
+                <ul class="features-list">
+                    <li>
+                        <span class="feature-icon">🔄</span>
+                        <span class="feature-text"><strong>AI Product Comparison</strong> - Compare products with
+                            AI-powered analysis</span>
+                    </li>
+                    <li>
+                        <span class="feature-icon">📝</span>
+                        <span class="feature-text"><strong>Article Summarization</strong> - Get AI summaries of any
+                            article</span>
+                    </li>
+                    <li>
+                        <span class="feature-icon">🎬</span>
+                        <span class="feature-text"><strong>YouTube Summaries</strong> - Summarize YouTube videos with
+                            chapters</span>
+                    </li>
+                    <li>
+                        <span class="feature-icon">♾️</span>
+                        <span class="feature-text"><strong>Monthly Credits</strong> - Generous monthly AI usage
+                            allowance</span>
+                    </li>
+                </ul>
+            </div>
+
+            <footer class="footer">
+                <p style="color: #999; font-size: 0.85rem;">
+                    Payments are securely processed by Stripe via ExtensionPay.
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="/js/components/sidebar.js"></script>
+    <script src="proAccount.js" type="module"></script>
+</body>
+
+</html>

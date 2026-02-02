@@ -412,6 +412,67 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
+// Pro Account page message handlers
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'GET_PRO_STATUS') {
+        (async () => {
+            try {
+                const user = await Premium.getUser();
+
+                // Get cached credits from storage (saved after each AI action)
+                let credits = null;
+                if (user.paid) {
+                    try {
+                        const stored = await chrome.storage.local.get(['cachedCredits', 'cachedCreditsTimestamp']);
+                        console.log('[ProAccount] Cached credits from storage:', stored);
+
+                        if (stored.cachedCredits !== undefined) {
+                            credits = {
+                                _remaining: stored.cachedCredits
+                            };
+                        }
+                    } catch (e) {
+                        console.warn('Failed to get cached credits:', e);
+                    }
+                }
+
+                sendResponse({
+                    user: {
+                        paid: user.paid,
+                        email: user.email,
+                        trialActive: user.trialActive,
+                        paidAt: user.paidAt || null
+                    },
+                    credits: credits
+                });
+            } catch (error) {
+                sendResponse({ error: error.message });
+            }
+        })();
+        return true; // Keep channel open for async response
+    }
+
+    if (request.action === 'OPEN_LOGIN_PAGE') {
+        Premium.openLoginPage();
+        sendResponse({ success: true });
+    }
+
+    if (request.action === 'OPEN_PAYMENT_PAGE') {
+        Premium.openPaymentPage();
+        sendResponse({ success: true });
+    }
+
+    if (request.action === 'OPEN_BILLING_PORTAL') {
+        // ExtensionPay handles billing through Stripe customer portal
+        // We redirect to the ExtPay dashboard where users can manage their subscription
+        chrome.tabs.create({
+            url: 'https://extensionpay.com/account',
+            active: true
+        });
+        sendResponse({ success: true });
+    }
+});
+
 // Handle compareProducts action
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'compareProducts') {
@@ -560,6 +621,14 @@ async function handleProductComparison(tabs) {
         }
     }
 
+    // Cache remaining credits for Pro Account page
+    if (data.remaining_month !== undefined) {
+        chrome.storage.local.set({
+            cachedCredits: data.remaining_month,
+            cachedCreditsTimestamp: Date.now()
+        });
+    }
+
     // Return comparison results (and remaining quota info)
     return {
         ...data.comparison,
@@ -632,6 +701,18 @@ async function handleArticleSummary(tab) {
             }
         }
 
+        // Cache remaining credits for Pro Account page
+        console.log('[Summarize] Response data.remaining_month:', data.remaining_month);
+        if (data.remaining_month !== undefined) {
+            console.log('[Summarize] Caching credits:', data.remaining_month);
+            chrome.storage.local.set({
+                cachedCredits: data.remaining_month,
+                cachedCreditsTimestamp: Date.now()
+            });
+        } else {
+            console.warn('[Summarize] remaining_month is undefined, not caching');
+        }
+
         // Return summary results (and remaining quota info)
         return {
             ...data.summary,
@@ -668,6 +749,14 @@ async function handleArticleSummary(tab) {
             } else {
                 throw new Error(data.message || 'Summary failed. Please try again.');
             }
+        }
+
+        // Cache remaining credits for Pro Account page
+        if (data.remaining_month !== undefined) {
+            chrome.storage.local.set({
+                cachedCredits: data.remaining_month,
+                cachedCreditsTimestamp: Date.now()
+            });
         }
 
         return {

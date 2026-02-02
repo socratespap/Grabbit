@@ -26,7 +26,8 @@ export const Premium = {
             return {
                 paid: user.paid || false,
                 email: user.email || null,
-                trialActive: user.trialStartedAt && !user.paid
+                trialActive: user.trialStartedAt && !user.paid,
+                paidAt: user.paidAt || null
             };
         } catch (e) {
             console.error('ExtPay getUser error:', e);
