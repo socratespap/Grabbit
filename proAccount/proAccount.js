@@ -8,7 +8,7 @@ let loadingState, statusDisplay, errorState, subscriptionBadge;
 let emailRow, userEmail, subscribedSinceRow, subscribedSince, nextBillingRow, nextBilling;
 let creditsSection, creditsReset, creditsTotal;
 let freeActions, proActions;
-let loginBtn, subscribeBtn, manageSubscriptionBtn, retryBtn;
+let loginBtn, subscribeBtn, logoutBtn, retryBtn, cancelSubscriptionLink;
 
 /**
  * Initialize DOM elements
@@ -31,14 +31,19 @@ function initElements() {
     proActions = document.getElementById('pro-actions');
     loginBtn = document.getElementById('login-btn');
     subscribeBtn = document.getElementById('subscribe-btn');
-    manageSubscriptionBtn = document.getElementById('manage-subscription-btn');
+    logoutBtn = document.getElementById('logout-btn');
     retryBtn = document.getElementById('retry-btn');
+    cancelSubscriptionLink = document.getElementById('cancel-subscription-link');
 
     // Add event listeners here to ensure buttons exist
     if (loginBtn) loginBtn.addEventListener('click', handleLogin);
     if (subscribeBtn) subscribeBtn.addEventListener('click', handleSubscribe);
-    if (manageSubscriptionBtn) manageSubscriptionBtn.addEventListener('click', handleManageSubscription);
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     if (retryBtn) retryBtn.addEventListener('click', fetchUserStatus);
+    if (cancelSubscriptionLink) cancelSubscriptionLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        chrome.runtime.sendMessage({ action: 'CANCEL_SUBSCRIPTION' });
+    });
 }
 
 /**
@@ -269,29 +274,34 @@ async function handleSubscribe() {
 }
 
 /**
- * Handle manage subscription button click
+ * Handle logout button click
  */
-async function handleManageSubscription() {
+async function handleLogout() {
     try {
-        manageSubscriptionBtn.disabled = true;
-        manageSubscriptionBtn.textContent = 'Opening...';
+        if (logoutBtn) {
+            logoutBtn.disabled = true;
+            logoutBtn.textContent = 'Logging out...';
+        }
 
-        // Open Stripe billing portal - this opens in a new tab
-        await chrome.runtime.sendMessage({ action: 'OPEN_BILLING_PORTAL' });
+        await chrome.runtime.sendMessage({ action: 'LOGOUT' });
 
-        // Re-enable after a delay
+        // Reset button state after a delay (logging out usually opens a new tab/window)
         setTimeout(() => {
-            manageSubscriptionBtn.disabled = false;
-            manageSubscriptionBtn.innerHTML = `
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                    <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor" />
-                </svg>
-                Manage Subscription
-            `;
+            if (logoutBtn) {
+                logoutBtn.disabled = false;
+                logoutBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/>
+                    </svg>
+                    Log Out
+                `;
+            }
+            // Refresh status - though user might still be logged in until they act on the ExtPay page
+            fetchUserStatus();
         }, 1000);
     } catch (error) {
-        console.error('Error opening billing portal:', error);
-        manageSubscriptionBtn.disabled = false;
+        console.error('Error logging out:', error);
+        if (logoutBtn) logoutBtn.disabled = false;
     }
 }
 

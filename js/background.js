@@ -457,18 +457,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ success: true });
     }
 
+    if (request.action === 'LOGOUT') {
+        // Clear cached credits AND ExtPay user data to fully log out
+        chrome.storage.local.remove([
+            'cachedCredits',
+            'cachedCreditsTimestamp',
+            'extensionpay_user',      // User data
+            'extensionpay_api_key'    // API key (force new key generation on next login)
+        ]);
+
+        // Open login page (allows explicit switch, though local clear is immediate)
+        Premium.openLoginPage();
+        sendResponse({ success: true });
+    }
+
     if (request.action === 'OPEN_PAYMENT_PAGE') {
         Premium.openPaymentPage();
         sendResponse({ success: true });
     }
 
     if (request.action === 'OPEN_BILLING_PORTAL') {
-        // ExtensionPay handles billing through Stripe customer portal
-        // We redirect to the ExtPay dashboard where users can manage their subscription
+        // ExtensionPay generic account page
         chrome.tabs.create({
             url: 'https://extensionpay.com/account',
             active: true
         });
+        sendResponse({ success: true });
+    }
+
+    if (request.action === 'CANCEL_SUBSCRIPTION') {
+        // ExtPay docs suggest openPaymentPage handles cancellation for existing subscribers
+        Premium.openPaymentPage();
         sendResponse({ success: true });
     }
 });
