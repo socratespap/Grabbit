@@ -1160,7 +1160,7 @@ async function extractYouTubeDataFromPage() {
             }
         }
 
-        data.chapters = chapters.slice(0, 20); // Limit to 20 chapters
+        data.chapters = chapters.slice(0, 50); // Support long videos with many chapters
 
         // Get InnerTube API key
         const apiKey = window.ytcfg?.get?.('INNERTUBE_API_KEY');
@@ -1271,8 +1271,8 @@ async function extractYouTubeDataFromPage() {
             }
         }
 
-        // Use timestamped transcript for AI (more accurate) - 60K chars for long videos
-        data.transcript = timestampedTranscript.trim().substring(0, 60000);
+        // Use timestamped transcript for AI - 200K chars supports 2+ hour videos
+        data.transcript = timestampedTranscript.trim().substring(0, 200000); // 200K chars for 2+ hour videos
 
         return data;
 

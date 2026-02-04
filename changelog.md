@@ -1,3 +1,7 @@
+## Version 3.8.1 Changelog:
+- **Improved YouTube Summarization for Long Videos**: Now supports videos up to 2+ hours by significantly increasing character limits.
+- **Extended Chapter Support**: Increased maximum chapter limit from 20 to 50 to ensure deep analysis of long-form content.
+
 ## Version 3.8.0 Changelog:
 - **New Feature: AI YouTube Video Summarization**: Summarize YouTube videos with AI-generated insights from video transcripts.
   - Comprehensive video overview with AI-generated summary
