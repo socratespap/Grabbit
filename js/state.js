@@ -26,9 +26,11 @@ const GrabbitState = {
     savedActions: [],           // Saved actions from storage
     cachedLinks: [],            // Cache for link elements and their positions
     smartSelectActive: false,   // Flag for LinkClump-style smart select mode (only important links)
-    exclusionFilters: [],       // Raw filter strings from user settings
+    exclusionFilters: [],       // Raw filter strings from user settings (URL filters)
+    linkTextExclusionFilters: [], // Raw link text filter strings from user settings
     disabledDomains: [],        // List of domains to block
-    compiledExclusionFilters: [], // Pre-compiled RegExp objects for performance
+    compiledExclusionFilters: [], // Pre-compiled RegExp objects for performance (URL filters)
+    compiledLinkTextExclusionFilters: [], // Pre-compiled RegExp objects for performance (link text)
     pressedKeys: new Set(),     // Set of currently pressed letter keys (for A-Z modifiers)
     linkRefreshInterval: null   // Interval ID for periodic link re-caching during selection
 };
