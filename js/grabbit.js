@@ -374,12 +374,14 @@ document.addEventListener('mouseup', (e) => {
     }, { once: true });
   }
 
-  const mouseButton = getMouseButton(e);
-  const matchedAction = checkKeyCombination(e, mouseButton);
+  // Use the action that started (or was active during) the selection, not the current key state.
+  // This fixes the case where the user releases the modifier key (e.g. Ctrl) before releasing
+  // the mouse button — the selection should still be processed with the original action.
+  const actionToUse = GrabbitState.currentMatchedAction;
 
   // Process selected links only if selection was actually activated and there's a matched action
-  if (GrabbitState.isSelectionActive && matchedAction && GrabbitState.selectedLinks.size > 0) {
-    processSelectedLinks(matchedAction);
+  if (GrabbitState.isSelectionActive && actionToUse && GrabbitState.selectedLinks.size > 0) {
+    processSelectedLinks(actionToUse);
   }
 
   // Clean up
