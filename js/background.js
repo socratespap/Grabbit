@@ -455,6 +455,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'OPEN_LOGIN_PAGE') {
         Premium.openLoginPage();
         sendResponse({ success: true });
+        return true;
     }
 
     if (request.action === 'LOGOUT') {
@@ -469,11 +470,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // Open login page (allows explicit switch, though local clear is immediate)
         Premium.openLoginPage();
         sendResponse({ success: true });
+        return true;
     }
 
     if (request.action === 'OPEN_PAYMENT_PAGE') {
         Premium.openPaymentPage();
         sendResponse({ success: true });
+        return true;
     }
 
     if (request.action === 'OPEN_BILLING_PORTAL') {
@@ -483,12 +486,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             active: true
         });
         sendResponse({ success: true });
+        return true;
     }
 
     if (request.action === 'CANCEL_SUBSCRIPTION') {
         // ExtPay docs suggest openPaymentPage handles cancellation for existing subscribers
         Premium.openPaymentPage();
         sendResponse({ success: true });
+        return true;
     }
 });
 
