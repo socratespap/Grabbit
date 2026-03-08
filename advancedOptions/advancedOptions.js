@@ -10,12 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const aggressiveContainer = document.getElementById('linkify-aggressive-container');
     const status = document.getElementById('status');
 
-    // Exclusion Filters elements
-    const filterInput = document.getElementById('filter-input');
-    const addFilterBtn = document.getElementById('add-filter-btn');
-    const filterList = document.getElementById('filter-list');
-    const clearFiltersContainer = document.getElementById('clear-filters-container');
-    const clearAllFiltersBtn = document.getElementById('clear-all-filters-btn');
+    // URL Filters elements (backwards-compatible storage key: exclusionFilters)
+    const urlFilterInput = document.getElementById('filter-input');
+    const addUrlFilterBtn = document.getElementById('add-filter-btn');
+    const urlFilterList = document.getElementById('filter-list');
+    const clearUrlFiltersContainer = document.getElementById('clear-filters-container');
+    const clearAllUrlFiltersBtn = document.getElementById('clear-all-filters-btn');
+
+    // Link Text Filters elements (new storage key: linkTextExclusionFilters)
+    const linkTextFilterInput = document.getElementById('link-text-filter-input');
+    const addLinkTextFilterBtn = document.getElementById('add-link-text-filter-btn');
+    const linkTextFilterList = document.getElementById('link-text-filter-list');
+    const clearLinkTextFiltersContainer = document.getElementById('clear-link-text-filters-container');
+    const clearAllLinkTextFiltersBtn = document.getElementById('clear-all-link-text-filters-btn');
 
     // Disabled Domains elements
     const disabledDomainInput = document.getElementById('disabled-domain-input');
@@ -24,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Local state for filters
     let exclusionFilters = [];
+    let linkTextExclusionFilters = [];
     let disabledDomains = [];
 
     // === Linkify Section ===
@@ -59,33 +67,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // === Exclusion Filters Section ===
-    if (filterInput && addFilterBtn && filterList) {
-        // Load saved filters
-        chrome.storage.sync.get(['exclusionFilters', 'disabledDomains'], (result) => {
-            exclusionFilters = result.exclusionFilters || [];
-            disabledDomains = result.disabledDomains || [];
-            renderFilterList();
-            renderDisabledDomainsList();
-        });
+    // Load saved filters
+    chrome.storage.sync.get(['exclusionFilters', 'linkTextExclusionFilters', 'disabledDomains'], (result) => {
+        exclusionFilters = result.exclusionFilters || [];
+        linkTextExclusionFilters = result.linkTextExclusionFilters || [];
+        disabledDomains = result.disabledDomains || [];
+        renderUrlFilterList();
+        renderLinkTextFilterList();
+        renderDisabledDomainsList();
+    });
 
-        // Add filter on button click
-        addFilterBtn.addEventListener('click', addFilter);
+    // === URL Filters Section ===
+    if (urlFilterInput && addUrlFilterBtn && urlFilterList) {
+        addUrlFilterBtn.addEventListener('click', addUrlFilter);
 
         // Add filter on Enter key
-        filterInput.addEventListener('keydown', (e) => {
+        urlFilterInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                addFilter();
+                addUrlFilter();
             }
         });
 
-        // Clear all filters
-        if (clearAllFiltersBtn) {
-            clearAllFiltersBtn.addEventListener('click', () => {
+        // Clear all URL filters
+        if (clearAllUrlFiltersBtn) {
+            clearAllUrlFiltersBtn.addEventListener('click', () => {
                 exclusionFilters = [];
-                saveFilters();
-                renderFilterList();
+                saveUrlFilters();
+                renderUrlFilterList();
                 showStatus('All filters cleared!');
+            });
+        }
+    }
+
+    // === Link Text Filters Section ===
+    if (linkTextFilterInput && addLinkTextFilterBtn && linkTextFilterList) {
+        addLinkTextFilterBtn.addEventListener('click', addLinkTextFilter);
+
+        linkTextFilterInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addLinkTextFilter();
+            }
+        });
+
+        if (clearAllLinkTextFiltersBtn) {
+            clearAllLinkTextFiltersBtn.addEventListener('click', () => {
+                linkTextExclusionFilters = [];
+                saveLinkTextFilters();
+                renderLinkTextFilterList();
+                showStatus('All link text filters cleared!');
             });
         }
     }
@@ -145,6 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
      * Renders the disabled domains list
      */
     function renderDisabledDomainsList() {
+        if (!disabledDomainsList) return;
+
         disabledDomainsList.innerHTML = '';
 
         disabledDomains.forEach((domain, index) => {
@@ -167,12 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Adds a new filter from the input field
+     * Adds a new URL filter from the input field
      */
-    function addFilter() {
-        const value = filterInput.value.trim();
+    function addUrlFilter() {
+        const value = urlFilterInput.value.trim();
         if (!value) {
-            showStatus('Please enter a filter pattern', true);
+            showStatus('Please enter a URL filter pattern', true);
             return;
         }
 
@@ -183,35 +216,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         exclusionFilters.push(value);
-        saveFilters();
-        renderFilterList();
-        filterInput.value = '';
+        saveUrlFilters();
+        renderUrlFilterList();
+        urlFilterInput.value = '';
         showStatus('Filter added!');
     }
 
     /**
-     * Removes a filter at the specified index
+     * Removes a URL filter at the specified index
      * @param {number} index - Index of filter to remove
      */
-    function removeFilter(index) {
+    function removeUrlFilter(index) {
         exclusionFilters.splice(index, 1);
-        saveFilters();
-        renderFilterList();
+        saveUrlFilters();
+        renderUrlFilterList();
         showStatus('Filter removed!');
     }
 
     /**
-     * Saves the current filters to chrome.storage.sync
+     * Saves the current URL filters to chrome.storage.sync
      */
-    function saveFilters() {
+    function saveUrlFilters() {
         chrome.storage.sync.set({ exclusionFilters: exclusionFilters });
     }
 
     /**
-     * Renders the filter list UI
+     * Renders the URL filter list UI
      */
-    function renderFilterList() {
-        filterList.innerHTML = '';
+    function renderUrlFilterList() {
+        if (!urlFilterList) return;
+
+        urlFilterList.innerHTML = '';
 
         exclusionFilters.forEach((filter, index) => {
             const li = document.createElement('li');
@@ -224,16 +259,87 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.className = 'delete-btn';
             deleteBtn.innerHTML = '×';
             deleteBtn.title = 'Remove filter';
-            deleteBtn.addEventListener('click', () => removeFilter(index));
+            deleteBtn.addEventListener('click', () => removeUrlFilter(index));
 
             li.appendChild(span);
             li.appendChild(deleteBtn);
-            filterList.appendChild(li);
+            urlFilterList.appendChild(li);
+        });
+
+        if (clearUrlFiltersContainer) {
+            clearUrlFiltersContainer.style.display = exclusionFilters.length > 0 ? 'block' : 'none';
+        }
+    }
+
+    /**
+     * Adds a new link text filter from the input field
+     */
+    function addLinkTextFilter() {
+        const value = linkTextFilterInput.value.trim();
+        if (!value) {
+            showStatus('Please enter a text filter pattern', true);
+            return;
+        }
+
+        if (linkTextExclusionFilters.includes(value)) {
+            showStatus('Text filter already exists', true);
+            return;
+        }
+
+        linkTextExclusionFilters.push(value);
+        saveLinkTextFilters();
+        renderLinkTextFilterList();
+        linkTextFilterInput.value = '';
+        showStatus('Text filter added!');
+    }
+
+    /**
+     * Removes a link text filter at the specified index
+     * @param {number} index - Index of filter to remove
+     */
+    function removeLinkTextFilter(index) {
+        linkTextExclusionFilters.splice(index, 1);
+        saveLinkTextFilters();
+        renderLinkTextFilterList();
+        showStatus('Text filter removed!');
+    }
+
+    /**
+     * Saves the current link text filters to chrome.storage.sync
+     */
+    function saveLinkTextFilters() {
+        chrome.storage.sync.set({ linkTextExclusionFilters: linkTextExclusionFilters });
+    }
+
+    /**
+     * Renders the link text filter list UI
+     */
+    function renderLinkTextFilterList() {
+        if (!linkTextFilterList) return;
+
+        linkTextFilterList.innerHTML = '';
+
+        linkTextExclusionFilters.forEach((filter, index) => {
+            const li = document.createElement('li');
+            li.className = 'filter-tag';
+
+            const span = document.createElement('span');
+            span.textContent = filter;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Remove text filter';
+            deleteBtn.addEventListener('click', () => removeLinkTextFilter(index));
+
+            li.appendChild(span);
+            li.appendChild(deleteBtn);
+            linkTextFilterList.appendChild(li);
         });
 
         // Show/hide clear all button
-        if (clearFiltersContainer) {
-            clearFiltersContainer.style.display = exclusionFilters.length > 0 ? 'block' : 'none';
+        if (clearLinkTextFiltersContainer) {
+            clearLinkTextFiltersContainer.style.display = linkTextExclusionFilters.length > 0 ? 'block' : 'none';
         }
     }
 

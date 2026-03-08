@@ -5,7 +5,7 @@
  *
  * This content script provides the core functionality for selecting multiple links on a webpage
  * by drawing a selection box with the mouse while holding specific key combinations.
- * 
+ *
  * @author Grabbit Team
  * @version 2.0.0
  */
@@ -17,9 +17,10 @@
 /**
  * Load saved actions from chrome storage on initialization
  */
-chrome.storage.sync.get(['savedActions', 'boxColor', 'exclusionFilters', 'disabledDomains'], function (result) {
+chrome.storage.sync.get(['savedActions', 'boxColor', 'exclusionFilters', 'linkTextExclusionFilters', 'disabledDomains'], function (result) {
   GrabbitState.savedActions = result.savedActions || [];
   GrabbitState.exclusionFilters = result.exclusionFilters || [];
+  GrabbitState.linkTextExclusionFilters = result.linkTextExclusionFilters || [];
   GrabbitState.disabledDomains = result.disabledDomains || [];
 
   // Check if disabled
@@ -30,10 +31,11 @@ chrome.storage.sync.get(['savedActions', 'boxColor', 'exclusionFilters', 'disabl
   }
 
   compileExclusionFilters();
+  compileLinkTextExclusionFilters();
 });
 
 /**
- * Compiles exclusion filter patterns into RegExp objects for performance.
+ * Compiles URL exclusion filter patterns into RegExp objects for performance.
  * Falls back to substring matching for invalid regex patterns.
  */
 function compileExclusionFilters() {
@@ -47,6 +49,23 @@ function compileExclusionFilters() {
     }
   });
 }
+
+/**
+ * Compiles link text exclusion filter patterns into RegExp objects for performance.
+ * Falls back to substring matching for invalid regex patterns.
+ */
+function compileLinkTextExclusionFilters() {
+  GrabbitState.compiledLinkTextExclusionFilters = GrabbitState.linkTextExclusionFilters.map(pattern => {
+    try {
+      // Try to compile as regex with case-insensitive flag
+      return { regex: new RegExp(pattern, 'i'), pattern: pattern };
+    } catch (e) {
+      // Invalid regex - will use substring matching
+      return { regex: null, pattern: pattern };
+    }
+  });
+}
+
 
 //=============================================================================
 // EVENT LISTENERS
@@ -491,10 +510,16 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
       });
     }
 
-    // Update exclusionFilters if they changed
+    // Update URL exclusionFilters if they changed
     if (changes.exclusionFilters) {
       GrabbitState.exclusionFilters = changes.exclusionFilters.newValue || [];
       compileExclusionFilters();
+    }
+
+    // Update linkTextExclusionFilters if they changed
+    if (changes.linkTextExclusionFilters) {
+      GrabbitState.linkTextExclusionFilters = changes.linkTextExclusionFilters.newValue || [];
+      compileLinkTextExclusionFilters();
     }
   }
 });

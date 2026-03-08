@@ -74,22 +74,96 @@ function handleScroll(mouseY) {
 //=============================================================================
 
 /**
- * Checks if a link URL matches any exclusion filter.
+ * Checks if a string matches any compiled URL exclusion filter.
+ * Used for both href and link text when applying URL filters.
+ */
+function urlFilterMatchesText(text, filters) {
+    if (!filters || filters.length === 0) return { matched: false };
+    const lower = text.toLowerCase();
+    for (let i = 0; i < filters.length; i++) {
+        const filter = filters[i];
+        const matched = filter.regex
+            ? filter.regex.test(text)
+            : lower.includes(filter.pattern.toLowerCase());
+        if (matched) return { matched: true, pattern: filter.pattern };
+    }
+    return { matched: false };
+}
+
+/**
+ * Checks if a link URL or visible text matches any URL exclusion filter.
  * Uses pre-compiled RegExp objects for performance.
  * Falls back to substring matching for invalid regex patterns.
- * @param {string} url - The URL to check
+ * @param {Element} link - The anchor element to check
  * @returns {boolean} True if the link should be excluded
  */
-function isLinkExcluded(url) {
-    return GrabbitState.compiledExclusionFilters.some(filter => {
-        if (filter.regex) {
-            // Use pre-compiled regex
-            return filter.regex.test(url);
-        } else {
-            // Fallback to case-insensitive substring match
-            return url.toLowerCase().includes(filter.pattern.toLowerCase());
-        }
-    });
+function isLinkExcluded(link) {
+    const filters = GrabbitState.compiledExclusionFilters;
+    if (!filters || filters.length === 0) return false;
+
+    const url = link.href || '';
+    let result = urlFilterMatchesText(url, filters);
+        if (result.matched) return true;
+
+    const linkText = getLinkTextForFiltering(link);
+    if (linkText) {
+        result = urlFilterMatchesText(linkText, filters);
+        if (result.matched) return true;
+    }
+    return false;
+}
+
+/**
+ * Checks if a link's visible text matches any link text exclusion filter.
+ * Uses pre-compiled RegExp objects for performance.
+ * Falls back to substring matching for invalid regex patterns.
+ * @param {Element} link - The anchor element to check
+ * @returns {boolean} True if the link should be excluded
+ */
+function isLinkTextExcluded(link) {
+    const filters = GrabbitState.compiledLinkTextExclusionFilters;
+    if (!filters || filters.length === 0) return false;
+
+    const text = getLinkTextForFiltering(link);
+    if (!text) return false;
+
+    for (let i = 0; i < filters.length; i++) {
+        const filter = filters[i];
+        const matched = filter.regex
+            ? filter.regex.test(text)
+            : text.toLowerCase().includes(filter.pattern.toLowerCase());
+        if (matched) return true;
+    }
+    return false;
+}
+
+/**
+ * Derives visible text for a link (anchor text, aria-label, title, or image alt) for filtering.
+ * @param {Element} link - The anchor element
+ * @returns {string} The derived text
+ */
+function getLinkTextForFiltering(link) {
+    if (!link) return '';
+
+    const textContent = (link.textContent || '').trim().replace(/\s+/g, ' ');
+    if (textContent) return textContent;
+
+    const ariaLabel = (link.getAttribute && link.getAttribute('aria-label')) ? link.getAttribute('aria-label').trim() : '';
+    if (ariaLabel) return ariaLabel;
+
+    const title = (link.getAttribute && link.getAttribute('title')) ? link.getAttribute('title').trim() : '';
+    if (title) return title;
+
+    const img = link.querySelector ? link.querySelector('img') : null;
+    if (img) {
+        const alt = (img.getAttribute && img.getAttribute('alt')) ? img.getAttribute('alt').trim() : '';
+        if (alt) return alt;
+
+        const imgAria = (img.getAttribute && img.getAttribute('aria-label')) ? img.getAttribute('aria-label').trim() : '';
+        if (imgAria) return imgAria;
+    }
+
+    return '';
 }
 
 /**
@@ -118,10 +192,11 @@ function updateSelectedLinks() {
     GrabbitState.cachedLinks.forEach(item => {
         const { link, box, isImportant, signature } = item;
 
-        // Skip links matching exclusion filters
-        if (isLinkExcluded(link.href)) {
-            return;
-        }
+        // Skip links matching URL exclusion filters
+        if (isLinkExcluded(link)) return;
+
+        // Skip links matching link text exclusion filters
+        if (isLinkTextExcluded(link)) return;
 
         // Check if link is within selection box
         const isInBox = !(box.left > boxRight ||
@@ -298,7 +373,7 @@ function processSelectedLinks(matchedAction) {
         });
 
         // If deduplication or reverse happened, we might have multiple links with same URL but different titles?
-        // Actually, logic above iterates DOM elements. 
+        // Actually, logic above iterates DOM elements.
         // Let's rely on mapping finalUrls back to titles to strictly follow the processed list (order/dedupe).
 
         const processedBookmarks = finalUrls.map(url => {
@@ -321,4 +396,3 @@ function processSelectedLinks(matchedAction) {
     }
 
 }
-
