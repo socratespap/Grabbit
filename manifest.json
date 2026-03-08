@@ -48,6 +48,7 @@
         "js/smart-select.js",
         "js/logic.js",
         "js/linkify.js",
+        "js/duplicate-highlighter.js",
         "js/grabbit.js"
       ],
       "all_frames": true,

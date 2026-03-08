@@ -126,10 +126,14 @@ function migrateStoredActions(actions) {
 
 //open options page on extension install
 chrome.runtime.onInstalled.addListener((details) => {
-    // Enable Linkify by default for new installs OR existing users upgrading to this version
-    chrome.storage.sync.get(['linkifyEnabled', 'savedActions'], (result) => {
+    // Enable Linkify and Duplicate Highlighter by default for new installs OR existing users upgrading to this version
+    chrome.storage.sync.get(['linkifyEnabled', 'duplicateHighlighterEnabled', 'savedActions'], (result) => {
         if (result.linkifyEnabled === undefined) {
             chrome.storage.sync.set({ linkifyEnabled: true });
+        }
+        
+        if (result.duplicateHighlighterEnabled === undefined) {
+            chrome.storage.sync.set({ duplicateHighlighterEnabled: true });
         }
 
         // Migrate/validate stored actions

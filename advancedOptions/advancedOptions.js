@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const linkifyToggle = document.getElementById('linkify-toggle');
     const linkifyAggressive = document.getElementById('linkify-aggressive');
     const aggressiveContainer = document.getElementById('linkify-aggressive-container');
+    const duplicateHighlighterToggle = document.getElementById('duplicate-highlighter-toggle');
     const status = document.getElementById('status');
 
     // URL Filters elements (backwards-compatible storage key: exclusionFilters)
@@ -37,9 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // === Linkify Section ===
     if (linkifyToggle && linkifyAggressive) {
         // Load saved settings
-        chrome.storage.sync.get(['linkifyEnabled', 'linkifyAggressive'], (result) => {
+        chrome.storage.sync.get(['linkifyEnabled', 'linkifyAggressive', 'duplicateHighlighterEnabled'], (result) => {
             linkifyToggle.checked = result.linkifyEnabled || false;
             linkifyAggressive.checked = result.linkifyAggressive || false;
+            if (duplicateHighlighterToggle) {
+                duplicateHighlighterToggle.checked = result.duplicateHighlighterEnabled || false;
+            }
             updateAggressiveUI();
         });
 
@@ -56,6 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 showStatus('Settings saved!');
             });
         });
+
+        if (duplicateHighlighterToggle) {
+            duplicateHighlighterToggle.addEventListener('change', () => {
+                chrome.storage.sync.set({ duplicateHighlighterEnabled: duplicateHighlighterToggle.checked }, () => {
+                    showStatus('Settings saved!');
+                });
+            });
+        }
 
         function updateAggressiveUI() {
             if (linkifyToggle.checked) {
