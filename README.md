@@ -25,6 +25,7 @@ This project is tested with BrowserStack
 *   **Advanced Options:** Dedicated section for power-user features. Now includes **animated toggle switches**, a dynamic UI that adapts to selected features, and a robust filter/domain management system.
 *   **Configurable "Mark as Visited":** (New) Per-action setting in Advanced Options to visually mark links as visited (purple) in the browser.
 *   **Dynamic Link Detection:** (New) Automatically detects and allows selection of new links that appear during a drag (e.g., from **infinite scroll** or lazy loading).
+*   **Duplicate Link Highlighter:** (New) Visually identifies links with the same URL on a page using unique colored underlines. Helps in finding repetitive content and managing navigation.
 *   **AI Product Comparison:** (New) Select multiple product tabs and generate a comprehensive AI-powered comparison table with a clear winner, pros/cons, and feature breakdown.
 *   **AI Article Summarization:** (New) Summarize articles and blog posts with AI-generated key takeaways, topic tags, and bottom line analysis.
 *   **AI YouTube Video Summarization:** (New) Summarize YouTube videos with chapter-by-chapter breakdowns, key points, and detailed summaries for each section. Automatically extracts transcripts and creates intelligent chapter markers.
@@ -146,7 +147,8 @@ The order in `manifest.json` → `content_scripts` → `js` is **critical**. Scr
 5. `js/smart-select.js` - Adaptive pattern-based selection
 6. `js/logic.js` - Core business logic
 7. `js/linkify.js` - Text-to-link conversion
-8. `js/grabbit.js` - **MUST LOAD LAST** - Main entry point and event orchestrator
+8. `js/duplicate-highlighter.js` - Duplicate link highlighting
+9. `js/grabbit.js` - **MUST LOAD LAST** - Main entry point and event orchestrator
 
 **Never reorder these scripts without understanding dependencies**. Many modules reference `GrabbitState` or functions from earlier-loaded scripts.
 
@@ -226,6 +228,13 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 - Code block support: Includes `<code>` and `<pre>` tags
 - Shadow DOM support: Handles URLs inside Shadow Roots
 - Linkified elements get `.grabbit-linkified` class
+
+**`js/duplicate-highlighter.js`** - Duplicate Link Highlighting
+- Automatically highlights links that share the same URL on a page.
+- Uses vibrant, unique colors for each group of duplicate links.
+- Uses `MutationObserver` to handle dynamic content (infinite scroll).
+- Supports Shadow DOM for deep link discovery.
+- Respects domain blocklist and user settings.
 
 ### Background Service Worker
 
@@ -651,6 +660,7 @@ Access the options page to:
 - 🟢 Copy links with titles
 - 🟢  Provide different color on add new action
 - 🟢  Added A-Z keys as modifier options for actions
+- 🟢 Duplicate Link Highlighter
 - 🔴 Append Urls to clipboard. Clipboard = selected links + clipboard
 - 🟢 Add rating button
 - 🟢 Open tabs next to active tab

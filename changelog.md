@@ -1,3 +1,10 @@
+## Version 3.8.2 Changelog:
+- **New Feature: Duplicate Link Highlighter**: Automatically highlights links that share the same URL on a page with unique colored underlines.
+- **Visual Grouping**: Each group of duplicate links is assigned a distinct, vibrant color for easy identification.
+- **Dynamic Content Support**: Uses a MutationObserver to automatically detect and highlight new duplicate links that appear during infinite scrolling or lazy loading.
+- **Shadow DOM Support**: Intelligently scans inside Shadow Roots to ensure all links on the page are accounted for.
+- **Granular Control**: Can be enabled or disabled via the Advanced Options page and respects the domain blocklist.
+
 ## Version 3.8.1 Changelog:
 - **Improved YouTube Summarization for Long Videos**: Now supports videos up to 2+ hours by significantly increasing character limits.
 - **Extended Chapter Support**: Increased maximum chapter limit from 20 to 50 to ensure deep analysis of long-form content.
