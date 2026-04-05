@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <title>Grabbit - Pro Account</title>
@@ -8,176 +7,173 @@
     <link rel="stylesheet" href="/css/components/sidebar.css">
     <link rel="stylesheet" href="/css/options.css">
     <link rel="stylesheet" href="proAccount.css">
+    <style>
+        .status-badge.badge-trial { background: #e8f5e9; color: #4CAF50; border-color: #c8e6c9; }
+        #reset-status-msg { display: none; font-size: 0.82rem; color: #4CAF50; margin: 0; }
+        .upgrade-box {
+            background: linear-gradient(135deg, #fff8f5 0%, #fff3ee 100%);
+            border: 1px solid #ffe0d0;
+            border-radius: 10px;
+            padding: 1.25rem 1rem;
+            margin-top: 1rem;
+        }
+        .upgrade-box p { margin: 0 0 .85rem; font-size: .9rem; color: #555; }
+        .upgrade-box .plan-btns { display: flex; gap: .6rem; flex-wrap: wrap; }
+        .upgrade-box .plan-btns button { flex: 1; min-width: 120px; }
+    </style>
 </head>
-
 <body>
     <div id="sidebar-placeholder" data-active-section="pro-account"></div>
 
     <div class="container">
         <div id="pro-account">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
-                <img src="/icons/icon128.png" alt="Grabbit Logo" style="width: 64px; height: 64px;">
-                <h1 style="margin: 0;">Pro Account</h1>
+            <div style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2rem;">
+                <img src="/icons/icon128.png" alt="Grabbit Logo" style="width:64px;height:64px;">
+                <h1 style="margin:0;">Pro Account</h1>
             </div>
 
-            <!-- Account Status Card -->
+            <!-- ── Account Status Card ── -->
             <div class="card account-status-card">
                 <h2>
-                    <svg viewBox="0 0 24 24" width="24" height="24"
-                        style="vertical-align: middle; margin-right: 0.5rem;">
-                        <path
-                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                            fill="currentColor" />
+                    <svg viewBox="0 0 24 24" width="24" height="24" style="vertical-align:middle;margin-right:.5rem;">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
                     </svg>
                     Account Status
                 </h2>
 
-                <!-- Loading State -->
+                <!-- STATE 1: Loading -->
                 <div id="loading-state" class="status-section">
                     <div class="loading-spinner"></div>
-                    <p>Loading account information...</p>
+                    <p>Loading account information…</p>
                 </div>
 
-                <!-- Status Display (hidden by default) -->
-                <div id="status-display" class="status-section" style="display: none;">
+                <!-- STATE 2: Not logged in — auth forms ONLY -->
+                <div id="login-state" class="status-section" style="display:none;">
+                    <div class="auth-tabs-container">
+                        <div class="auth-tabs">
+                            <button id="tab-signin" class="auth-tab active">Sign In</button>
+                            <button id="tab-signup" class="auth-tab">Sign Up</button>
+                            <div class="tab-indicator" id="tab-indicator"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sign In -->
+                    <div id="signin-form" class="auth-form">
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <input id="login-email-input" type="email" placeholder="Email address" autocomplete="email" />
+                        </div>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input id="login-password-input" type="password" placeholder="Password" autocomplete="current-password" />
+                        </div>
+                        <button id="login-submit-btn" class="btn btn-primary" style="width:100%;">Sign In</button>
+                        <p id="login-error" class="form-error"></p>
+                        <div class="auth-footer">
+                            <a id="forgot-password-link">Forgot password?</a>
+                            <p id="reset-status-msg"></p>
+                        </div>
+                    </div>
+
+                    <!-- Sign Up -->
+                    <div id="signup-form" class="auth-form" style="display:none;">
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <input id="signup-email-input" type="email" placeholder="Email address" autocomplete="email" />
+                        </div>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input id="signup-password-input" type="password" placeholder="Password (min. 8 chars)" autocomplete="new-password" />
+                        </div>
+                        <button id="signup-submit-btn" class="btn btn-primary" style="width:100%;">Create Account</button>
+                        <p id="signup-error" class="form-error"></p>
+                        <p style="font-size:.82rem;color:#999;margin:0.5rem 0 0;text-align:center;">Confirmation email will be sent to verify address.</p>
+                    </div>
+                </div>
+
+                <!-- STATE 3: Logged in (free or pro) -->
+                <div id="status-display" class="status-section" style="display:none;">
                     <div class="status-row">
                         <span class="status-label">Status:</span>
                         <span id="subscription-badge" class="status-badge badge-free">FREE</span>
                     </div>
-                    <div class="status-row" id="email-row" style="display: none;">
+                    <div class="status-row" id="email-row" style="display:none;">
                         <span class="status-label">Email:</span>
-                        <span id="user-email" class="status-value">-</span>
+                        <span id="user-email" class="status-value">—</span>
                     </div>
-                    <div class="status-row" id="subscribed-since-row" style="display: none;">
-                        <span class="status-label">Subscribed since:</span>
-                        <span id="subscribed-since" class="status-value">-</span>
-                    </div>
-                    <div class="status-row" id="next-billing-row" style="display: none;">
-                        <span class="status-label">Next billing date:</span>
-                        <span id="next-billing" class="status-value">-</span>
+                    <div class="status-row" id="trial-expiry-row" style="display:none;">
+                        <span class="status-label">Trial Ends:</span>
+                        <span id="trial-expiry-date" class="status-value">—</span>
                     </div>
 
-                    <!-- Credits Section -->
-                    <div id="credits-section" class="credits-section" style="display: none;">
+                    <!-- Credits (Pro only) -->
+                    <div id="credits-section" class="credits-section" style="display:none;">
                         <div class="credits-header">
                             <span class="credits-title">Monthly AI Credits</span>
-                            <span id="credits-reset" class="credits-reset">Resets in - days</span>
+                            <span id="credits-reset" class="credits-reset">Resets in — days</span>
                         </div>
                         <div class="credits-single-display">
                             <div class="credits-main-value">
                                 <span class="credit-icon">⚡</span>
-                                <span id="credits-total" class="credit-value">-</span>
+                                <span id="credits-total" class="credit-value">—</span>
                             </div>
-                            <p class="credits-description">Shared credits for all AI features (Compare, Summarize,
-                                YouTube)</p>
+                            <p class="credits-description">Shared credits for all AI features</p>
                         </div>
                     </div>
+
+                    <!-- Upgrade box (Free only, shown after login) -->
+                    <div id="upgrade-box" class="upgrade-box" style="display:none;">
+                        <p>🚀 <strong>Upgrade to Pro</strong> to unlock AI Product Comparison, Article Summaries, YouTube Summaries, and more.</p>
+                        <div class="plan-btns">
+                            <button id="subscribe-monthly-btn" class="btn btn-secondary">Monthly Plan</button>
+                            <button id="subscribe-yearly-btn"  class="btn btn-primary btn-premium">⭐ Yearly — Best Value</button>
+                        </div>
+                    </div>
+
+                    <!-- Pro actions -->
+                    <div id="pro-actions" style="display:none;margin-top:.75rem;">
+                        <button id="billing-portal-btn" class="btn btn-secondary btn-full">
+                            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" fill="currentColor"/></svg>
+                            Manage Billing
+                        </button>
+                        <div style="text-align:center;margin-top:.75rem;">
+                            <a href="#" id="cancel-subscription-link" style="color:#bbb;font-size:.8rem;text-decoration:underline;">Cancel Subscription</a>
+                        </div>
+                    </div>
+
+                    <!-- Logout (always visible when logged in) -->
+                    <button id="logout-btn" class="btn btn-secondary btn-full" style="margin-top:1rem;background:transparent;border:1px solid #ddd;color:#666;">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/></svg>
+                        Log Out
+                    </button>
                 </div>
 
-                <!-- Error State -->
-                <div id="error-state" class="status-section" style="display: none;">
+                <!-- STATE 4: Error -->
+                <div id="error-state" class="status-section" style="display:none;">
                     <div class="error-icon">⚠️</div>
                     <p id="error-message">Unable to load account information. Please try again.</p>
                     <button id="retry-btn" class="btn btn-secondary">Retry</button>
                 </div>
             </div>
 
-            <!-- Actions Card -->
-            <div class="card actions-card">
-                <h2>
-                    <svg viewBox="0 0 24 24" width="24" height="24"
-                        style="vertical-align: middle; margin-right: 0.5rem;">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor" />
-                    </svg>
-                    Actions
-                </h2>
-
-                <!-- Actions for non-subscribed users -->
-                <div id="free-actions" class="actions-container">
-                    <p class="actions-description">Unlock premium AI features with a Pro subscription!</p>
-                    <div class="action-buttons-row">
-                        <button id="login-btn" class="btn btn-secondary">
-                            <svg viewBox="0 0 24 24" width="18" height="18">
-                                <path
-                                    d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"
-                                    fill="currentColor" />
-                            </svg>
-                            Log In
-                        </button>
-                        <button id="subscribe-btn" class="btn btn-primary btn-premium">
-                            <svg viewBox="0 0 24 24" width="18" height="18">
-                                <path
-                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                                    fill="currentColor" />
-                            </svg>
-                            Subscribe to Pro
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Actions for subscribed users -->
-                <div id="pro-actions" class="actions-container" style="display: none;">
-                    <p class="actions-description pro-description">
-                        <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle;">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#4CAF50" />
-                        </svg>
-                        You're enjoying Grabbit Pro!
-                    </p>
-                    <button id="logout-btn" class="btn btn-secondary btn-full"
-                        style="margin-top: 0.75rem; background: transparent; border: 1px solid #ddd; color: #666;">
-                        <svg viewBox="0 0 24 24" width="18" height="18">
-                            <path
-                                d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
-                                fill="currentColor" />
-                        </svg>
-                        Log Out
-                    </button>
-                    <div style="text-align: center; margin-top: 1rem;">
-                        <a href="#" id="cancel-subscription-link"
-                            style="color: #999; font-size: 0.8rem; text-decoration: underline;">Cancel Subscription</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Card -->
+            <!-- ── Features Card ── -->
             <div class="card features-card">
                 <h2>
-                    <svg viewBox="0 0 24 24" width="24" height="24"
-                        style="vertical-align: middle; margin-right: 0.5rem;">
-                        <path
-                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                            fill="currentColor" />
+                    <svg viewBox="0 0 24 24" width="24" height="24" style="vertical-align:middle;margin-right:.5rem;">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
                     </svg>
                     Pro Features
                 </h2>
                 <ul class="features-list">
-                    <li>
-                        <span class="feature-icon">🔄</span>
-                        <span class="feature-text"><strong>AI Product Comparison</strong> - Compare products with
-                            AI-powered analysis</span>
-                    </li>
-                    <li>
-                        <span class="feature-icon">📝</span>
-                        <span class="feature-text"><strong>Article Summarization</strong> - Get AI summaries of any
-                            article</span>
-                    </li>
-                    <li>
-                        <span class="feature-icon">🎬</span>
-                        <span class="feature-text"><strong>YouTube Summaries</strong> - Summarize YouTube videos with
-                            chapters</span>
-                    </li>
-                    <li>
-                        <span class="feature-icon">♾️</span>
-                        <span class="feature-text"><strong>Monthly Credits</strong> - Generous monthly AI usage
-                            allowance</span>
-                    </li>
+                    <li><span class="feature-icon">🔄</span><span class="feature-text"><strong>AI Product Comparison</strong> — Compare products with AI analysis</span></li>
+                    <li><span class="feature-icon">📝</span><span class="feature-text"><strong>Article Summarization</strong> — Instant AI summaries of any article</span></li>
+                    <li><span class="feature-icon">🎬</span><span class="feature-text"><strong>YouTube Summaries</strong> — Chapter-by-chapter video breakdowns</span></li>
+                    <li><span class="feature-icon">♾️</span><span class="feature-text"><strong>Monthly Credits</strong> — Generous monthly AI usage allowance</span></li>
                 </ul>
             </div>
 
             <footer class="footer">
-                <p style="color: #999; font-size: 0.85rem;">
-                    Payments are securely processed by Stripe via ExtensionPay.
-                </p>
+                <p style="color:#bbb;font-size:.82rem;">Payments are securely processed by Stripe.</p>
             </footer>
         </div>
     </div>
@@ -185,5 +181,4 @@
     <script src="/js/components/sidebar.js"></script>
     <script src="proAccount.js" type="module"></script>
 </body>
-
 </html>

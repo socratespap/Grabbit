@@ -1,3 +1,8 @@
+## Version 3.8.6 Changelog:
+- **Major Infrastructure Upgrade**: Migrated backend services and user database from WordPress to Supabase for improved performance, security, and reliability.
+- **Enhanced Database Architecture**: Transitioned to a more robust SQL-based system in Supabase, enabling faster query processing and better data integrity.
+- **Improved Authentication & Limits Monitoring**: Optimized user subscription tracking and AI quotas using Supabase Edge Functions and real-time database triggers.
+
 ## Version 3.8.2 Changelog:
 - **New Feature: Duplicate Link Highlighter**: Automatically highlights links that share the same URL on a page with unique colored underlines.
 - **Visual Grouping**: Each group of duplicate links is assigned a distinct, vibrant color for easy identification.

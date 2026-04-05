@@ -52,8 +52,8 @@ async function runComparison() {
         if (response.error) {
             // Handle different error types
             if (response.error === 'Premium required') {
-                chrome.runtime.sendMessage({ action: 'openPaymentPage' });
-                showError('Premium subscription required. Opening payment page...');
+                chrome.runtime.sendMessage({ action: 'OPEN_PRO_ACCOUNT' });
+                showError('Premium subscription required. Opening account page...');
                 return;
             }
 
@@ -61,7 +61,7 @@ async function runComparison() {
                 response.error.includes('subscription')) {
                 showError('Your subscription is not active. Please check your payment.');
                 setTimeout(() => {
-                    chrome.runtime.sendMessage({ action: 'openPaymentPage' });
+                    chrome.runtime.sendMessage({ action: 'OPEN_PRO_ACCOUNT' });
                 }, 2000);
                 return;
             }

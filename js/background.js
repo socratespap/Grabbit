@@ -1,4 +1,9 @@
-import { Premium } from './premium.js';
+import { GrabbitAuth } from './grabbit-auth.js';
+
+const SUPABASE_API_BASE = 'https://xtemoktforlrgxwdtpqb.supabase.co/functions/v1';
+const STRIPE_MONTHLY_URL = 'https://buy.stripe.com/aFa8wQ04DfZweE14Ogbsc02';
+const STRIPE_YEARLY_URL  = 'https://buy.stripe.com/9B600k3gP6oWfI5a8Absc03';
+const STRIPE_PORTAL_URL  = 'https://billing.stripe.com/p/login/4gMeVe8B9aFc3Zna8Absc00'; // Update this if you have a test portal link too!
 // AI comparison now handled server-side for security
 
 //=============================================================================
@@ -410,19 +415,12 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 // PREMIUM FEATURES
 //=============================================================================
 
-// Initialize Premium module (ExtPay listeners)
-Premium.init();
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'checkPremiumStatus') {
-        Premium.getUser().then(user => {
-            sendResponse({ isPremium: user.paid });
+        GrabbitAuth.getUser().then(user => {
+            sendResponse({ isPremium: user.isPremium });
         });
-        return true; // Keep channel open for async response
-    }
-
-    if (request.action === 'openPaymentPage') {
-        Premium.openPaymentPage();
+        return true;
     }
 });
 
@@ -431,81 +429,86 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'GET_PRO_STATUS') {
         (async () => {
             try {
-                const user = await Premium.getUser();
-
-                // Get cached credits from storage (saved after each AI action)
+                const user = await GrabbitAuth.getUser();
                 let credits = null;
-                if (user.paid) {
-                    try {
-                        const stored = await chrome.storage.local.get(['cachedCredits', 'cachedCreditsTimestamp']);
-                        console.log('[ProAccount] Cached credits from storage:', stored);
 
-                        if (stored.cachedCredits !== undefined) {
-                            credits = {
-                                _remaining: stored.cachedCredits
-                            };
-                        }
-                    } catch (e) {
-                        console.warn('Failed to get cached credits:', e);
+                if (user.isPremium) {
+                    // Use subscription data if available, else fall back to cached credits
+                    if (user.subscription?.monthly_usage !== undefined && user.subscription?.monthly_limit !== undefined) {
+                        const currentMonth = new Date().toISOString().slice(0, 7);
+                        const used = user.subscription.last_usage_month === currentMonth ? (user.subscription.monthly_usage ?? 0) : 0;
+                        const remaining = Math.max(0, (user.subscription.monthly_limit ?? 1000) - used);
+                        credits = { _remaining: remaining };
+                        chrome.storage.local.set({ cachedCredits: remaining, cachedCreditsTimestamp: Date.now() });
+                    } else {
+                        const stored = await chrome.storage.local.get(['cachedCredits', 'cachedCreditsTimestamp']);
+                        if (stored.cachedCredits !== undefined) credits = { _remaining: stored.cachedCredits };
                     }
                 }
 
                 sendResponse({
                     user: {
-                        paid: user.paid,
+                        paid: user.isPremium,
                         email: user.email,
-                        trialActive: user.trialActive,
-                        paidAt: user.paidAt || null
+                        trialActive: user.subscription?.status === 'trialing',
+                        planType: user.subscription?.plan_type || null,
+                        status: user.subscription?.status || null,
+                        resetDate: user.subscription?.month_reset_requests || null,
+                        expiryDate: user.subscription?.current_period_end || null,
                     },
-                    credits: credits
+                    credits
                 });
             } catch (error) {
                 sendResponse({ error: error.message });
             }
         })();
-        return true; // Keep channel open for async response
+        return true;
     }
 
-    if (request.action === 'OPEN_LOGIN_PAGE') {
-        Premium.openLoginPage();
-        sendResponse({ success: true });
+    if (request.action === 'GRABBIT_LOGIN') {
+        (async () => {
+            let result;
+            if (request.type === 'signup') {
+                result = await GrabbitAuth.signUp(request.email, request.password);
+            } else if (request.type === 'reset_password') {
+                result = await GrabbitAuth.resetPassword(request.email);
+            } else {
+                // default: signin
+                result = await GrabbitAuth.signIn(request.email, request.password);
+            }
+            sendResponse(result);
+        })();
         return true;
     }
 
     if (request.action === 'LOGOUT') {
-        // Clear cached credits AND ExtPay user data to fully log out
-        chrome.storage.local.remove([
-            'cachedCredits',
-            'cachedCreditsTimestamp',
-            'extensionpay_user',      // User data
-            'extensionpay_api_key'    // API key (force new key generation on next login)
-        ]);
+        GrabbitAuth.signOut().then(() => {
+            sendResponse({ success: true });
+        });
+        return true;
+    }
 
-        // Open login page (allows explicit switch, though local clear is immediate)
-        Premium.openLoginPage();
+    if (request.action === 'OPEN_PAYMENT_PAGE' || request.action === 'openPaymentPage') {
+        const url = request.plan === 'yearly' ? STRIPE_YEARLY_URL : STRIPE_MONTHLY_URL;
+        chrome.tabs.create({ url, active: true });
         sendResponse({ success: true });
         return true;
     }
 
-    if (request.action === 'OPEN_PAYMENT_PAGE') {
-        Premium.openPaymentPage();
+    if (request.action === 'OPEN_PRO_ACCOUNT') {
+        chrome.tabs.create({ url: chrome.runtime.getURL('proAccount/proAccount.html'), active: true });
         sendResponse({ success: true });
         return true;
     }
 
     if (request.action === 'OPEN_BILLING_PORTAL') {
-        // ExtensionPay generic account page
-        chrome.tabs.create({
-            url: 'https://extensionpay.com/account',
-            active: true
-        });
+        chrome.tabs.create({ url: STRIPE_PORTAL_URL, active: true });
         sendResponse({ success: true });
         return true;
     }
 
     if (request.action === 'CANCEL_SUBSCRIPTION') {
-        // ExtPay docs suggest openPaymentPage handles cancellation for existing subscribers
-        Premium.openPaymentPage();
+        chrome.tabs.create({ url: STRIPE_PORTAL_URL, active: true });
         sendResponse({ success: true });
         return true;
     }
@@ -542,80 +545,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 /**
- * Fetch API token for authenticated requests
+ * Get the access token from the current Supabase session.
  */
-async function getApiToken(email) {
-    const stored = await chrome.storage.local.get(['grabbit_api_token']);
-    if (stored.grabbit_api_token) return stored.grabbit_api_token;
-
-    const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/get-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        await chrome.storage.local.set({ grabbit_api_token: data.token });
-        return data.token;
-    }
-
-    // Try to get more error details
-    let errorDetails = '';
-    try {
-        const errorData = await response.json();
-        errorDetails = errorData.message || JSON.stringify(errorData);
-    } catch (e) {
-        errorDetails = response.statusText || 'Unknown error';
-    }
-
-    console.error('[Grabbit] Failed to get API token. Status:', response.status, 'Details:', errorDetails);
-    throw new Error(`Failed to get API token (${response.status}: ${errorDetails})`);
+async function getAccessToken() {
+    return GrabbitAuth.getAccessToken();
 }
 
 /**
  * Main handler for AI Product Comparison
- * Uses server-side proxy - API key never sent to client
+ * Uses Supabase Edge Function proxy — API key never sent to client
  */
 async function handleProductComparison(tabs) {
-    // 1. Verify premium status (client-side check)
-    const user = await Premium.getUser();
+    // 1. Verify auth + get access token
+    const user = await GrabbitAuth.getUser();
+    if (!user.isPremium) throw new Error('Premium required');
+    const accessToken = await getAccessToken();
 
-    if (!user.paid) {
-        throw new Error('Premium required');
-    }
-
-    if (!user.email) {
-        throw new Error('No email associated with your account. Please log in to ExtPay.');
-    }
-
-    // 2. Fetch API token
-    const token = await getApiToken(user.email);
-
-    // 3. Extract content from each tab
+    // 2. Extract content from each tab
     const products = [];
     for (const tab of tabs) {
         try {
-            // Check if tab still exists before injecting script
-            let targetTab;
-            try {
-                targetTab = await chrome.tabs.get(tab.id);
-            } catch (tabError) {
-                console.warn('Product tab was closed:', tab.id);
-                products.push({
-                    title: tab.title,
-                    price: '',
-                    rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url,
-                    siteName: new URL(tab.url).hostname,
-                    url: tab.url
-                });
-                continue; // Skip to next tab
+            try { await chrome.tabs.get(tab.id); } catch {
+                products.push({ title: tab.title, price: '', rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url, siteName: new URL(tab.url).hostname, url: tab.url });
+                continue;
             }
-
-            const [result] = await chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                func: extractProductDataFromPage
-            });
+            const [result] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: extractProductDataFromPage });
             products.push({
                 title: result.result?.title || tab.title,
                 price: result.result?.price || '',
@@ -625,183 +579,81 @@ async function handleProductComparison(tabs) {
             });
         } catch (e) {
             console.warn('Could not extract from tab ' + tab.id + ':', e);
-            products.push({
-                title: tab.title,
-                price: '',
-                rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url,
-                siteName: new URL(tab.url).hostname,
-                url: tab.url
-            });
+            products.push({ title: tab.title, price: '', rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url, siteName: new URL(tab.url).hostname, url: tab.url });
         }
     }
 
-    // 4. Send to server-side proxy (API key stays on server)
-    const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/compare', {
+    // 3. Send to Supabase Edge Function with JWT auth
+    const response = await fetch(`${SUPABASE_API_BASE}/compare`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            email: user.email,
-            token: token,
-            products: products
-        })
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ products })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-        // Handle specific errors
-        if (response.status === 403) {
-            throw new Error('Subscription not active. Please check your payment status.');
-        } else if (response.status === 429) {
-            throw new Error(data.message || 'Monthly limit reached. Try again next month.');
-        } else {
-            throw new Error(data.message || 'Comparison failed. Please try again.');
-        }
+        if (response.status === 403) throw new Error('Subscription not active. Please check your payment status.');
+        if (response.status === 429) throw new Error(data.message || 'Monthly limit reached. Try again next month.');
+        throw new Error(data.message || 'Comparison failed. Please try again.');
     }
 
-    // Cache remaining credits for Pro Account page
     if (data.remaining_month !== undefined) {
-        chrome.storage.local.set({
-            cachedCredits: data.remaining_month,
-            cachedCreditsTimestamp: Date.now()
-        });
+        chrome.storage.local.set({ cachedCredits: data.remaining_month, cachedCreditsTimestamp: Date.now() });
     }
 
-    // Return comparison results (and remaining quota info)
-    return {
-        ...data.comparison,
-        _remaining: data.remaining_month
-    };
+    return { ...data.comparison, _remaining: data.remaining_month };
 }
 
 /**
  * Main handler for AI Article Summary
- * Uses server-side proxy - API key never sent to client
+ * Uses Supabase Edge Function proxy — API key never sent to client
  */
 async function handleArticleSummary(tab) {
-    // 1. Verify premium status (client-side check)
-    const user = await Premium.getUser();
-
-    if (!user.paid) {
-        throw new Error('Premium required');
-    }
-
-    if (!user.email) {
-        throw new Error('No email associated with your account. Please log in to ExtPay.');
-    }
-
-    // 2. Fetch API token
-    const token = await getApiToken(user.email);
+    // 1. Verify auth + get access token
+    const user = await GrabbitAuth.getUser();
+    if (!user.isPremium) throw new Error('Premium required');
+    const accessToken = await getAccessToken();
 
     // 3. Extract article content from the tab
+    let pageData;
     try {
-        // Check if tab still exists before injecting script
-        let targetTab;
-        try {
-            targetTab = await chrome.tabs.get(tab.id);
-        } catch (tabError) {
-            console.warn('Article tab was closed:', tab.id);
+        try { await chrome.tabs.get(tab.id); } catch {
             throw new Error('The article tab was closed. Please reopen the article and try again.');
         }
-
-        const [result] = await chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: extractArticleDataFromPage
-        });
-
-        const pageData = {
-            title: result.result?.title || tab.title,
-            url: tab.url,
-            rawContent: result.result?.rawContent || ''
-        };
-
-        // 4. Send to server-side proxy (API key stays on server)
-        const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/summarize', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: user.email,
-                token: token,
-                pageData: pageData
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            // Handle specific errors
-            if (response.status === 403) {
-                throw new Error('Subscription not active. Please check your payment status.');
-            } else if (response.status === 429) {
-                throw new Error(data.message || 'Monthly limit reached. Try again next month.');
-            } else {
-                throw new Error(data.message || 'Summary failed. Please try again.');
-            }
-        }
-
-        // Cache remaining credits for Pro Account page
-        console.log('[Summarize] Response data.remaining_month:', data.remaining_month);
-        if (data.remaining_month !== undefined) {
-            console.log('[Summarize] Caching credits:', data.remaining_month);
-            chrome.storage.local.set({
-                cachedCredits: data.remaining_month,
-                cachedCreditsTimestamp: Date.now()
-            });
-        } else {
-            console.warn('[Summarize] remaining_month is undefined, not caching');
-        }
-
-        // Return summary results (and remaining quota info)
-        return {
-            ...data.summary,
-            _remaining: data.remaining_month
-        };
-
+        const [result] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: extractArticleDataFromPage });
+        pageData = { title: result.result?.title || tab.title, url: tab.url, rawContent: result.result?.rawContent || '' };
     } catch (e) {
         console.warn('Could not extract from tab ' + tab.id + ':', e);
-
-        // Fallback: send minimal data
-        const pageData = {
-            title: tab.title,
-            url: tab.url,
-            rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url
-        };
-
-        const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/summarize', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: user.email,
-                token: token,
-                pageData: pageData
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            if (response.status === 403) {
-                throw new Error('Subscription not active. Please check your payment status.');
-            } else if (response.status === 429) {
-                throw new Error(data.message || 'Monthly limit reached. Try again next month.');
-            } else {
-                throw new Error(data.message || 'Summary failed. Please try again.');
-            }
-        }
-
-        // Cache remaining credits for Pro Account page
-        if (data.remaining_month !== undefined) {
-            chrome.storage.local.set({
-                cachedCredits: data.remaining_month,
-                cachedCreditsTimestamp: Date.now()
-            });
-        }
-
-        return {
-            ...data.summary,
-            _remaining: data.remaining_month
-        };
+        pageData = { title: tab.title, url: tab.url, rawContent: 'Page Title: ' + tab.title + '\nURL: ' + tab.url };
     }
+
+    // 4. Send to Supabase Edge Function with JWT auth
+    const response = await fetch(`${SUPABASE_API_BASE}/summarize`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ pageData })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        if (response.status === 403) throw new Error('Subscription not active. Please check your payment status.');
+        if (response.status === 429) throw new Error(data.message || 'Monthly limit reached. Try again next month.');
+        throw new Error(data.message || 'Summary failed. Please try again.');
+    }
+
+    if (data.remaining_month !== undefined) {
+        chrome.storage.local.set({ cachedCredits: data.remaining_month, cachedCreditsTimestamp: Date.now() });
+    }
+
+    return { ...data.summary, _remaining: data.remaining_month };
 }
 
 /**
@@ -1037,81 +889,56 @@ function extractArticleDataFromPage() {
 
 /**
  * Main handler for AI YouTube Summary
- * Uses server-side proxy - API key never sent to client
+ * Uses Supabase Edge Function proxy — API key never sent to client
  */
 async function handleYouTubeSummary(tab) {
-    // 1. Verify premium status (client-side check)
-    const user = await Premium.getUser();
-
-    if (!user.paid) {
-        throw new Error('Premium required');
-    }
-
-    if (!user.email) {
-        throw new Error('No email associated with your account. Please log in to ExtPay.');
-    }
-
-    // 2. Fetch API token
-    const token = await getApiToken(user.email);
+    // 1. Verify auth + get access token
+    const user = await GrabbitAuth.getUser();
+    if (!user.isPremium) throw new Error('Premium required');
+    const accessToken = await getAccessToken();
 
     // 3. Extract YouTube data (transcript, chapters, metadata) from the tab
     try {
-        // Check if tab still exists before injecting script
-        let targetTab;
-        try {
-            targetTab = await chrome.tabs.get(tab.id);
-        } catch (tabError) {
-            console.warn('YouTube video tab was closed:', tab.id);
+        try { await chrome.tabs.get(tab.id); } catch {
             throw new Error('The YouTube video tab was closed. Please reopen the video and try again.');
         }
 
         const [result] = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: extractYouTubeDataFromPage,
-            world: 'MAIN' // Required to access window.ytcfg from YouTube's page
+            world: 'MAIN'
         });
 
         const videoData = result.result;
 
-        // Check for extraction errors
-        if (videoData && videoData.error) {
-            console.error('YouTube extraction failed:', videoData.error);
-            throw new Error(videoData.error);
-        }
-
+        if (videoData && videoData.error) throw new Error(videoData.error);
         if (!videoData || !videoData.transcript) {
             throw new Error('No transcript available for this video. The video may not have captions enabled.');
         }
 
-        // 4. Send to server-side proxy (API key stays on server)
-        const response = await fetch('https://grabbit.socratisp.com/wp-json/grabbit/v1/youtube-summary', {
+        // 4. Send to Supabase Edge Function with JWT auth
+        const response = await fetch(`${SUPABASE_API_BASE}/youtube-summary`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: user.email,
-                token: token,
-                videoData: videoData
-            })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ videoData })
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            // Handle specific errors
-            if (response.status === 403) {
-                throw new Error('Subscription not active. Please check your payment status.');
-            } else if (response.status === 429) {
-                throw new Error(data.message || 'Monthly limit reached. Try again next month.');
-            } else {
-                throw new Error(data.message || 'YouTube summary failed. Please try again.');
-            }
+            if (response.status === 403) throw new Error('Subscription not active. Please check your payment status.');
+            if (response.status === 429) throw new Error(data.message || 'Monthly limit reached. Try again next month.');
+            throw new Error(data.message || 'YouTube summary failed. Please try again.');
         }
 
-        // Return summary results (and remaining quota info)
-        return {
-            ...data.summary,
-            _remaining: data.remaining_month
-        };
+        if (data.remaining_month !== undefined) {
+            chrome.storage.local.set({ cachedCredits: data.remaining_month, cachedCreditsTimestamp: Date.now() });
+        }
+
+        return { ...data.summary, _remaining: data.remaining_month };
 
     } catch (e) {
         console.error('YouTube extraction error:', e);
@@ -1181,42 +1008,83 @@ async function extractYouTubeDataFromPage() {
 
         data.chapters = chapters.slice(0, 50); // Support long videos with many chapters
 
-        // Get InnerTube API key
-        const apiKey = window.ytcfg?.get?.('INNERTUBE_API_KEY');
+        // Extract session data from ytcfg — available because we run in MAIN world
+        // visitorData is required by YouTube since late 2024 to bypass po_token checks
+        const apiKey = window.ytcfg?.get?.('INNERTUBE_API_KEY') || 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
+        const hl = window.ytcfg?.get?.('HL') || 'en';
+        const visitorData = window.ytcfg?.get?.('VISITOR_DATA') || '';
+        const clientVersion = window.ytcfg?.get?.('INNERTUBE_CLIENT_VERSION') || '2.20240726.00.00';
 
-        if (!apiKey) {
-            throw new Error('Could not get InnerTube API key');
-        }
 
-        // Call InnerTube Player API to get caption tracks
-        // Use ANDROID client - returns directly accessible subtitle URLs without restrictions
-        const playerResponse = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                context: {
-                    client: {
-                        clientName: 'ANDROID',
-                        clientVersion: '19.29.37',
-                        hl: window.ytcfg?.get?.('HL') || 'en',
+        // InnerTube clients to try in order.
+        // TVHTML5_SIMPLY_EMBEDDED_PLAYER is the most reliable in 2025/2026 — it's a
+        // lightweight embedded client that bypasses most po_token requirements.
+        const clients = [
+            {
+                // Embedded TV client — bypasses po_token, still returns captions
+                clientName: 'TVHTML5_SIMPLY_EMBEDDED_PLAYER',
+                clientVersion: '2.0',
+                hl,
+                visitorData,
+            },
+            {
+                // Standard web client with session data from the real page
+                clientName: 'WEB',
+                clientVersion,
+                hl,
+                visitorData,
+            },
+            {
+                // Android client — last resort
+                clientName: 'ANDROID',
+                clientVersion: '19.29.37',
+                hl,
+            },
+        ];
+
+        let playerData = null;
+
+        for (const client of clients) {
+            try {
+                const res = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Visitor-Id': visitorData,
+                        'X-YouTube-Client-Name': '85', // TVHTML5_SIMPLY_EMBEDDED_PLAYER numeric ID
                     },
-                },
-                videoId: data.videoId,
-            }),
-        });
+                    body: JSON.stringify({
+                        context: { client },
+                        videoId: data.videoId,
+                        playbackContext: {
+                            contentPlaybackContext: { signatureTimestamp: window.ytcfg?.get?.('STS') || 0 },
+                        },
+                    }),
+                });
 
-        if (!playerResponse.ok) {
-            throw new Error('Failed to get player data');
+                if (res.ok) {
+                    const json = await res.json();
+                    const tracks = json?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+                    if (tracks && tracks.length > 0) {
+                        playerData = json;
+                        console.log('[Grabbit] InnerTube client worked:', client.clientName);
+                        break;
+                    }
+                    console.warn('[Grabbit] Client returned no captions:', client.clientName);
+                } else {
+                    console.warn('[Grabbit] Client HTTP error:', client.clientName, res.status);
+                }
+            } catch (e) {
+                console.warn('[Grabbit] Client failed:', client.clientName, e.message);
+            }
         }
 
-        const playerData = await playerResponse.json();
+        if (!playerData) {
+            throw new Error('No captions available for this video. The video may not have captions enabled.');
+        }
 
-        // Get caption tracks
+        // Get caption tracks (guaranteed non-empty by multi-client loop above)
         const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
-
-        if (!captionTracks || captionTracks.length === 0) {
-            throw new Error('No captions available');
-        }
 
         // Prefer English captions, fallback to first available
         let selectedTrack = captionTracks.find(t => t.languageCode === 'en') ||

@@ -1,312 +1,335 @@
 /**
- * Pro Account Page JavaScript
- * Handles ExtPay integration for login, subscription, and account management
+ * Pro Account Page — Auth-first flow
+ *
+ * Flow:
+ *   1. Not logged in  → show Sign In / Sign Up forms only
+ *   2. Logged in, Free → show account info + upgrade options (payment buttons)
+ *   3. Logged in, Pro  → show account info + credits + manage billing
  */
 
-// DOM Elements (initialized in init)
-let loadingState, statusDisplay, errorState, subscriptionBadge;
-let emailRow, userEmail, subscribedSinceRow, subscribedSince, nextBillingRow, nextBilling;
+// ─── DOM refs ─────────────────────────────────────────────────────────────────
+let loadingState, loginState, statusDisplay, errorState;
+let subscriptionBadge, emailRow, userEmail, trialExpiryRow, trialExpiryDate;
 let creditsSection, creditsReset, creditsTotal;
-let freeActions, proActions;
-let loginBtn, subscribeBtn, logoutBtn, retryBtn, cancelSubscriptionLink;
+let upgradeBox, proActions;
+let logoutBtn, retryBtn;
+let cancelSubscriptionLink;
 
-/**
- * Initialize DOM elements
- */
-function initElements() {
-    loadingState = document.getElementById('loading-state');
-    statusDisplay = document.getElementById('status-display');
-    errorState = document.getElementById('error-state');
+// Auth tabs / forms
+let tabSignIn, tabSignUp, signInForm, signUpForm;
+let loginEmailInput, loginPasswordInput, loginSubmitBtn, loginError;
+let signupEmailInput, signupPasswordInput, signupSubmitBtn, signupError;
+let forgotPasswordLink, resetStatusMsg;
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    cacheDomRefs();
+    bindEvents();
+    fetchUserStatus();
+});
+
+function cacheDomRefs() {
+    loadingState   = document.getElementById('loading-state');
+    loginState     = document.getElementById('login-state');
+    statusDisplay  = document.getElementById('status-display');
+    errorState     = document.getElementById('error-state');
+
     subscriptionBadge = document.getElementById('subscription-badge');
-    emailRow = document.getElementById('email-row');
-    userEmail = document.getElementById('user-email');
-    subscribedSinceRow = document.getElementById('subscribed-since-row');
-    subscribedSince = document.getElementById('subscribed-since');
-    nextBillingRow = document.getElementById('next-billing-row');
-    nextBilling = document.getElementById('next-billing');
-    creditsSection = document.getElementById('credits-section');
-    creditsReset = document.getElementById('credits-reset');
-    creditsTotal = document.getElementById('credits-total');
-    freeActions = document.getElementById('free-actions');
-    proActions = document.getElementById('pro-actions');
-    loginBtn = document.getElementById('login-btn');
-    subscribeBtn = document.getElementById('subscribe-btn');
-    logoutBtn = document.getElementById('logout-btn');
-    retryBtn = document.getElementById('retry-btn');
+    emailRow          = document.getElementById('email-row');
+    userEmail         = document.getElementById('user-email');
+    trialExpiryRow    = document.getElementById('trial-expiry-row');
+    trialExpiryDate   = document.getElementById('trial-expiry-date');
+    creditsSection    = document.getElementById('credits-section');
+    creditsReset      = document.getElementById('credits-reset');
+    creditsTotal      = document.getElementById('credits-total');
+    upgradeBox        = document.getElementById('upgrade-box');
+    proActions        = document.getElementById('pro-actions');
+    logoutBtn         = document.getElementById('logout-btn');
+    retryBtn          = document.getElementById('retry-btn');
     cancelSubscriptionLink = document.getElementById('cancel-subscription-link');
 
-    // Add event listeners here to ensure buttons exist
-    if (loginBtn) loginBtn.addEventListener('click', handleLogin);
-    if (subscribeBtn) subscribeBtn.addEventListener('click', handleSubscribe);
-    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-    if (retryBtn) retryBtn.addEventListener('click', fetchUserStatus);
-    if (cancelSubscriptionLink) cancelSubscriptionLink.addEventListener('click', (e) => {
+    tabSignIn  = document.getElementById('tab-signin');
+    tabSignUp  = document.getElementById('tab-signup');
+    signInForm = document.getElementById('signin-form');
+    signUpForm = document.getElementById('signup-form');
+
+    loginEmailInput    = document.getElementById('login-email-input');
+    loginPasswordInput = document.getElementById('login-password-input');
+    loginSubmitBtn     = document.getElementById('login-submit-btn');
+    loginError         = document.getElementById('login-error');
+
+    signupEmailInput    = document.getElementById('signup-email-input');
+    signupPasswordInput = document.getElementById('signup-password-input');
+    signupSubmitBtn     = document.getElementById('signup-submit-btn');
+    signupError         = document.getElementById('signup-error');
+
+    forgotPasswordLink = document.getElementById('forgot-password-link');
+    resetStatusMsg     = document.getElementById('reset-status-msg');
+}
+
+function bindEvents() {
+    // Auth tab switching
+    tabSignIn?.addEventListener('click', () => switchAuthTab('signin'));
+    tabSignUp?.addEventListener('click', () => switchAuthTab('signup'));
+
+    // Sign In
+    loginSubmitBtn?.addEventListener('click', handleSignIn);
+    loginEmailInput?.addEventListener('keydown',    e => { if (e.key === 'Enter') loginPasswordInput?.focus(); });
+    loginPasswordInput?.addEventListener('keydown', e => { if (e.key === 'Enter') handleSignIn(); });
+
+    // Sign Up
+    signupSubmitBtn?.addEventListener('click', handleSignUp);
+    signupEmailInput?.addEventListener('keydown',    e => { if (e.key === 'Enter') signupPasswordInput?.focus(); });
+    signupPasswordInput?.addEventListener('keydown', e => { if (e.key === 'Enter') handleSignUp(); });
+
+    // Forgot password
+    forgotPasswordLink?.addEventListener('click', async e => {
+        e.preventDefault();
+        const email = loginEmailInput?.value?.trim();
+        if (!email) { showFormError(loginError, 'Enter your email above first.'); return; }
+        forgotPasswordLink.textContent = 'Sending…';
+        const result = await chrome.runtime.sendMessage({ action: 'GRABBIT_LOGIN', type: 'reset_password', email });
+        forgotPasswordLink.textContent = 'Forgot password?';
+        if (result.success) {
+            if (resetStatusMsg) { resetStatusMsg.textContent = 'Reset email sent! Check your inbox.'; resetStatusMsg.style.display = 'block'; }
+        } else {
+            showFormError(loginError, result.error || 'Failed to send reset email.');
+        }
+    });
+
+    // Payment buttons (visible only to logged-in free users)
+    document.getElementById('subscribe-monthly-btn')?.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ action: 'OPEN_PAYMENT_PAGE', plan: 'monthly' });
+    });
+    document.getElementById('subscribe-yearly-btn')?.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ action: 'OPEN_PAYMENT_PAGE', plan: 'yearly' });
+    });
+
+    // Manage billing / cancel
+    document.getElementById('billing-portal-btn')?.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ action: 'OPEN_BILLING_PORTAL' });
+    });
+    cancelSubscriptionLink?.addEventListener('click', e => {
         e.preventDefault();
         chrome.runtime.sendMessage({ action: 'CANCEL_SUBSCRIPTION' });
     });
+
+    // Logout
+    logoutBtn?.addEventListener('click', handleLogout);
+
+    // Retry on error
+    retryBtn?.addEventListener('click', fetchUserStatus);
 }
 
-/**
- * Show a specific state (loading, status, or error)
- */
-function showState(state) {
-    loadingState.style.display = 'none';
-    statusDisplay.style.display = 'none';
-    errorState.style.display = 'none';
+// ─── Auth tab switch ──────────────────────────────────────────────────────────
+function switchAuthTab(tab) {
+    const isSignIn = tab === 'signin';
+    const indicator = document.getElementById('tab-indicator');
+    
+    tabSignIn?.classList.toggle('active', isSignIn);
+    tabSignUp?.classList.toggle('active', !isSignIn);
 
-    switch (state) {
-        case 'loading':
-            loadingState.style.display = 'flex';
-            break;
-        case 'status':
-            statusDisplay.style.display = 'block';
-            break;
-        case 'error':
-            errorState.style.display = 'block';
-            break;
+    if (indicator) {
+        indicator.style.transform = isSignIn ? 'translateX(0)' : 'translateX(100%)';
+    }
+
+    if (signInForm) {
+        signInForm.style.display = isSignIn ? 'flex' : 'none';
+        signInForm.style.animation = 'fadeIn 0.3s ease';
+    }
+    if (signUpForm) {
+        signUpForm.style.display = isSignIn ? 'none' : 'flex';
+        signUpForm.style.animation = 'fadeIn 0.3s ease';
     }
 }
 
-/**
- * Format date to readable string
- */
-function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+// ─── State panels ─────────────────────────────────────────────────────────────
+function showStatePanel(state) {
+    [loadingState, loginState, statusDisplay, errorState].forEach(el => {
+        if (el) el.style.display = 'none';
     });
-}
-
-/**
- * Calculate days until end of month (for credits reset)
- */
-function getDaysUntilReset() {
-    const now = new Date();
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    const daysLeft = lastDay.getDate() - now.getDate();
-    return daysLeft;
-}
-
-/**
- * Calculate next billing date (one month from paidAt)
- */
-function getNextBillingDate(paidAt) {
-    if (!paidAt) return null;
-    const paidDate = new Date(paidAt);
-    const now = new Date();
-
-    // Calculate next billing date based on subscription anniversary
-    let nextBilling = new Date(paidDate);
-    while (nextBilling <= now) {
-        nextBilling.setMonth(nextBilling.getMonth() + 1);
-    }
-    return nextBilling;
-}
-
-/**
- * Update credit value styling based on amount
- */
-function updateCreditStyle(element, value) {
-    element.textContent = value;
-    element.classList.remove('low', 'empty');
-    if (value === 0) {
-        element.classList.add('empty');
-    } else if (value <= 5) {
-        element.classList.add('low');
+    switch (state) {
+        case 'loading': if (loadingState)  loadingState.style.display  = 'flex'; break;
+        case 'login':   if (loginState)    loginState.style.display    = 'block'; break;
+        case 'status':  if (statusDisplay) statusDisplay.style.display = 'block'; break;
+        case 'error':   if (errorState)    errorState.style.display    = 'block'; break;
     }
 }
 
-/**
- * Update the UI with user status
- */
-function updateUI(user, credits = null) {
-    showState('status');
+// ─── Fetch & render user status ───────────────────────────────────────────────
+async function fetchUserStatus() {
+    showStatePanel('loading');
+    try {
+        const resp = await chrome.runtime.sendMessage({ action: 'GET_PRO_STATUS' });
+        if (resp.error) throw new Error(resp.error);
 
-    // Update badge
-    if (user.paid) {
-        subscriptionBadge.textContent = 'PRO ✓';
-        subscriptionBadge.className = 'status-badge badge-pro';
-        freeActions.style.display = 'none';
-        proActions.style.display = 'block';
-    } else if (user.trialActive) {
+        // Not authenticated — show login/signup forms
+        if (!resp.user.email) {
+            showStatePanel('login');
+            return;
+        }
+
+        // Authenticated — show account state
+        renderAccountUI(resp.user, resp.credits);
+    } catch (err) {
+        document.getElementById('error-message').textContent =
+            err.message || 'Unable to load account information.';
+        showStatePanel('error');
+    }
+}
+
+function renderAccountUI(user, credits) {
+    showStatePanel('status');
+    const isPro = user.paid;
+
+    // Badge
+    if (user.trialActive) {
         subscriptionBadge.textContent = 'TRIAL';
-        subscriptionBadge.className = 'status-badge badge-trial';
-        freeActions.style.display = 'block';
-        proActions.style.display = 'none';
+        subscriptionBadge.className   = 'status-badge badge-trial';
+    } else if (isPro) {
+        const planLabel = user.planType === 'yearly' ? 'PRO (Yearly)' : user.planType === 'monthly' ? 'PRO (Monthly)' : 'PRO ✓';
+        subscriptionBadge.textContent = planLabel;
+        subscriptionBadge.className   = 'status-badge badge-pro';
     } else {
         subscriptionBadge.textContent = 'FREE';
-        subscriptionBadge.className = 'status-badge badge-free';
-        freeActions.style.display = 'block';
-        proActions.style.display = 'none';
+        subscriptionBadge.className   = 'status-badge badge-free';
     }
 
-    // Update email
-    if (user.email) {
+    // Email
+    if (user.email && emailRow) {
         emailRow.style.display = 'flex';
-        userEmail.textContent = user.email;
-    } else {
-        emailRow.style.display = 'none';
+        if (userEmail) userEmail.textContent = user.email;
     }
 
-    // Update subscribed since and billing
-    if (user.paid) {
-        subscribedSinceRow.style.display = 'flex';
-        subscribedSince.textContent = user.paidAt ? formatDate(user.paidAt) : '-';
-
-        // Calculate and show next billing date
-        const nextBillingDate = getNextBillingDate(user.paidAt);
-        nextBillingRow.style.display = 'flex';
-        nextBilling.textContent = nextBillingDate ? formatDate(nextBillingDate) : '-';
-    } else {
-        subscribedSinceRow.style.display = 'none';
-        nextBillingRow.style.display = 'none';
+    // Trial Expiry
+    if (user.trialActive && user.expiryDate && trialExpiryRow) {
+        trialExpiryRow.style.display = 'flex';
+        if (trialExpiryDate) {
+            const date = new Date(user.expiryDate);
+            trialExpiryDate.textContent = date.toLocaleDateString();
+        }
+    } else if (trialExpiryRow) {
+        trialExpiryRow.style.display = 'none';
     }
 
-    // Update credits section
-    // Update credits section
-    if (user.paid) {
+    // Credits (Pro or Trial — both have AI access)
+    if ((isPro || user.trialActive) && creditsSection) {
         creditsSection.style.display = 'block';
-
-        // Update credits reset countdown
-        const daysLeft = getDaysUntilReset();
-        creditsReset.textContent = `Resets in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`;
-        console.log('[ProAccount] Displaying credits section, credits object:', credits);
-
-        if (credits && credits._remaining !== undefined) {
+        const daysLeft = getDaysUntilReset(user.resetDate);
+        if (creditsReset) creditsReset.textContent = `Resets in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`;
+        if (credits?._remaining !== undefined) {
             updateCreditStyle(creditsTotal, credits._remaining);
         } else {
-            // No cached credits yet - user needs to use an AI feature first
-            creditsTotal.textContent = '—';
-            creditsTotal.classList.remove('low', 'empty');
-            // Update description to explain
-            const desc = document.querySelector('.credits-description');
-            if (desc) {
-                desc.textContent = 'Use an AI feature to see your remaining credits';
-            }
+            if (creditsTotal) { creditsTotal.textContent = '—'; creditsTotal.classList.remove('low', 'empty'); }
         }
-    } else {
+    } else if (creditsSection) {
         creditsSection.style.display = 'none';
     }
+
+    // Action zones: upgrade box vs pro actions
+    // Trialing users have already selected a plan, so we hide the upgrade box
+    // and show the manage billing options instead.
+    if (upgradeBox) upgradeBox.style.display = isPro ? 'none' : 'block';
+    if (proActions)  proActions.style.display  = isPro ? 'block' : 'none';
 }
 
-/**
- * Fetch user status from background script
- */
-async function fetchUserStatus() {
-    showState('loading');
+function getDaysUntilReset(resetDateISO) {
+    if (!resetDateISO) {
+        // Fallback to end of current month if no date provided
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
+    }
+    const now = new Date();
+    const reset = new Date(resetDateISO);
+    const diffMs = reset.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+}
 
-    try {
-        const response = await chrome.runtime.sendMessage({ action: 'GET_PRO_STATUS' });
-        console.log('[ProAccount] Received response:', response);
-        console.log('[ProAccount] User:', response.user);
-        console.log('[ProAccount] Credits:', response.credits);
+function updateCreditStyle(el, value) {
+    if (!el) return;
+    el.textContent = value;
+    el.classList.remove('low', 'empty');
+    if (value === 0) el.classList.add('empty');
+    else if (value <= 5) el.classList.add('low');
+}
 
-        if (response.error) {
-            throw new Error(response.error);
+// ─── Sign In ──────────────────────────────────────────────────────────────────
+async function handleSignIn() {
+    const email    = loginEmailInput?.value?.trim();
+    const password = loginPasswordInput?.value;
+    if (!email || !email.includes('@')) { showFormError(loginError, 'Enter a valid email address.'); return; }
+    if (!password) { showFormError(loginError, 'Enter your password.'); return; }
+
+    setButtonLoading(loginSubmitBtn, true, 'Signing in…');
+    hideFormError(loginError);
+    if (resetStatusMsg) resetStatusMsg.style.display = 'none';
+
+    const result = await chrome.runtime.sendMessage({ action: 'GRABBIT_LOGIN', type: 'signin', email, password });
+    setButtonLoading(loginSubmitBtn, false, 'Sign In');
+
+    if (result.success) {
+        fetchUserStatus();
+    } else {
+        showFormError(loginError, result.error || 'Sign-in failed. Please try again.');
+    }
+}
+
+// ─── Sign Up ──────────────────────────────────────────────────────────────────
+async function handleSignUp() {
+    const email    = signupEmailInput?.value?.trim();
+    const password = signupPasswordInput?.value;
+    if (!email || !email.includes('@')) { showFormError(signupError, 'Enter a valid email address.'); return; }
+    if (!password || password.length < 8) { showFormError(signupError, 'Password must be at least 8 characters.'); return; }
+
+    setButtonLoading(signupSubmitBtn, true, 'Creating account…');
+    hideFormError(signupError);
+
+    const result = await chrome.runtime.sendMessage({ action: 'GRABBIT_LOGIN', type: 'signup', email, password });
+    setButtonLoading(signupSubmitBtn, false, 'Create Account');
+
+    if (result.success) {
+        if (result.needsConfirmation) {
+            showFormError(signupError, '✅ Check your email to confirm your account, then sign in.', 'success');
+            switchAuthTab('signin');
+            if (loginEmailInput) loginEmailInput.value = email;
+        } else {
+            fetchUserStatus();
         }
-
-        updateUI(response.user, response.credits);
-    } catch (error) {
-        console.error('Error fetching user status:', error);
-        document.getElementById('error-message').textContent =
-            error.message || 'Unable to load account information. Please try again.';
-        showState('error');
+    } else {
+        showFormError(signupError, result.error || 'Sign-up failed. Please try again.');
     }
 }
 
-/**
- * Handle login button click
- */
-async function handleLogin() {
-    try {
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Opening...';
-
-        await chrome.runtime.sendMessage({ action: 'OPEN_LOGIN_PAGE' });
-
-        // Re-enable after a delay
-        setTimeout(() => {
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = `
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                    <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z" fill="currentColor" />
-                </svg>
-                Log In
-            `;
-            // Refresh status after login attempt
-            fetchUserStatus();
-        }, 2000);
-    } catch (error) {
-        console.error('Error opening login page:', error);
-        loginBtn.disabled = false;
-    }
-}
-
-/**
- * Handle subscribe button click
- */
-async function handleSubscribe() {
-    try {
-        subscribeBtn.disabled = true;
-        subscribeBtn.textContent = 'Opening...';
-
-        await chrome.runtime.sendMessage({ action: 'OPEN_PAYMENT_PAGE' });
-
-        // Re-enable after a delay
-        setTimeout(() => {
-            subscribeBtn.disabled = false;
-            subscribeBtn.innerHTML = `
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor" />
-                </svg>
-                Subscribe to Pro
-            `;
-            // Refresh status after subscription attempt
-            fetchUserStatus();
-        }, 2000);
-    } catch (error) {
-        console.error('Error opening payment page:', error);
-        subscribeBtn.disabled = false;
-    }
-}
-
-/**
- * Handle logout button click
- */
+// ─── Logout ───────────────────────────────────────────────────────────────────
 async function handleLogout() {
-    try {
-        if (logoutBtn) {
-            logoutBtn.disabled = true;
-            logoutBtn.textContent = 'Logging out...';
-        }
-
-        await chrome.runtime.sendMessage({ action: 'LOGOUT' });
-
-        // Reset button state after a delay (logging out usually opens a new tab/window)
-        setTimeout(() => {
-            if (logoutBtn) {
-                logoutBtn.disabled = false;
-                logoutBtn.innerHTML = `
-                    <svg viewBox="0 0 24 24" width="18" height="18">
-                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/>
-                    </svg>
-                    Log Out
-                `;
-            }
-            // Refresh status - though user might still be logged in until they act on the ExtPay page
-            fetchUserStatus();
-        }, 1000);
-    } catch (error) {
-        console.error('Error logging out:', error);
-        if (logoutBtn) logoutBtn.disabled = false;
-    }
+    if (!logoutBtn) return;
+    setButtonLoading(logoutBtn, true, 'Logging out…');
+    await chrome.runtime.sendMessage({ action: 'LOGOUT' });
+    // Reset form state
+    if (loginEmailInput)    loginEmailInput.value = '';
+    if (loginPasswordInput) loginPasswordInput.value = '';
+    hideFormError(loginError);
+    if (resetStatusMsg) resetStatusMsg.style.display = 'none';
+    setButtonLoading(logoutBtn, false, 'Log Out');
+    showStatePanel('login');
+    switchAuthTab('signin');
 }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    initElements();
-    fetchUserStatus();
-});
+// ─── Form helpers ─────────────────────────────────────────────────────────────
+function showFormError(el, msg, type = 'error') {
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = type === 'success' ? '#4CAF50' : '#e53935';
+    el.style.display = 'block';
+}
+
+function hideFormError(el) {
+    if (el) el.style.display = 'none';
+}
+
+function setButtonLoading(btn, loading, label) {
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.textContent = label;
+}

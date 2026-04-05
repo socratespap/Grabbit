@@ -64,11 +64,11 @@ Frontend (Chrome Extension)
     └── Article Summarization (AI Features/summarize/)
     └── YouTube Video Summarization (AI Features/youtube-summary/)
 
-Backend (WordPress Plugin)
-├── Secure API proxy (OpenRouter API)
-├── ExtPay integration (payment validation)
+Backend (Supabase Infrastructure)
+├── Secure Edge Functions (OpenRouter API)
+├── Stripe integration (payment validation)
 ├── Rate limiting (monthly quotas with automatic reset)
-└── User management (subscribers, usage tracking, manual subscriber management)
+└── User management (subscribers, usage tracking, RLS policies)
 ```
 
 ### Component Interaction Flow
@@ -76,7 +76,7 @@ Backend (WordPress Plugin)
 1. **User Action**: Content scripts detect mouse/keyboard input on webpages
 2. **Event Processing**: `grabbit.js` orchestrates event handling through modular components
 3. **Action Execution**: For privileged operations (tabs, bookmarks), messages sent to `background.js`
-4. **AI Features**: Comparison data sent through WordPress backend proxy (API keys never exposed to client)
+4. **AI Features**: Comparison data sent through Supabase Edge Functions (API keys never exposed to client)
 5. **Result Display**: UI components render feedback (selection box, success messages, comparison tables)
 6. **Settings Management**: Options pages use modular components (sidebar, footer) with auto-initialization
 7. **Popup Actions**: Popup loads configuration from storage, renders buttons based on user preferences
@@ -87,7 +87,7 @@ Backend (WordPress Plugin)
 *   **HTML/CSS:** UI for Popup and Options pages. Leveraging **CSS Variables** for a centralized design system.
 *   **Chrome APIs:** `storage`, `tabs`, `windows`, `clipboard`, `scripting`, `bookmarks`.
 *   **Manifest V3:** Adheres to the latest Chrome extension security and background service worker requirements.
-*   **Backend (PHP/WordPress):** Secure server-side proxy for handling OpenRouter AI requests and Stripe integration.
+*   **Backend (Supabase):** Secure server-side infrastructure for database persistence, user authentication, and Edge Functions handling AI requests and Stripe integration.
 *   **AI:** OpenRouter API for product comparison, article summarization, and YouTube video summarization.
 *   **Payments:** ExtPay (Chrome extension payment platform), Stripe API.
 
@@ -364,7 +364,7 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 - `Premium.getUser()`: Returns payment status, email, trial status
 - `Premium.openPaymentPage()`: Opens ExtPay payment flow
 - `Premium.openLoginPage()`: Opens ExtPay login for existing users
-- `Premium.validateWithBackend(email)`: Validates license with WordPress backend
+- `Premium.validateWithBackend(email)`: Validates license with Supabase backend
 - Syncs with ExtPay dashboard (extension ID: `grabbit-premium`)
 
 **`js/ExtPay.js`** - Third-Party Payment Library
@@ -378,7 +378,7 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 **`handleYouTubeSummary()`** - YouTube Video Summarization Orchestrator
 - Verifies premium status and fetches API token
 - Extracts YouTube video data via `extractYouTubeDataFromPage()` using InnerTube API
-- Sends transcript and metadata to WordPress backend `/youtube-summary` endpoint
+- Sends transcript and metadata to Supabase Edge Function `/youtube-summary` endpoint
 - Handles monthly quota limits and error states (no captions, subscription inactive)
 - Returns structured chapter-by-chapter summary with timestamps and detailed summaries
 
@@ -403,14 +403,14 @@ Styles are organized by component area (Options, Sidebar, Popup), each inheritin
 **`handleArticleSummary()`** - Article Summarization Orchestrator
 - Verifies premium status and fetches API token
 - Extracts article content via `extractArticleDataFromPage()`
-- Sends to WordPress backend `/summarize` endpoint
+- Sends to Supabase Edge Function `/summarize` endpoint
 - Handles monthly quota limits and subscription validation
 - Returns structured summary with key takeaways and topics
 
 **`handleProductComparison()`** - Product Comparison Orchestrator
 - Verifies premium status and fetches API token
 - Extracts product data from multiple tabs via `extractProductDataFromPage()`
-- Sends to WordPress backend `/compare` endpoint
+- Sends to Supabase Edge Function `/compare` endpoint
 - Handles monthly quota limits and subscription validation
 - Returns structured comparison with winner, pros/cons, and feature tables
 
@@ -676,10 +676,10 @@ Access the options page to:
 
 - **Frontend**: Vanilla JavaScript (ES6+), HTML, CSS
 - **Chrome APIs**: storage, tabs, windows, clipboard, scripting, bookmarks
-- **Backend**: PHP/WordPress plugin
+- **Backend**: Supabase Edge Functions
 - **AI**: OpenRouter API
-- **Payments**: ExtPay (Chrome extension payment platform), Stripe API
-- **Database**: WordPress MySQL database
+- **Payments**: Stripe API, checkout flow
+- **Database**: Supabase PostgreSQL database
 - **Content Extraction**: Custom DOM parsing for e-commerce sites
 - **Component Architecture**: Class-based reusable components with auto-initialization
 - **Design System**: CSS Variables, Glassmorphism design, component-based styling
