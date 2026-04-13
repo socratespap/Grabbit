@@ -119,6 +119,30 @@ function bindEvents() {
 
     // Retry on error
     retryBtn?.addEventListener('click', fetchUserStatus);
+
+    // Pricing buttons (Pre-login)
+    document.getElementById('pricing-get-started-btn')?.addEventListener('click', () => scrollToAuth('signup'));
+    document.getElementById('pricing-go-premium-btn')?.addEventListener('click', () => scrollToAuth('signup'));
+
+    // Password toggles
+    document.querySelectorAll('.password-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const eyeOpen = btn.querySelector('.eye-open');
+            const eyeClosed = btn.querySelector('.eye-closed');
+
+            if (input && input.type === 'password') {
+                input.type = 'text';
+                if (eyeOpen) eyeOpen.style.display = 'none';
+                if (eyeClosed) eyeClosed.style.display = 'block';
+            } else if (input) {
+                input.type = 'password';
+                if (eyeOpen) eyeOpen.style.display = 'block';
+                if (eyeClosed) eyeClosed.style.display = 'none';
+            }
+        });
+    });
 }
 
 // ─── Auth tab switch ──────────────────────────────────────────────────────────
@@ -140,6 +164,18 @@ function switchAuthTab(tab) {
     if (signUpForm) {
         signUpForm.style.display = isSignIn ? 'none' : 'flex';
         signUpForm.style.animation = 'fadeIn 0.3s ease';
+    }
+}
+
+// Helper for pricing buttons to scroll up and switch tab
+function scrollToAuth(tab) {
+    // 1. Switch the tab
+    switchAuthTab(tab);
+
+    // 2. Smooth scroll to the auth container
+    const authContainer = document.querySelector('.auth-tabs-container');
+    if (authContainer) {
+        authContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
@@ -279,8 +315,24 @@ async function handleSignIn() {
 async function handleSignUp() {
     const email    = signupEmailInput?.value?.trim();
     const password = signupPasswordInput?.value;
-    if (!email || !email.includes('@')) { showFormError(signupError, 'Enter a valid email address.'); return; }
-    if (!password || password.length < 8) { showFormError(signupError, 'Password must be at least 8 characters.'); return; }
+    
+    // Validation regex: 8+ chars, uppercase, lowercase, number, symbol
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    if (!email || !email.includes('@')) { 
+        showFormError(signupError, 'Enter a valid email address.'); 
+        return; 
+    }
+    
+    if (!password) {
+        showFormError(signupError, 'Enter a password.');
+        return;
+    }
+
+    if (!passwordRegex.test(password)) { 
+        showFormError(signupError, 'Password must be 8+ characters and include uppercase, lowercase, a number, and a symbol.'); 
+        return; 
+    }
 
     setButtonLoading(signupSubmitBtn, true, 'Creating account…');
     hideFormError(signupError);

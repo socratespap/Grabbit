@@ -62,6 +62,10 @@
                         <div class="input-wrapper">
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                             <input id="login-password-input" type="password" placeholder="Password" autocomplete="current-password" />
+                            <button type="button" class="password-toggle" data-target="login-password-input">
+                                <svg class="eye-open" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="eye-closed" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
                         </div>
                         <button id="login-submit-btn" class="btn btn-primary" style="width:100%;">Access Pro Dashboard</button>
                         <p id="login-error" class="form-error"></p>
@@ -79,8 +83,13 @@
                         </div>
                         <div class="input-wrapper">
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            <input id="signup-password-input" type="password" placeholder="Password (min. 8 chars)" autocomplete="new-password" />
+                            <input id="signup-password-input" type="password" placeholder="Password (8+ chars, A-Z, 0-9, !@#)" autocomplete="new-password" />
+                            <button type="button" class="password-toggle" data-target="signup-password-input">
+                                <svg class="eye-open" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="eye-closed" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
                         </div>
+                        <p style="font-size:0.75rem; color: var(--color-text-muted); margin-top: -0.5rem; text-align: left;">Requirements: 8+ chars, uppercase, lowercase, number, & symbol.</p>
                         <button id="signup-submit-btn" class="btn btn-primary" style="width:100%;">Create Account</button>
                         <p id="signup-error" class="form-error"></p>
                         <p style="font-size:0.8rem; color: var(--color-text-muted); text-align:center; margin-top: 1rem;">Joined 100,000+ users transforming their productivity.</p>
@@ -107,7 +116,7 @@
                                     <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Core selection logic</li>
                                     <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Basic formatting</li>
                                 </ul>
-                                <button class="btn btn-secondary" onclick="document.getElementById('tab-signup').click()">Get Started Free</button>
+                                <button id="pricing-get-started-btn" class="btn btn-secondary">Get Started Free</button>
                             </div>
 
                             <!-- Premium Tier Card -->
@@ -141,7 +150,7 @@
                                     </li>
                                     <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Priority updates</li>
                                 </ul>
-                                <button class="btn btn-primary" onclick="document.getElementById('tab-signup').click()">Go Premium</button>
+                                <button id="pricing-go-premium-btn" class="btn btn-primary">Go Premium</button>
                                 <div class="trial-notice">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                                     3 Days Free Trial Included
