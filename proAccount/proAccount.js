@@ -15,6 +15,9 @@ let upgradeBox, proActions;
 let logoutBtn, retryBtn;
 let cancelSubscriptionLink;
 
+// Stores the logged-in user's email for Stripe pre-fill
+let currentUserEmail = null;
+
 // Auth tabs / forms
 let tabSignIn, tabSignUp, signInForm, signUpForm;
 let loginEmailInput, loginPasswordInput, loginSubmitBtn, loginError;
@@ -99,10 +102,10 @@ function bindEvents() {
 
     // Payment buttons (visible only to logged-in free users)
     document.getElementById('subscribe-monthly-btn')?.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ action: 'OPEN_PAYMENT_PAGE', plan: 'monthly' });
+        chrome.runtime.sendMessage({ action: 'OPEN_PAYMENT_PAGE', plan: 'monthly', email: currentUserEmail });
     });
     document.getElementById('subscribe-yearly-btn')?.addEventListener('click', () => {
-        chrome.runtime.sendMessage({ action: 'OPEN_PAYMENT_PAGE', plan: 'yearly' });
+        chrome.runtime.sendMessage({ action: 'OPEN_PAYMENT_PAGE', plan: 'yearly', email: currentUserEmail });
     });
 
     // Manage billing / cancel
@@ -217,6 +220,9 @@ async function fetchUserStatus() {
 function renderAccountUI(user, credits) {
     showStatePanel('status');
     const isPro = user.paid;
+
+    // Store email for Stripe pre-fill
+    currentUserEmail = user.email || null;
 
     // Badge
     if (user.trialActive) {

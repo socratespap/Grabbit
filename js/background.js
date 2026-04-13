@@ -489,7 +489,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 
     if (request.action === 'OPEN_PAYMENT_PAGE' || request.action === 'openPaymentPage') {
-        const url = request.plan === 'yearly' ? STRIPE_YEARLY_URL : STRIPE_MONTHLY_URL;
+        let url = request.plan === 'yearly' ? STRIPE_YEARLY_URL : STRIPE_MONTHLY_URL;
+        if (request.email) {
+            url += `?prefilled_email=${encodeURIComponent(request.email)}`;
+        }
         chrome.tabs.create({ url, active: true });
         sendResponse({ success: true });
         return true;
