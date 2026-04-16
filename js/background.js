@@ -2,8 +2,8 @@ import { GrabbitAuth } from './grabbit-auth.js';
 
 const SUPABASE_API_BASE = 'https://xtemoktforlrgxwdtpqb.supabase.co/functions/v1';
 const STRIPE_MONTHLY_URL = 'https://buy.stripe.com/aFa8wQ04DfZweE14Ogbsc02';
-const STRIPE_YEARLY_URL  = 'https://buy.stripe.com/9B600k3gP6oWfI5a8Absc03';
-const STRIPE_PORTAL_URL  = 'https://billing.stripe.com/p/login/4gMeVe8B9aFc3Zna8Absc00'; // Update this if you have a test portal link too!
+const STRIPE_YEARLY_URL = 'https://buy.stripe.com/9B600k3gP6oWfI5a8Absc03';
+const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/4gMeVe8B9aFc3Zna8Absc00';
 // AI comparison now handled server-side for security
 
 //=============================================================================
@@ -139,7 +139,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         if (result.linkifyEnabled === undefined) {
             chrome.storage.sync.set({ linkifyEnabled: true });
         }
-        
+
         // If the reset flag is missing, force the highlighter to false (one-time fix)
         if (!result[RESET_FLAG]) {
             const update = { duplicateHighlighterEnabled: false };
@@ -944,7 +944,6 @@ async function handleYouTubeSummary(tab) {
         return { ...data.summary, _remaining: data.remaining_month };
 
     } catch (e) {
-        console.error('YouTube extraction error:', e);
         throw new Error(e.message || 'Failed to extract video data. Please try again.');
     }
 }
@@ -1070,15 +1069,11 @@ async function extractYouTubeDataFromPage() {
                     const tracks = json?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
                     if (tracks && tracks.length > 0) {
                         playerData = json;
-                        console.log('[Grabbit] InnerTube client worked:', client.clientName);
                         break;
                     }
-                    console.warn('[Grabbit] Client returned no captions:', client.clientName);
                 } else {
-                    console.warn('[Grabbit] Client HTTP error:', client.clientName, res.status);
                 }
             } catch (e) {
-                console.warn('[Grabbit] Client failed:', client.clientName, e.message);
             }
         }
 
@@ -1167,7 +1162,6 @@ async function extractYouTubeDataFromPage() {
         return data;
 
     } catch (error) {
-        console.error('YouTube extraction error:', error);
         // Return what we have, even if incomplete
         data.error = error.message;
         return data;

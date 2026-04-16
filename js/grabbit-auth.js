@@ -152,10 +152,6 @@ export const GrabbitAuth = {
             const sub = rows?.[0];
             const isPremium = sub ? _checkPremiumStatus(sub) : false;
 
-            // DEBUG — remove after confirming
-            console.log('[GrabbitAuth] REST status:', res.status);
-            console.log('[GrabbitAuth] subscriber rows:', JSON.stringify(rows));
-            console.log('[GrabbitAuth] isPremium:', isPremium, 'sub:', JSON.stringify(sub));
 
             return {
                 isPremium,
@@ -165,7 +161,6 @@ export const GrabbitAuth = {
                 subscription: sub || null,
             };
         } catch (e) {
-            console.warn('[GrabbitAuth] getUser error:', e);
             return { isPremium: false, email: session.user?.email, userId: session.user?.id, session };
         }
     },

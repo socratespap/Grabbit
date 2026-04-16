@@ -1,3 +1,15 @@
+## Version 3.8.8 Changelog:
+- **Critical Fix: Deferred Selection Activation**: Resolved a major issue where plain mouse clicks (left/right) became unusable when actions were configured without modifier keys.
+- **Improved UX for Simple Clicks**: Native browser behavior (focusing text fields, placing cursors, following links) is now preserved for simple clicks; Grabbit only intercepts the event after the 5px drag threshold is reached.
+- **Enhanced Payment Flow**: Added support for pre-filling the user's email address on the Stripe checkout page for a smoother premium upgrade experience.
+- **Console Log Optimization**: Removed redundant diagnostic messages and internal warnings from the background service worker to maintain a cleaner developer environment.
+- **Click Suppression Safety**: Implemented a one-shot click suppressor to prevent accidental navigation at the end of a long drag-selection.
+
+## Version 3.8.7 Changelog:
+- **Privacy & Security Hardening**: Removed sensitive Supabase debug logs that could potentially leak subscription data or internal status in the browser console.
+- **Improved Logging Hygiene**: Cleaned up unnecessary YouTube extraction logs and technical warnings to provide a cleaner developer console experience.
+- **Enhanced Error Handling**: Refactored authentication modules to securely handle internal errors without exposing raw operational details.
+
 ## Version 3.8.6 Changelog:
 - **Major Infrastructure Upgrade**: Migrated backend services and user database from WordPress to Supabase for improved performance, security, and reliability.
 - **Enhanced Database Architecture**: Transitioned to a more robust SQL-based system in Supabase, enabling faster query processing and better data integrity.
