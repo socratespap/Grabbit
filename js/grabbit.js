@@ -88,7 +88,10 @@ document.addEventListener('mousedown', (e) => {
     GrabbitState.startX = e.clientX;
     GrabbitState.startY = e.clientY + window.scrollY; // Add scroll offset to initial Y position
     GrabbitState.initialScrollY = window.scrollY;
-    e.preventDefault();
+    // NOTE: We intentionally do NOT call e.preventDefault() here.
+    // For actions bound to plain left-click (no modifier), calling it here
+    // would block ALL native click behavior (focusing inputs, placing cursor, etc.).
+    // Instead, preventDefault is deferred to when the drag threshold is crossed.
   }
 });
 
@@ -98,6 +101,17 @@ document.addEventListener('mousedown', (e) => {
  */
 function activateSelection() {
   GrabbitState.isSelectionActive = true;
+
+  // Clear any text selection that started before the drag threshold was reached
+  window.getSelection()?.removeAllRanges();
+
+  // Suppress the 'click' event that fires after mouseup to prevent
+  // accidentally following links or clicking buttons at the drag endpoint
+  document.addEventListener('click', function suppressClick(ev) {
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    document.removeEventListener('click', suppressClick, true);
+  }, { capture: true, once: true });
 
   // PRE-CACHE LINKS
   // We do this once when selection activates to avoid expensive DOM queries
@@ -341,8 +355,13 @@ document.addEventListener('mousemove', (e) => {
     }
 
     // Threshold crossed - activate selection
+    // Now it's safe to preventDefault to block text selection during drag
+    e.preventDefault();
     activateSelection();
   }
+
+  // Prevent text selection while dragging
+  e.preventDefault();
 
   // At this point, selection is active - proceed with normal logic
   if (!GrabbitState.selectionBox) return;
