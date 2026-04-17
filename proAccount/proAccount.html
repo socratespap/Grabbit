@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,44 @@
     <link rel="stylesheet" href="proAccount.css">
     <style>
         /* Small overrides for inline states */
-        #reset-status-msg { display: none; font-size: 0.85rem; color: #10b981; margin: 10px 0 0; text-align: center; }
-        .form-error { display: none; font-size: 0.85rem; padding: 12px; border-radius: 12px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); margin: 15px 0; text-align: center; }
-        .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        #reset-status-msg {
+            display: none;
+            font-size: 0.85rem;
+            color: #10b981;
+            margin: 10px 0 0;
+            text-align: center;
+        }
+
+        .form-error {
+            display: none;
+            font-size: 0.85rem;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
     <!-- Animated Background -->
     <div class="bg-animation">
@@ -56,21 +89,44 @@
                     <!-- Sign In -->
                     <div id="signin-form" class="auth-form">
                         <div class="input-wrapper">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            <input id="login-email-input" type="email" placeholder="Email address" autocomplete="email" />
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path
+                                    d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input id="login-email-input" type="email" placeholder="Email address"
+                                autocomplete="email" />
                         </div>
                         <div class="input-wrapper">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            <input id="login-password-input" type="password" placeholder="Password" autocomplete="current-password" />
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input id="login-password-input" type="password" placeholder="Password"
+                                autocomplete="current-password" />
                             <button type="button" class="password-toggle" data-target="login-password-input">
-                                <svg class="eye-open" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                <svg class="eye-closed" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                <svg class="eye-open" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg class="eye-closed" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                                    stroke="currentColor" stroke-width="2" style="display:none;">
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
                             </button>
                         </div>
-                        <button id="login-submit-btn" class="btn btn-primary" style="width:100%;">Access Pro Dashboard</button>
+                        <button id="login-submit-btn" class="btn btn-primary" style="width:100%;">Access Pro
+                            Dashboard</button>
                         <p id="login-error" class="form-error"></p>
                         <div style="text-align: center; margin-top: 1rem;">
-                            <a id="forgot-password-link" style="color: var(--color-text-secondary); cursor:pointer; font-size: 0.9rem;">Forgot password?</a>
+                            <a id="forgot-password-link"
+                                style="color: var(--color-text-secondary); cursor:pointer; font-size: 0.9rem;">Forgot
+                                password?</a>
                             <p id="reset-status-msg"></p>
                         </div>
                     </div>
@@ -78,85 +134,152 @@
                     <!-- Sign Up -->
                     <div id="signup-form" class="auth-form" style="display:none;">
                         <div class="input-wrapper">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            <input id="signup-email-input" type="email" placeholder="Email address" autocomplete="email" />
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path
+                                    d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input id="signup-email-input" type="email" placeholder="Email address"
+                                autocomplete="email" />
                         </div>
                         <div class="input-wrapper">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            <input id="signup-password-input" type="password" placeholder="Password (8+ chars, A-Z, 0-9, !@#)" autocomplete="new-password" />
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input id="signup-password-input" type="password"
+                                placeholder="Password (8+ chars, A-Z, 0-9, !@#)" autocomplete="new-password" />
                             <button type="button" class="password-toggle" data-target="signup-password-input">
-                                <svg class="eye-open" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                <svg class="eye-closed" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                <svg class="eye-open" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg class="eye-closed" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                                    stroke="currentColor" stroke-width="2" style="display:none;">
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
                             </button>
                         </div>
-                        <p style="font-size:0.75rem; color: var(--color-text-muted); margin-top: -0.5rem; text-align: left;">Requirements: 8+ chars, uppercase, lowercase, number, & symbol.</p>
-                        <button id="signup-submit-btn" class="btn btn-primary" style="width:100%;">Create Account</button>
+                        <p
+                            style="font-size:0.75rem; color: var(--color-text-muted); margin-top: -0.5rem; text-align: left;">
+                            Requirements: 8+ chars, uppercase, lowercase, number, & symbol.</p>
+                        <button id="signup-submit-btn" class="btn btn-primary" style="width:100%;">Create
+                            Account</button>
                         <p id="signup-error" class="form-error"></p>
-                        <p style="font-size:0.8rem; color: var(--color-text-muted); text-align:center; margin-top: 1rem;">Joined 100,000+ users transforming their productivity.</p>
+                        <p
+                            style="font-size:0.8rem; color: var(--color-text-muted); text-align:center; margin-top: 1rem;">
+                            Joined 100,000+ users transforming their productivity.</p>
                     </div>
 
                     <!-- Pricing Section (Pre-Login) -->
                     <div class="pricing-section">
                         <div class="pricing-header">
-                            <h2 class="plan-name" style="margin-bottom: 0.5rem;">Choose Your <span class="gradient-text">Productivity Level</span></h2>
-                            <p style="color: var(--color-text-secondary);">Core features are free forever. Pro unlocks AI superpowers.</p>
+                            <h2 class="plan-name" style="margin-bottom: 0.5rem;">Choose Your <span
+                                    class="gradient-text">Productivity Level</span></h2>
+                            <p style="color: var(--color-text-secondary);">Core features are free forever. Pro unlocks
+                                AI superpowers.</p>
                         </div>
-                        
-                        <div class="pricing-grid">
-                            <!-- Free Tier Card -->
-                            <div class="pricing-card">
-                                <h3 class="plan-name">Free</h3>
-                                <div class="plan-price">
-                                    <span class="price-value">$0</span>
-                                    <span class="price-period">forever</span>
-                                </div>
-                                <ul class="plan-features">
-                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Drag-select multiple links</li>
-                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Custom keyboard shortcuts</li>
-                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Core selection logic</li>
-                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Basic formatting</li>
-                                </ul>
-                                <button id="pricing-get-started-btn" class="btn btn-secondary">Get Started Free</button>
-                            </div>
 
-                            <!-- Premium Tier Card -->
-                            <div class="pricing-card featured">
-                                <div class="popular-badge">Most Popular</div>
-                                <h3 class="plan-name">Premium</h3>
+                        <div class="pricing-grid">
+                            <!-- Premium (Monthly) Card -->
+                            <div class="pricing-card">
+                                <h3 class="plan-name">Premium <span
+                                        style="font-size: 0.9rem; font-weight: 500; opacity: 0.7;">(Monthly)</span></h3>
                                 <div class="plan-price">
                                     <span class="price-value">$3.99</span>
                                     <span class="price-period">/ month</span>
                                 </div>
                                 <ul class="plan-features">
                                     <li class="feature-highlight">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> 
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
                                         AI Product Comparison
-                                        <div class="feature-info" data-tooltip="Select multiple product tabs (Amazon, eBay, etc.) and Grabbit will generate a comprehensive comparison table with a clear winner and pros/cons.">?</div>
                                     </li>
                                     <li class="feature-highlight">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> 
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
                                         AI Article Summarization
-                                        <div class="feature-info" data-tooltip="Instantly condense long articles and blog posts into key takeaways, topic tags, and a 'bottom line' analysis.">?</div>
                                     </li>
                                     <li class="feature-highlight">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> 
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
                                         AI YouTube Summaries
-                                        <div class="feature-info" data-tooltip="Get a chapter-by-chapter breakdown of any YouTube video with detailed AI summaries for each section.">?</div>
                                     </li>
-                                    <li>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> 
-                                        300 AI requests/month
-                                        <div class="feature-info" data-tooltip="Your total monthly allowance for all AI-powered features. Credits reset every 30 days.">?</div>
-                                    </li>
-                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Priority updates</li>
+                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg> 300 AI requests/month</li>
+                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg> Priority updates</li>
                                 </ul>
-                                <button id="pricing-go-premium-btn" class="btn btn-primary">Go Premium</button>
+                                <button id="pricing-monthly-btn" class="btn btn-secondary">Go Monthly</button>
                                 <div class="trial-notice">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                    </svg>
+                                    3 Days Free Trial Included
+                                </div>
+                            </div>
+
+                            <!-- Premium (Yearly) Card -->
+                            <div class="pricing-card featured">
+                                <div class="popular-badge">Best Value — Save 48%</div>
+                                <h3 class="plan-name">Premium <span
+                                        style="font-size: 0.9rem; font-weight: 500; opacity: 0.7;">(Yearly)</span></h3>
+                                <div class="plan-price">
+                                    <span class="price-value">$24.99</span>
+                                    <span class="price-period">/ year</span>
+                                </div>
+                                <div class="savings-highlight">Equivalent to $2.08 / month</div>
+                                <ul class="plan-features">
+                                    <li class="feature-highlight">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                        All features included
+                                    </li>
+                                    <li class="feature-highlight">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                        Max yearly savings
+                                    </li>
+                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg> 300 AI requests/month</li>
+                                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg> Priority support</li>
+                                </ul>
+                                <button id="pricing-yearly-btn" class="btn btn-primary">Go Yearly</button>
+                                <div class="trial-notice">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                    </svg>
                                     3 Days Free Trial Included
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -177,7 +300,8 @@
 
                     <!-- Credits (Pro only) -->
                     <div id="credits-section" class="credits-display" style="display:none;">
-                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div
+                            style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                             <span style="font-weight: 700; font-size: 1.1rem;">Monthly AI Credits</span>
                             <span id="credits-reset" class="credits-reset">Resets in — days</span>
                         </div>
@@ -190,25 +314,48 @@
                     <!-- Upgrade box (Free only, shown after login) -->
                     <div id="upgrade-box" class="upgrade-box" style="display:none;">
                         <h3 style="margin: 0 0 10px 0; font-size: 1.25rem;">🚀 Ready for the full power?</h3>
-                        <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem;">Upgrade to Pro to unlock AI Product Comparison, Article Summaries, YouTube Summaries, and more.</p>
+                        <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem;">Upgrade to Pro to unlock
+                            AI Product Comparison, Article Summaries, YouTube Summaries, and more.</p>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <button id="subscribe-monthly-btn" class="btn btn-secondary" style="flex: 1;">Monthly Plan</button>
-                            <button id="subscribe-yearly-btn"  class="btn btn-primary" style="flex: 1.5;">⭐ Yearly — Best Value</button>
+                            <button id="subscribe-monthly-btn" class="btn btn-secondary" style="flex: 1;">Monthly —
+                                $3.99</button>
+                            <button id="subscribe-yearly-btn" class="btn btn-primary" style="flex: 1.5;">⭐ Yearly —
+                                $24.99 <span style="font-size: 0.8rem; opacity: 0.9; margin-left: 5px;">(Save
+                                    48%)</span></button>
+                        </div>
+                        <div class="trial-notice" style="margin-top: 1.5rem; justify-content: flex-start;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                            3 Days Free Trial Included with both plans
                         </div>
                     </div>
 
+
                     <!-- Pro actions -->
                     <div id="pro-actions" style="display:none; margin-top: 2rem; text-align: center;">
-                        <button id="billing-portal-btn" class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                        <button id="billing-portal-btn" class="btn btn-secondary"
+                            style="width: 100%; margin-bottom: 1rem;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                            </svg>
                             Manage Stripe Billing
                         </button>
-                        <a href="#" id="cancel-subscription-link" style="color: var(--color-text-muted); font-size: 0.85rem; text-decoration: underline;">Cancel Subscription</a>
+                        <a href="#" id="cancel-subscription-link"
+                            style="color: var(--color-text-muted); font-size: 0.85rem; text-decoration: underline;">Cancel
+                            Subscription</a>
                     </div>
 
                     <!-- Logout (always visible when logged in) -->
-                    <button id="logout-btn" class="btn btn-secondary" style="margin-top: 2rem; width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    <button id="logout-btn" class="btn btn-secondary"
+                        style="margin-top: 2rem; width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+                        </svg>
                         Log Out of Grabbit
                     </button>
                 </div>
@@ -216,7 +363,8 @@
                 <!-- STATE 4: Error -->
                 <div id="error-state" class="status-section" style="display:none; text-align: center;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
-                    <p id="error-message" style="margin-bottom: 1.5rem;">Unable to load account information. Please try again.</p>
+                    <p id="error-message" style="margin-bottom: 1.5rem;">Unable to load account information. Please try
+                        again.</p>
                     <button id="retry-btn" class="btn btn-primary">Retry Connection</button>
                 </div>
             </div>
@@ -230,4 +378,5 @@
     <script src="/js/components/sidebar.js"></script>
     <script src="proAccount.js" type="module"></script>
 </body>
+
 </html>

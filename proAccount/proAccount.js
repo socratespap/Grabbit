@@ -124,8 +124,8 @@ function bindEvents() {
     retryBtn?.addEventListener('click', fetchUserStatus);
 
     // Pricing buttons (Pre-login)
-    document.getElementById('pricing-get-started-btn')?.addEventListener('click', () => scrollToAuth('signup'));
-    document.getElementById('pricing-go-premium-btn')?.addEventListener('click', () => scrollToAuth('signup'));
+    document.getElementById('pricing-monthly-btn')?.addEventListener('click', () => scrollToAuth('signup'));
+    document.getElementById('pricing-yearly-btn')?.addEventListener('click', () => scrollToAuth('signup'));
 
     // Password toggles
     document.querySelectorAll('.password-toggle').forEach(btn => {

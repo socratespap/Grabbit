@@ -1,4 +1,8 @@
 ## Version 3.9.0 Changelog:
+- **Pricing Structure Update**: Modernized the Pro Account page by transitioning to a simplified Monthly and Yearly pricing model.
+- **New Yearly Premium Plan**: Introduced a featured Yearly subscription ($24.99/yr) offering 48% savings compared to the monthly rate.
+- **Trial Visibility**: Added a "3 Days Free Trial Included" notice to both Monthly and Yearly subscription cards for better transparency.
+- **UI Optimization**: Removed the secondary "Free Account" card from the pre-login grid to focus on core premium value; post-login upgrade flows now clearly present both subscription options.
 - **Optimization: Dependency Cleanup**: Removed legacy version-specific reset flag from the background service worker.
 - **Improved Initialization Logic**: Streamlined extension startup and storage initialization for better performance and maintainability.
 
