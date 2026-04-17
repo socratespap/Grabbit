@@ -430,7 +430,7 @@ document.addEventListener('mouseup', (e) => {
  * Prevents the default right-click menu when using right mouse button during selection
  */
 document.addEventListener('contextmenu', (e) => {
-  if (GrabbitState.isMouseDown) {
+  if (GrabbitState.isMouseDown && GrabbitState.isSelectionActive) {
     e.preventDefault();
   }
 });

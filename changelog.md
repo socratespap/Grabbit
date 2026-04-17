@@ -1,3 +1,7 @@
+## Version 3.8.9 Changelog:
+- **Mac/Linux Right-Click Fix**: Resolved a long-standing issue where the native browser context menu was suppressed on Mac and Linux systems when right-click actions were enabled.
+- **Improved Context Menu Logic**: The context menu is now only suppressed if the user is actively performing a drag-selection, preserving normal right-click behavior for simple clicks on all platforms.
+
 ## Version 3.8.8 Changelog:
 - **Critical Fix: Deferred Selection Activation**: Resolved a major issue where plain mouse clicks (left/right) became unusable when actions were configured without modifier keys.
 - **Improved UX for Simple Clicks**: Native browser behavior (focusing text fields, placing cursors, following links) is now preserved for simple clicks; Grabbit only intercepts the event after the 5px drag threshold is reached.
