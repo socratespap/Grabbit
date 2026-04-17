@@ -131,23 +131,12 @@ function migrateStoredActions(actions) {
 
 //open options page on extension install
 chrome.runtime.onInstalled.addListener((details) => {
-    // We use a version-specific flag to ensure we reset the highlighter to 'false' 
-    // exactly once for users who might have received the accidental 'true' default.
-    const RESET_FLAG = 'highlighterDefaultReset_3_8_2';
-
-    chrome.storage.sync.get(['linkifyEnabled', 'duplicateHighlighterEnabled', RESET_FLAG, 'savedActions'], (result) => {
+    chrome.storage.sync.get(['linkifyEnabled', 'duplicateHighlighterEnabled', 'savedActions'], (result) => {
         if (result.linkifyEnabled === undefined) {
             chrome.storage.sync.set({ linkifyEnabled: true });
         }
 
-        // If the reset flag is missing, force the highlighter to false (one-time fix)
-        if (!result[RESET_FLAG]) {
-            const update = { duplicateHighlighterEnabled: false };
-            update[RESET_FLAG] = true;
-            chrome.storage.sync.set(update);
-            console.log('Grabbit: Duplicate Highlighter default reset to false.');
-        } else if (result.duplicateHighlighterEnabled === undefined) {
-            // Fallback for new installs if the flag somehow exists but setting doesn't
+        if (result.duplicateHighlighterEnabled === undefined) {
             chrome.storage.sync.set({ duplicateHighlighterEnabled: false });
         }
 

@@ -1,3 +1,7 @@
+## Version 3.9.0 Changelog:
+- **Optimization: Dependency Cleanup**: Removed legacy version-specific reset flag from the background service worker.
+- **Improved Initialization Logic**: Streamlined extension startup and storage initialization for better performance and maintainability.
+
 ## Version 3.8.9 Changelog:
 - **Mac/Linux Right-Click Fix**: Resolved a long-standing issue where the native browser context menu was suppressed on Mac and Linux systems when right-click actions were enabled.
 - **Improved Context Menu Logic**: The context menu is now only suppressed if the user is actively performing a drag-selection, preserving normal right-click behavior for simple clicks on all platforms.
