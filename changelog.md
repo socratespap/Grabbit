@@ -1,3 +1,8 @@
+## Version 3.9.1 Changelog:
+- **New Feature: Manage Subscription Link**: Added a direct access link to the Pro Account page from the popup header.
+- **Popup UI Optimization**: Compacted the popup layout and header size (shrunk logo and spacing) to ensure all action buttons and footer links are visible without scrolling.
+- **Improved Popup Frame Scaling**: Reconfigured CSS to allow Chrome to correctly measure and scale the popup height to fit all content.
+
 ## Version 3.9.0 Changelog:
 - **Pricing Structure Update**: Modernized the Pro Account page by transitioning to a simplified Monthly and Yearly pricing model.
 - **New Yearly Premium Plan**: Introduced a featured Yearly subscription ($24.99/yr) offering 48% savings compared to the monthly rate.

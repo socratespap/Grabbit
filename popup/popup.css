@@ -15,9 +15,8 @@ html {
 
 body {
     width: 320px;
-    min-height: 280px;
     background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d0d1f 100%);
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
 }
 
@@ -78,10 +77,10 @@ body {
 .popup-container {
     position: relative;
     z-index: 1;
-    padding: 20px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
 }
 
 @keyframes fadeIn {
@@ -100,22 +99,22 @@ body {
 .popup-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding-bottom: 8px;
+    gap: 10px;
+    padding-bottom: 4px;
 }
 
 .logo-wrapper {
     position: relative;
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
 }
 
 .logo {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
     background: url('../icons/icon48.png');
     background-size: cover;
-    border-radius: 12px;
+    border-radius: 9px;
     position: relative;
     z-index: 2;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
@@ -126,11 +125,11 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 16px;
-    filter: blur(15px);
+    border-radius: 12px;
+    filter: blur(12px);
     opacity: 0.6;
     animation: pulse 3s ease-in-out infinite;
 }
@@ -153,10 +152,28 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1;
+}
+
+.manage-sub-link {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
+}
+
+.manage-sub-link:hover {
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .title {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     background: linear-gradient(135deg, #ffffff 0%, #a8b4ff 100%);
     -webkit-background-clip: text;
@@ -166,7 +183,7 @@ body {
 }
 
 .tagline {
-    font-size: 11px;
+    font-size: 9px;
     color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -177,17 +194,17 @@ body {
 .actions-section {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
 }
 
 /* Action Buttons - Glassmorphism Style */
 .action-button {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 10px;
+    padding: 10px 14px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 14px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -225,9 +242,9 @@ body {
 
 /* Button Icon Styles */
 .button-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
