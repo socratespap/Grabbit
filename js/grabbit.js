@@ -432,6 +432,12 @@ document.addEventListener('mouseup', (e) => {
 document.addEventListener('contextmenu', (e) => {
   if (GrabbitState.isMouseDown && GrabbitState.isSelectionActive) {
     e.preventDefault();
+  } else if (GrabbitState.isMouseDown) {
+    // Context menu is showing (not prevented) — clean up Grabbit state
+    // so the stuck isMouseDown doesn't trigger a phantom drag-selection.
+    // This is critical on Mac/Linux where mouseup doesn't fire when
+    // the native context menu captures the right-click interaction.
+    cleanupSelection();
   }
 });
 

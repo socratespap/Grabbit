@@ -1,3 +1,6 @@
+## Version 3.9.2 Changelog:
+- **Mac/Linux Right-Click Refinement**: Fixed a follow-up issue where a simple right-click would trigger a phantom drag-selection after the context menu was dismissed, because Mac/Linux does not fire `mouseup` when the native context menu captures the interaction.
+
 ## Version 3.9.1 Changelog:
 - **New Feature: Manage Subscription Link**: Added a direct access link to the Pro Account page from the popup header.
 - **Popup UI Optimization**: Compacted the popup layout and header size (shrunk logo and spacing) to ensure all action buttons and footer links are visible without scrolling.
