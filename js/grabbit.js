@@ -367,6 +367,14 @@ document.addEventListener('mousemove', (e) => {
     // Calculate distance from start position (using viewport coordinates for consistency)
     const distance = Math.hypot(currentX - GrabbitState.startX, currentY - GrabbitState.startY);
 
+    // On macOS/Linux, Chrome can dispatch contextmenu before mouseup during a right-drag.
+    // Prime suppression as soon as we see a small but real drag, while keeping the
+    // selection box gated behind the normal 5px activation threshold.
+    if (GrabbitState.currentMouseButton === 'right' && getOS() !== 'windows' &&
+      distance >= CONSTANTS.CONTEXT_MENU_DRAG_THRESHOLD) {
+      GrabbitState.pendingContextMenuSuppression = true;
+    }
+
     // If below threshold, don't activate yet
     if (distance < CONSTANTS.DRAG_THRESHOLD) {
       return;
