@@ -32,6 +32,8 @@ const GrabbitState = {
     compiledExclusionFilters: [], // Pre-compiled RegExp objects for performance (URL filters)
     compiledLinkTextExclusionFilters: [], // Pre-compiled RegExp objects for performance (link text)
     pressedKeys: new Set(),     // Set of currently pressed letter keys (for A-Z modifiers)
+    pendingContextMenuSuppression: false, // Tracks right-drag selections that must suppress the native menu
+    contextMenuSuppressionTimeout: null, // Timeout used to clear one-shot context menu suppression after mouseup
     linkRefreshInterval: null   // Interval ID for periodic link re-caching during selection
 };
 
@@ -50,5 +52,6 @@ const CONSTANTS = {
     DEBOUNCE_DELAY: 5,          // Milliseconds for debouncing link selection
     DEFAULT_BOX_COLOR: '#2196F3', // Default selection box color
     DRAG_THRESHOLD: 5,          // Pixels to drag before activating selection
-    LINK_REFRESH_INTERVAL: 500  // Milliseconds between link re-caching during selection
+    LINK_REFRESH_INTERVAL: 500, // Milliseconds between link re-caching during selection
+    CONTEXT_MENU_SUPPRESSION_TIMEOUT: 250 // Milliseconds to wait for a delayed contextmenu after right-drag
 };

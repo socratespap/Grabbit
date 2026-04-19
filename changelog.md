@@ -1,3 +1,8 @@
+## Version 3.9.3 Changelog:
+- **Cross-Platform Right-Click Selection Fix**: Fixed right-click drag actions on macOS so the native context menu no longer interrupts the selection box and prevents links from being selected.
+- **Windows Context Menu Regression Fix**: Fixed a follow-up issue where the native context menu could still appear after a successful right-click drag action had already executed.
+- **Improved Selection State Cleanup**: Hardened right-click selection cleanup so interrupted or delayed browser events do not leave stale selection state behind.
+
 ## Version 3.9.2 Changelog:
 - **Mac/Linux Right-Click Refinement**: Fixed a follow-up issue where a simple right-click would trigger a phantom drag-selection after the context menu was dismissed, because Mac/Linux does not fire `mouseup` when the native context menu captures the interaction.
 

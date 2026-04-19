@@ -85,6 +85,16 @@ function updateVisualStyles() {
 function cleanupSelection() {
     GrabbitState.isMouseDown = false;
     GrabbitState.isSelectionActive = false;
+    GrabbitState.pendingContextMenuSuppression = false;
+
+    if (GrabbitState.contextMenuSuppressionTimeout) {
+        clearTimeout(GrabbitState.contextMenuSuppressionTimeout);
+        GrabbitState.contextMenuSuppressionTimeout = null;
+    }
+
+    GrabbitState.currentMatchedAction = null;
+    GrabbitState.previousAction = null;
+    GrabbitState.currentMouseButton = null;
 
     if (GrabbitState.selectionBox) {
         GrabbitState.selectionBox.remove();

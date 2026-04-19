@@ -76,6 +76,14 @@ function compileLinkTextExclusionFilters() {
  */
 document.addEventListener('mousedown', (e) => {
   if (GrabbitState.isDisabled) return;
+
+  if (GrabbitState.contextMenuSuppressionTimeout) {
+    clearTimeout(GrabbitState.contextMenuSuppressionTimeout);
+    GrabbitState.contextMenuSuppressionTimeout = null;
+  }
+
+  GrabbitState.pendingContextMenuSuppression = false;
+
   const mouseButton = getMouseButton(e);
   GrabbitState.currentMouseButton = mouseButton; // Store the initial mouse button
 
@@ -102,6 +110,10 @@ document.addEventListener('mousedown', (e) => {
 function activateSelection() {
   GrabbitState.isSelectionActive = true;
 
+  if (GrabbitState.currentMouseButton === 'right') {
+    GrabbitState.pendingContextMenuSuppression = true;
+  }
+
   // Clear any text selection that started before the drag threshold was reached
   window.getSelection()?.removeAllRanges();
 
@@ -111,6 +123,12 @@ function activateSelection() {
     ev.preventDefault();
     ev.stopImmediatePropagation();
     document.removeEventListener('click', suppressClick, true);
+  }, { capture: true, once: true });
+
+  document.addEventListener('auxclick', function suppressAuxClick(ev) {
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    document.removeEventListener('auxclick', suppressAuxClick, true);
   }, { capture: true, once: true });
 
   // PRE-CACHE LINKS
@@ -403,19 +421,11 @@ document.addEventListener('mouseup', (e) => {
 
   if (!GrabbitState.isMouseDown) return;
 
-  // Prevent default context menu if links are selected and right mouse clicked or if selection box is a bit big
-  if (e.button === 2 && GrabbitState.selectedLinks.size > 0 ||
-    (GrabbitState.selectionBox && GrabbitState.selectionBox.offsetWidth > 100 && GrabbitState.selectionBox.offsetHeight > 100)) {
-    document.addEventListener('contextmenu', function preventContextMenu(e) {
-      e.preventDefault();
-      document.removeEventListener('contextmenu', preventContextMenu);
-    }, { once: true });
-  }
-
   // Use the action that started (or was active during) the selection, not the current key state.
   // This fixes the case where the user releases the modifier key (e.g. Ctrl) before releasing
   // the mouse button — the selection should still be processed with the original action.
   const actionToUse = GrabbitState.currentMatchedAction;
+  const shouldSuppressDelayedContextMenu = GrabbitState.pendingContextMenuSuppression;
 
   // Process selected links only if selection was actually activated and there's a matched action
   if (GrabbitState.isSelectionActive && actionToUse && GrabbitState.selectedLinks.size > 0) {
@@ -424,14 +434,24 @@ document.addEventListener('mouseup', (e) => {
 
   // Clean up
   cleanupSelection();
+
+  if (shouldSuppressDelayedContextMenu) {
+    GrabbitState.pendingContextMenuSuppression = true;
+    GrabbitState.contextMenuSuppressionTimeout = setTimeout(() => {
+      GrabbitState.pendingContextMenuSuppression = false;
+      GrabbitState.contextMenuSuppressionTimeout = null;
+    }, CONSTANTS.CONTEXT_MENU_SUPPRESSION_TIMEOUT);
+  }
 });
 
 /**
  * Prevents the default right-click menu when using right mouse button during selection
  */
 document.addEventListener('contextmenu', (e) => {
-  if (GrabbitState.isMouseDown && GrabbitState.isSelectionActive) {
+  if (GrabbitState.pendingContextMenuSuppression || (GrabbitState.isMouseDown && GrabbitState.isSelectionActive)) {
     e.preventDefault();
+    e.stopImmediatePropagation();
+    GrabbitState.pendingContextMenuSuppression = false;
   } else if (GrabbitState.isMouseDown) {
     // Context menu is showing (not prevented) — clean up Grabbit state
     // so the stuck isMouseDown doesn't trigger a phantom drag-selection.
@@ -439,7 +459,7 @@ document.addEventListener('contextmenu', (e) => {
     // the native context menu captures the right-click interaction.
     cleanupSelection();
   }
-});
+}, { capture: true });
 
 /**
  * Handles keydown events during selection to update the action
