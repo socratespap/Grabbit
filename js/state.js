@@ -51,7 +51,6 @@ const CONSTANTS = {
     SCROLL_INTERVAL: 16,        // Milliseconds between scroll updates (~60fps)
     DEBOUNCE_DELAY: 5,          // Milliseconds for debouncing link selection
     DEFAULT_BOX_COLOR: '#2196F3', // Default selection box color
-    CONTEXT_MENU_DRAG_THRESHOLD: 2, // Small movement that signals right-drag intent before the full selection threshold
     DRAG_THRESHOLD: 5,          // Pixels to drag before activating selection
     LINK_REFRESH_INTERVAL: 500, // Milliseconds between link re-caching during selection
     CONTEXT_MENU_SUPPRESSION_TIMEOUT: 250 // Milliseconds to wait for a delayed contextmenu after right-drag

@@ -13,3 +13,8 @@ PRIVACY_POLICY.md
 backup_script.bat
 grabbit-theme/
 build_theme.js
+manifest.chrome.json
+manifest.firefox.json
+plan_firefox_chrome.md
+publishing_instructions.md
+switch-manifest.ps1

@@ -12,6 +12,15 @@ import { setupPreviewListeners } from './preview.js';
 import { createActionCard } from './card.js';
 import { initializeModal, setupModalListeners, setupFormValidation } from './modal.js';
 
+function getBrowserCompat() {
+    return globalThis.GrabbitBrowserCompat || {
+        feedbackUrl: 'https://chromewebstore.google.com/detail/grabbit/madmdgpjgagdmmmiddpiggdnpgjglcdk/reviews',
+        feedbackButtonLabel: 'Rate on Chrome Web Store',
+        pinHelpUrl: 'https://support.google.com/chrome_webstore/answer/3060053',
+        supportUrl: 'https://github.com/socratespap/Grabbit/issues',
+    };
+}
+
 // ============================================================================
 // DOM ELEMENT REFERENCES
 // ============================================================================
@@ -35,6 +44,8 @@ const modalTitle = document.getElementById('modalTitle');
  * Initialize the options page
  */
 function initialize() {
+    applyBrowserSpecificLabels();
+
     // Initialize the modal module with required DOM references
     initializeModal({
         modal,
@@ -94,34 +105,42 @@ function initialize() {
     }
 }
 
+function applyBrowserSpecificLabels() {
+    const compat = getBrowserCompat();
+    const rateExtensionButton = document.getElementById('rateExtensionButton');
+
+    if (rateExtensionButton) {
+        rateExtensionButton.innerHTML = `
+            <span class="star-icons">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            ${compat.feedbackButtonLabel}
+        `;
+    }
+}
+
 /**
  * Set up extension management buttons (pin, rate)
  */
 function setupExtensionButtons() {
+    const compat = getBrowserCompat();
+
     // Handle pin extension button
     const pinExtensionButton = document.getElementById('pinExtensionButton');
-    if (pinExtensionButton) {
-        pinExtensionButton.addEventListener('click', async () => {
-            try {
-                const extensionId = chrome.runtime.id;
-                await chrome.action.setPopup({ popup: 'popup/popup.html' });
-                await chrome.action.enable();
-                await chrome.tabs.create({
-                    url: 'chrome://extensions/?id=' + extensionId
-                });
-            } catch (error) {
-                console.error('Failed to pin extension:', error);
-            }
+    if (pinExtensionButton && !pinExtensionButton.dataset.grabbitClickBound) {
+        pinExtensionButton.dataset.grabbitClickBound = 'true';
+        pinExtensionButton.addEventListener('click', () => {
+            chrome.tabs.create({
+                url: compat.pinHelpUrl
+            });
         });
     }
 
     // Handle rate extension button
     const rateExtensionButton = document.getElementById('rateExtensionButton');
-    if (rateExtensionButton) {
+    if (rateExtensionButton && !rateExtensionButton.dataset.grabbitClickBound) {
+        rateExtensionButton.dataset.grabbitClickBound = 'true';
         rateExtensionButton.addEventListener('click', () => {
-            const extensionId = chrome.runtime.id;
             chrome.tabs.create({
-                url: `https://chrome.google.com/webstore/detail/${extensionId}/reviews`
+                url: compat.feedbackUrl
             });
         });
     }
@@ -131,7 +150,7 @@ function setupExtensionButtons() {
     if (reportIssueButton) {
         reportIssueButton.addEventListener('click', () => {
             chrome.tabs.create({
-                url: 'https://chromewebstore.google.com/detail/madmdgpjgagdmmmiddpiggdnpgjglcdk/support'
+                url: compat.supportUrl
             });
         });
     }

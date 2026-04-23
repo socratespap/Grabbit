@@ -96,6 +96,14 @@ document.addEventListener('mousedown', (e) => {
     GrabbitState.startX = e.clientX;
     GrabbitState.startY = e.clientY + window.scrollY; // Add scroll offset to initial Y position
     GrabbitState.initialScrollY = window.scrollY;
+    
+    // On macOS/Linux, contextmenu fires immediately after mousedown.
+    // If we matched an action, we MUST prime suppression right away,
+    // otherwise the native menu will open and abort the selection before mousemove triggers.
+    if (mouseButton === 'right' && getOS() !== 'windows') {
+      GrabbitState.pendingContextMenuSuppression = true;
+    }
+
     // NOTE: We intentionally do NOT call e.preventDefault() here.
     // For actions bound to plain left-click (no modifier), calling it here
     // would block ALL native click behavior (focusing inputs, placing cursor, etc.).
@@ -125,11 +133,16 @@ function activateSelection() {
     document.removeEventListener('click', suppressClick, true);
   }, { capture: true, once: true });
 
-  document.addEventListener('auxclick', function suppressAuxClick(ev) {
-    ev.preventDefault();
-    ev.stopImmediatePropagation();
-    document.removeEventListener('auxclick', suppressAuxClick, true);
-  }, { capture: true, once: true });
+  // Suppress 'auxclick' only for right/middle-click drags.
+  // Left-click drags never fire auxclick, so registering it would leave
+  // a stale listener that swallows the next legitimate middle-click.
+  if (GrabbitState.currentMouseButton !== 'left') {
+    document.addEventListener('auxclick', function suppressAuxClick(ev) {
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      document.removeEventListener('auxclick', suppressAuxClick, true);
+    }, { capture: true, once: true });
+  }
 
   // PRE-CACHE LINKS
   // We do this once when selection activates to avoid expensive DOM queries
@@ -366,14 +379,6 @@ document.addEventListener('mousemove', (e) => {
   if (!GrabbitState.isSelectionActive) {
     // Calculate distance from start position (using viewport coordinates for consistency)
     const distance = Math.hypot(currentX - GrabbitState.startX, currentY - GrabbitState.startY);
-
-    // On macOS/Linux, Chrome can dispatch contextmenu before mouseup during a right-drag.
-    // Prime suppression as soon as we see a small but real drag, while keeping the
-    // selection box gated behind the normal 5px activation threshold.
-    if (GrabbitState.currentMouseButton === 'right' && getOS() !== 'windows' &&
-      distance >= CONSTANTS.CONTEXT_MENU_DRAG_THRESHOLD) {
-      GrabbitState.pendingContextMenuSuppression = true;
-    }
 
     // If below threshold, don't activate yet
     if (distance < CONSTANTS.DRAG_THRESHOLD) {

@@ -1,3 +1,11 @@
+## Version 3.9.5 Changelog:
+- **macOS Right-Click Event Timing Fix**: Resolved a critical issue where the context menu would still interrupt selection on Mac because it fires immediately after mousedown. Moved suppression priming to the mousedown event for macOS/Linux.
+- **Resource Leak Fix**: Optimized the `auxclick` listener registration to only trigger for right/middle-click actions, preventing stale listeners from intercepting future legitimate middle-clicks.
+- **Cleaned Up Technical Debt**: Removed unused constants and refined cross-platform event handling logic.
+
+## Version 3.9.4 Changelog:
+- **Internal Optimization**: Improved cross-platform event detection patterns and refined selection box state cleanup.
+
 ## Version 3.9.3 Changelog:
 - **Cross-Platform Right-Click Selection Fix**: Fixed right-click drag actions on macOS so the native context menu no longer interrupts the selection box and prevents links from being selected.
 - **Windows Context Menu Regression Fix**: Fixed a follow-up issue where the native context menu could still appear after a successful right-click drag action had already executed.
